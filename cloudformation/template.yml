@@ -1,0 +1,105 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: "Template to provision ec2 for RerekishoReaction"
+
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnetId:
+    Type: AWS::EC2::Subnet::Id
+  InstanceType:
+    Type: String
+    Default: t2.nano
+    AllowedValues:
+      - t2.nano
+      - t2.micro
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+  HostedZoneId:
+    Type: String
+  RecordName:
+    Type: String
+
+Resources:
+  RerekishoReactionEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+        - Key: Name
+          Value: rerekisho-reaction-ec2-instance
+      IamInstanceProfile: !Ref RerekishoReactionEC2InstanceProfile
+      InstanceType: !Ref InstanceType
+      SubnetId: !Ref PublicSubnetId
+      SecurityGroupIds:
+        - !Ref RerekishoReactionSecurityGroup
+      ImageId: !Ref AmiId
+      #   UserData:
+
+  RerekishoReactionEC2InstanceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: RerekishoReactionEC2InstanceRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+
+  RerekishoReactionEC2InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles:
+        - !Ref RerekishoReactionEC2InstanceRole
+
+  RerekishoReactionSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: "Security group for RerekishoReaction"
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+      SecurityGroupEgress:
+        - IpProtocol: -1
+          CidrIp: 0.0.0.0/0
+
+  RerekishoReactionEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: RerekishoReactionEIP
+
+  RerekishoReactionEIPAssociation:
+    Type: AWS::EC2::EIPAssociation
+    Properties:
+      AllocationId: !GetAtt RerekishoReactionEIP.AllocationId
+      InstanceId: !Ref RerekishoReactionEC2Instance
+
+  RerekishoReactionDnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref RecordName
+      Type: A
+      TTL: "300"
+      ResourceRecords:
+        - !Ref RerekishoReactionEIP
+
+Outputs:
+  InstanceId:
+    Value: !Ref RerekishoReactionEC2Instance
