@@ -3,23 +3,33 @@ AWSTemplateFormatVersion: '2010-09-09'
 Description: "Template to provision ec2 for RerekishoReaction"
 
 Parameters:
-  VpcId:
-    Type: AWS::EC2::VPC::Id
-  PublicSubnetId:
-    Type: AWS::EC2::Subnet::Id
+  VpcIdParam:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>
+    Default: /RerekishoReaction/VpcId
+  PublicSubnetIdParam:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Subnet::Id>
+    Default: /RerekishoReaction/PublicSubnetId
   InstanceType:
     Type: String
     Default: t2.nano
     AllowedValues:
       - t2.nano
       - t2.micro
+  Region:
+    Type: String
+  SSMParameterStoreId:
+    Type: String
+  SSMParameterStoreKeyId:
+    Type: String
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
-  HostedZoneId:
-    Type: String
-  RecordName:
-    Type: String
+  HostedZoneIdParam:
+    Type: AWS::SSM::Parameter::Value<AWS::Route53::HostedZone::Id>
+    Default: /RerekishoReaction/HostedZoneId
+  RecordNameParam:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /RerekishoReaction/RecordName
 
 Resources:
   RerekishoReactionEC2Instance:
@@ -28,20 +38,130 @@ Resources:
       Tags:
         - Key: Name
           Value: rerekisho-reaction-ec2-instance
+        - Key: DeployTarget
+          Value: rerekisho-reaction-ec2-instances
       IamInstanceProfile: !Ref RerekishoReactionEC2InstanceProfile
       InstanceType: !Ref InstanceType
-      SubnetId: !Ref PublicSubnetId
+      SubnetId: !Ref PublicSubnetIdParam
       SecurityGroupIds:
         - !Ref RerekishoReactionSecurityGroup
       ImageId: !Ref AmiId
-      #   UserData:
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          set -euo pipefail
+
+          echo 'UserData Started'
+
+          # EC2リージョンを取得
+          TOKEN="$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")"
+          CURRENT_REGION="$(curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/placement/region)"
+
+          # nodejsインストール
+          curl -fsSL https://rpm.nodesource.com/setup_24.x | sudo bash -
+          sudo yum install -y nodejs
+          node -v
+          which node
+
+          # serviceファイルの作成
+          /opt/aws/bin/cfn-init \
+            --stack rerekisho-reaction-ec2 \
+            --resource RerekishoReactionEC2Instance \
+            --region "$CURRENT_REGION"
+          systemctl daemon-reload
+          
+          # MariaDBをインストール
+          yum install mariadb105-server -y
+          mysql --version
+          systemctl enable mariadb
+          systemctl start mariadb
+          systemctl status mariadb --no-pager
+          
+          # dbを作成
+          mysql -u root -h localhost -e "CREATE DATABASE rerekisho_reaction_db;"
+
+          # SSMパラメータストアから取得
+          DB_USER_NAME="$(aws ssm get-parameter \
+            --region "$CURRENT_REGION" \
+            --name "/RerekishoReaction/DBUserName" \
+            --query 'Parameter.Value' \
+            --with-decryption \
+            --output text)"
+          DB_PASSWORD="$(aws ssm get-parameter \
+            --region "$CURRENT_REGION" \
+            --name "/RerekishoReaction/DBPassword" \
+            --query 'Parameter.Value' \
+            --with-decryption \
+            --output text)"
+          
+          # 念の為エスケープ
+          esc_for_sql() { printf "%s" "$1" | sed "s/'/''/g"; }
+          DB_USER_NAME="$(esc_for_sql "$DB_USER_NAME")"
+          DB_PASSWORD="$(esc_for_sql "$DB_PASSWORD")"
+
+          # DBにprismaのユーザーを作成
+          mysql -u root -h localhost <<<"
+            CREATE USER IF NOT EXISTS '$DB_USER_NAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+            GRANT ALL PRIVILEGES on rerekisho_reaction_db.* TO '$DB_USER_NAME'@'localhost';
+            FLUSH PRIVILEGES;
+          "
+
+          # 変数をクリア
+          unset DB_USER_NAME
+          unset DB_PASSWORD
+
+          # AWS CodeDeployのインストール
+          yum update
+          yum install ruby -y
+          yum install wget -y
+          # 既存codedeployがある場合は削除
+          # CODEDEPLOY_BIN="/opt/codedeploy-agent/bin/codedeploy-agent"
+          # $CODEDEPLOY_BIN stop
+          # yum erase codedeploy-agent -y
+          # codedeployをap-northeast-1からインストール
+          cd /home/ec2-user
+          wget https://aws-codedeploy-ap-northeast-1.s3.ap-northeast-1.amazonaws.com/latest/install
+          chmod +x ./install
+          ./install auto
+          systemctl status codedeploy-agent --no-pager
+
+          echo 'UserData Finished'
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          files:
+            /etc/systemd/system/rerekisho_reaction_app.service:
+              mode: "0644"
+              owner: root
+              group: root
+              content: |
+                [Unit]
+                Description=Express Application Rerekisho Reaction
+                After=network.target
+
+                [Service]
+                Type=simple
+                User=ec2-user
+                Group=ec2-user
+                WorkingDirectory=/var/rerekisho_reaction_app
+                ExecStart=/var/rerekisho_reaction_app/server_start.sh
+                Restart=always
+                RestartSec=30
+                Environment=NODE_ENV=production
+                Environment=PORT=3000
+                StandardOutput=journal
+                StandardError=journal
+                LimitNOFILE=65535
+
+                [Install]
+                WantedBy=multi-user.target
 
   RerekishoReactionEC2InstanceRole:
     Type: AWS::IAM::Role
     Properties:
       RoleName: RerekishoReactionEC2InstanceRole
       AssumeRolePolicyDocument:
-        Version: '2012-10-17'
+        Version: "2012-10-17"
         Statement:
           - Effect: Allow
             Principal:
@@ -51,7 +171,26 @@ Resources:
               - sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
-        - arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforAWSCodeDeploy
+      Policies:
+        - PolicyName: AllowGetParametersByPathForRerekishoReactionApp
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: AllowGetParametersByPath
+                Effect: Allow
+                Action:
+                  - ssm:GetParametersByPath
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                Resource:
+                  - !Sub "${ !Ref SSMParameterStoreId }/*"
+              - Sid: AllowKmsDecryptForSecureString
+                Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource:
+                  - !Ref SSMParameterStoreKeyId
 
   RerekishoReactionEC2InstanceProfile:
     Type: AWS::IAM::InstanceProfile
@@ -64,7 +203,7 @@ Resources:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: "Security group for RerekishoReaction"
-      VpcId: !Ref VpcId
+      VpcId: !Ref VpcIdParam
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 80
@@ -93,13 +232,86 @@ Resources:
   RerekishoReactionDnsRecord:
     Type: AWS::Route53::RecordSet
     Properties:
-      HostedZoneId: !Ref HostedZoneId
-      Name: !Ref RecordName
+      HostedZoneId: !Ref HostedZoneIdParam
+      Name: !Ref RecordNameParam
       Type: A
       TTL: "300"
       ResourceRecords:
         - !Ref RerekishoReactionEIP
 
+  RerekishoReactionCodeDeployApplication:
+    Type: AWS::CodeDeploy::Application
+    Properties:
+      ApplicationName: RerekishoReactionCodeDeployApp
+      ComputePlatform: Server
+
+  RerekishoReactionCodeDeployS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: rerekisho-reaction-code-deploy-s3-bucket
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireNonCurrentAfter30Days
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 30
+
+  RerekishoReactionCodeDeployServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: RerekishoReactionCodeDeployServiceRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - codedeploy.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole
+      Policies:
+        - PolicyName: ReadCodeDeployRevisionFromRerekishoReactionCodeDeployS3Bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: ReadRevisionFromBucket
+                Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:GetObjectVersion
+                Resource: !Sub "${ RerekishoReactionCodeDeployS3Bucket.Arn }/*"
+              - Sid: ListAndLocateBucket
+                Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:GetBucketLocation
+                Resource: !GetAtt RerekishoReactionCodeDeployS3Bucket.Arn
+
+  RerekishoReactionCodeDeployDeploymentGroup:
+    Type: AWS::CodeDeploy::DeploymentGroup
+    Properties:
+      ApplicationName: !Ref RerekishoReactionCodeDeployApplication
+      DeploymentGroupName: RerekishoReactionDeploymentGroup
+      ServiceRoleArn: !GetAtt RerekishoReactionCodeDeployServiceRole.Arn
+      DeploymentConfigName: CodeDeployDefault.OneAtATime
+      Ec2TagFilters:
+        - Key: DeployTarget
+          Value: rerekisho-reaction-ec2-instances
+          Type: KEY_AND_VALUE
+          
 Outputs:
   InstanceId:
     Value: !Ref RerekishoReactionEC2Instance
