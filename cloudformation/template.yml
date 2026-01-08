@@ -93,22 +93,83 @@ Resources:
             --query 'Parameter.Value' \
             --with-decryption \
             --output text)"
-          
           # 念の為エスケープ
           esc_for_sql() { printf "%s" "$1" | sed "s/'/''/g"; }
           DB_USER_NAME="$(esc_for_sql "$DB_USER_NAME")"
           DB_PASSWORD="$(esc_for_sql "$DB_PASSWORD")"
-
           # DBにprismaのユーザーを作成
           mysql -u root -h localhost <<<"
             CREATE USER IF NOT EXISTS '$DB_USER_NAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
             GRANT ALL PRIVILEGES on rerekisho_reaction_db.* TO '$DB_USER_NAME'@'localhost';
             FLUSH PRIVILEGES;
           "
-
           # 変数をクリア
           unset DB_USER_NAME
           unset DB_PASSWORD
+
+          # 永続化EBSをマウント
+          DEVICE=/dev/xvdf
+          MOUNT_POINT=/mnt/permanent-volume
+          CERT_DIR=${!MOUNT_POINT}/letsencrypt
+          # フォーマット
+          if ! blkid ${!DEVICE}; then
+            mkfs.ext4 ${!DEVICE}
+          fi
+          # デバイスをマウント
+          mkdir -p ${!MOUNT_POINT}
+          if ! mount | grep -q "${!MOUNT_POINT}"; then
+            mount ${!DEVICE} ${!MOUNT_POINT}
+          fi
+          # /etc/letsencryptをバインドマウント
+          mkdir -p ${!CERT_DIR}
+          mkdir -p /etc/letsencrypt
+          if ! mount | grep -q "/etc/letsencrypt"; then
+            mount --bind ${!CERT_DIR} /etc/letsencrypt
+          fi
+          # fstab登録
+          UUID=$(blkid -s UUID -o value ${!DEVICE})
+          grep -q "${!UUID}" /etc/fstab || echo "UUID=${!UUID} ${!MOUNT_POINT} ext4 defaults,nofail 0 2" >> /etc/fstab
+          grep -q "${!CERT_DIR} /etc/letsencrypt" /etc/fstab || echo "${!CERT_DIR} /etc/letsencrypt none bind 0 0" >> /etc/fstab
+
+          # Let's Encryptの実行
+          dnf update -y
+          dnf install -y certbot
+          certbot --version
+          DOMAIN="$(aws ssm get-parameter \
+            --region "$CURRENT_REGION" \
+            --name "/RerekishoReaction/RecordName" \
+            --query 'Parameter.Value' \
+            --with-decryption \
+            --output text)"
+          LIVE_DIR_PATH="/etc/letsencrypt/live/${!DOMAIN}"
+          FULLCHAIN="${!LIVE_DIR_PATH}/fullchain.pem"
+          PRIVKEY="${!LIVE_DIR_PATH}/privkey.pem"
+          if [ -s "${!FULLCHAIN}" ] && [ -s "${!PRIVKEY}" ]; then
+            echo "Let's Encrypt cert already exists. Skip certbot."
+          else
+            echo "Let's Encrypt cert not found. Run certbot."
+            DEV_EMAIL="$(aws ssm get-parameter \
+              --region "$CURRENT_REGION" \
+              --name "/RerekishoReaction/DevEmail" \
+              --query 'Parameter.Value' \
+              --with-decryption \
+              --output text)"
+            certbot certonly \
+              --standalone \
+              -d "${!DOMAIN}" \
+              --agree-tos \
+              -m "${!DEV_EMAIL}" \
+              --non-interactive
+            unset DEV_EMAIL
+          fi
+          unset DOMAIN
+
+          # cronをインストール
+          dnf install -y cronie
+          systemctl enable crond
+          systemctl start crond
+          echo '0 */12 * * * root certbot renew -q' > /etc/cron.d/certbot
+          chmod 644 /etc/cron.d/certbot
 
           # AWS CodeDeployのインストール
           yum update
@@ -184,7 +245,7 @@ Resources:
                   - ssm:GetParameter
                   - ssm:GetParameters
                 Resource:
-                  - !Sub "${ !Ref SSMParameterStoreId }/*"
+                  - !Sub "${SSMParameterStoreId}/*"
               - Sid: AllowKmsDecryptForSecureString
                 Effect: Allow
                 Action:
@@ -208,9 +269,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 443
           ToPort: 443
+          CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: -1
           CidrIp: 0.0.0.0/0
@@ -238,6 +301,22 @@ Resources:
       TTL: "300"
       ResourceRecords:
         - !Ref RerekishoReactionEIP
+
+  RerekishoReactionEC2PermanentVolume:
+    Type: AWS::EC2::Volume
+    DeletionPolicy: Retain
+    Properties:
+      AvailabilityZone: !GetAtt RerekishoReactionEC2Instance.AvailabilityZone
+      Size: 1
+      VolumeType: gp3
+      Encrypted: true
+
+  RerekishoReactionEC2VolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      InstanceId: !Ref RerekishoReactionEC2Instance
+      VolumeId: !Ref RerekishoReactionEC2PermanentVolume
+      Device: /dev/xvdf
 
   RerekishoReactionCodeDeployApplication:
     Type: AWS::CodeDeploy::Application
