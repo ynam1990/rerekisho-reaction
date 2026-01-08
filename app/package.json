@@ -1,0 +1,21 @@
+{
+  "name": "rerekisho_reaction_app",
+  "version": "1.0.0",
+  "description": "clientとserverをbuildするためのpackage.jsonです",
+  "main": "index.js",
+  "scripts": {
+    "build:client": "npm --prefix client run build",
+    "build:server": "npm --prefix server run build",
+    "build": "npm run build:client && npm run build:server",
+    "prepare:dir": "rm -rf .temp && mkdir -p .temp",
+    "copy:dist": "cp -R server/dist .temp/app && cp server/package.json server/package-lock.json .temp/app && cp -R client/dist .temp/app/public && cp -R codedeploy/* .temp/ && cp server_start.sh .temp/",
+    "zip:dist": "rm -rf revision.zip && cd .temp && zip -r ../revision.zip . && cd ../",
+    "create": "npm run build && npm run prepare:dir && npm run copy:dist && npm run zip:dist",
+    "upload": "aws s3 cp revision.zip s3://rerekisho-reaction-code-deploy-s3-bucket/revision.zip",
+    "prepare": "npm run create && npm run upload"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "type": "module"
+}
