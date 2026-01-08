@@ -1,17 +1,18 @@
+import 'dotenv/config';
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { publicDirectoryPath } from './utils/path.js';
+import { APP_PORT } from './constants/env.const.js';
+
+// 作業ディレクトリ確認
+console.log(`App has initiated in ${ process.cwd() }`);
 
 const app = express();
-const APP_PORT = 3000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 app.use(express.static(
-  path.join(__dirname, '../../client/dist')
+  publicDirectoryPath()
 ));
 
-app.all('*', (req, res) => {
+app.use((req, res) => {
   if (req.method !== 'GET') {
     return res.status(404).json({
       error: `No api found for ${ req.path }`
@@ -19,7 +20,7 @@ app.all('*', (req, res) => {
   }
   
   res.sendFile(
-    path.join(__dirname, '../../client/dist', 'index.html')
+    publicDirectoryPath('index.html')
   );
 });
 
