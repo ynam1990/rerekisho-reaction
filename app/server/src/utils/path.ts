@@ -10,7 +10,6 @@ const __dirname = path.join(
 );
 
 export function publicDirectoryPath (filename?: string) : string {
-  console.log(__dirname)
   return path.join(
     __dirname,
     isLocal() ? '../../client/dist' : 'public',

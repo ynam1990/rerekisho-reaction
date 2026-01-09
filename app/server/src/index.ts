@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import { publicDirectoryPath } from './utils/path.js';
 import { APP_PORT } from './constants/env.const.js';
+import './utils/before_shutdown.js'
 
 // 作業ディレクトリ確認
 console.log(`App has initiated in ${ process.cwd() }`);
