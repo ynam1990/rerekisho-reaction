@@ -63,7 +63,7 @@ Resources:
           node -v
           which node
 
-          # serviceファイルの作成
+          # serviceファイル、nginx設定ファイルの作成
           /opt/aws/bin/cfn-init \
             --stack rerekisho-reaction-ec2 \
             --resource RerekishoReactionEC2Instance \
@@ -131,51 +131,26 @@ Resources:
           grep -q "${!UUID}" /etc/fstab || echo "UUID=${!UUID} ${!MOUNT_POINT} ext4 defaults,nofail 0 2" >> /etc/fstab
           grep -q "${!CERT_DIR} /etc/letsencrypt" /etc/fstab || echo "${!CERT_DIR} /etc/letsencrypt none bind 0 0" >> /etc/fstab
 
-          # Let's Encryptの実行
+          # certbotのインストール
           dnf update -y
           dnf install -y certbot
           certbot --version
-          DOMAIN="$(aws ssm get-parameter \
-            --region "$CURRENT_REGION" \
-            --name "/RerekishoReaction/RecordName" \
-            --query 'Parameter.Value' \
-            --with-decryption \
-            --output text)"
-          LIVE_DIR_PATH="/etc/letsencrypt/live/${!DOMAIN}"
-          FULLCHAIN="${!LIVE_DIR_PATH}/fullchain.pem"
-          PRIVKEY="${!LIVE_DIR_PATH}/privkey.pem"
-          if [ -s "${!FULLCHAIN}" ] && [ -s "${!PRIVKEY}" ]; then
-            echo "Let's Encrypt cert already exists. Skip certbot."
-          else
-            echo "Let's Encrypt cert not found. Run certbot."
-            DEV_EMAIL="$(aws ssm get-parameter \
-              --region "$CURRENT_REGION" \
-              --name "/RerekishoReaction/DevEmail" \
-              --query 'Parameter.Value' \
-              --with-decryption \
-              --output text)"
-            certbot certonly \
-              --standalone \
-              -d "${!DOMAIN}" \
-              --agree-tos \
-              -m "${!DEV_EMAIL}" \
-              --non-interactive
-            unset DEV_EMAIL
-          fi
-          unset DOMAIN
+
+          # NginXをインストール
+          dnf install -y nginx
+          mkdir -p /var/www/certbot/.well-known/acme-challenge
+          chown -R nginx:nginx /var/www/certbot
 
           # cronをインストール
           dnf install -y cronie
           systemctl enable crond
           systemctl start crond
-          echo '0 */12 * * * root certbot renew -q' > /etc/cron.d/certbot
-          chmod 644 /etc/cron.d/certbot
 
           # AWS CodeDeployのインストール
           yum update
           yum install ruby -y
           yum install wget -y
-          # 既存codedeployがある場合は削除
+          # 既存codedeployがある場合は削除（無い想定のためコメントアウト）
           # CODEDEPLOY_BIN="/opt/codedeploy-agent/bin/codedeploy-agent"
           # $CODEDEPLOY_BIN stop
           # yum erase codedeploy-agent -y
@@ -216,6 +191,50 @@ Resources:
 
                 [Install]
                 WantedBy=multi-user.target
+            /etc/nginx/conf.d/app.conf.withoutssl:
+              mode: "0644"
+              owner: root
+              group: root
+              content: !Sub |
+                server {
+                  listen 80;
+                  server_name ${RecordNameParam};
+                  location /.well-known/acme-challenge/ {
+                      root /var/www/certbot;
+                  }
+                  location / {
+                      return 404;
+                  }
+                }
+            /etc/nginx/conf.d/app.conf.withssl:
+              mode: "0644"
+              owner: root
+              group: root
+              content: !Sub |
+                server {
+                  listen 80;
+                  server_name ${RecordNameParam};
+                  location /.well-known/acme-challenge/ {
+                      root /var/www/certbot;
+                  }
+                  location / {
+                      return 301 https://$host$request_uri;
+                  }
+                }
+                server {
+                  listen 443 ssl http2;
+                  server_name ${RecordNameParam};
+                  ssl_certificate     /etc/letsencrypt/live/${RecordNameParam}/fullchain.pem;
+                  ssl_certificate_key /etc/letsencrypt/live/${RecordNameParam}/privkey.pem;
+                  location / {
+                      proxy_pass http://127.0.0.1:3000;
+                      proxy_http_version 1.1;
+                      proxy_set_header Host $host;
+                      proxy_set_header X-Real-IP $remote_addr;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto $scheme;
+                  }
+                }
 
   RerekishoReactionEC2InstanceRole:
     Type: AWS::IAM::Role

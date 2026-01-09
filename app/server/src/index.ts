@@ -8,6 +8,9 @@ console.log(`App has initiated in ${ process.cwd() }`);
 
 const app = express();
 
+// Nginxのプロキシを信頼
+app.set('trust proxy', 1);
+
 app.use(express.static(
   publicDirectoryPath()
 ));
