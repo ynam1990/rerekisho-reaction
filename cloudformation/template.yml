@@ -76,41 +76,13 @@ Resources:
           systemctl enable mariadb
           systemctl start mariadb
           systemctl status mariadb --no-pager
-          
-          # dbを作成
-          mysql -u root -h localhost -e "CREATE DATABASE rerekisho_reaction_db;"
-
-          # SSMパラメータストアから取得
-          DB_USER_NAME="$(aws ssm get-parameter \
-            --region "$CURRENT_REGION" \
-            --name "/RerekishoReaction/DBUserName" \
-            --query 'Parameter.Value' \
-            --with-decryption \
-            --output text)"
-          DB_PASSWORD="$(aws ssm get-parameter \
-            --region "$CURRENT_REGION" \
-            --name "/RerekishoReaction/DBPassword" \
-            --query 'Parameter.Value' \
-            --with-decryption \
-            --output text)"
-          # 念の為エスケープ
-          esc_for_sql() { printf "%s" "$1" | sed "s/'/''/g"; }
-          DB_USER_NAME="$(esc_for_sql "$DB_USER_NAME")"
-          DB_PASSWORD="$(esc_for_sql "$DB_PASSWORD")"
-          # DBにprismaのユーザーを作成
-          mysql -u root -h localhost <<<"
-            CREATE USER IF NOT EXISTS '$DB_USER_NAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
-            GRANT ALL PRIVILEGES on rerekisho_reaction_db.* TO '$DB_USER_NAME'@'localhost';
-            FLUSH PRIVILEGES;
-          "
-          # 変数をクリア
-          unset DB_USER_NAME
-          unset DB_PASSWORD
 
           # 永続化EBSをマウント
           DEVICE=/dev/xvdf
           MOUNT_POINT=/mnt/permanent-volume
           CERT_DIR=${!MOUNT_POINT}/letsencrypt
+          MYSQL_EBS_DIR="${MOUNT_POINT}/mariadb"
+          MYSQL_DATADIR="/var/lib/mysql"
           # フォーマット
           if ! blkid ${!DEVICE}; then
             mkfs.ext4 ${!DEVICE}
@@ -126,10 +98,34 @@ Resources:
           if ! mount | grep -q "/etc/letsencrypt"; then
             mount --bind ${!CERT_DIR} /etc/letsencrypt
           fi
+          # /var/lib/mysqlをバインドマウント
+          mkdir -p "${MYSQL_EBS_DIR}"
+          chown -R mysql:mysql "${MYSQL_EBS_DIR}"
+          chmod 750 "${MYSQL_EBS_DIR}"
+          systemctl stop mariadb
+          # 初回：EBS側が空の時は既存データをコピー
+          if [ -z "$(ls -A "${MYSQL_EBS_DIR}" 2>/dev/null)" ]; then
+            if [ -d "${MYSQL_DATADIR}" ] && [ -n "$(ls -A "${MYSQL_DATADIR}" 2>/dev/null)" ]; then
+              rsync -aHAX --delete "${MYSQL_DATADIR}/" "${MYSQL_EBS_DIR}/"
+            fi
+          fi
+          mkdir -p "${MYSQL_DATADIR}"
+          if ! mount | grep -q "on ${MYSQL_DATADIR} "; then
+            mount --bind "${MYSQL_EBS_DIR}" "${MYSQL_DATADIR}"
+          fi
+          # SELinuxの対応設定
+          if command -v getenforce >/dev/null 2>&1 && [ "$(getenforce)" != "Disabled" ]; then
+            if command -v semanage >/dev/null 2>&1; then
+              semanage fcontext -a -t mysqld_db_t "${MYSQL_EBS_DIR}(/.*)?"
+              restorecon -Rv "${MYSQL_EBS_DIR}"
+            fi
+          fi
+          systemctl start mariadb
           # fstab登録
           UUID=$(blkid -s UUID -o value ${!DEVICE})
           grep -q "${!UUID}" /etc/fstab || echo "UUID=${!UUID} ${!MOUNT_POINT} ext4 defaults,nofail 0 2" >> /etc/fstab
           grep -q "${!CERT_DIR} /etc/letsencrypt" /etc/fstab || echo "${!CERT_DIR} /etc/letsencrypt none bind 0 0" >> /etc/fstab
+          grep -q "${MYSQL_EBS_DIR} ${MYSQL_DATADIR} none bind" /etc/fstab || echo "${MYSQL_EBS_DIR} ${MYSQL_DATADIR} none bind 0 0" >> /etc/fstab
 
           # certbotのインストール
           dnf update -y
@@ -160,6 +156,36 @@ Resources:
           chmod +x ./install
           ./install auto
           systemctl status codedeploy-agent --no-pager
+
+          # dbを作成
+          mysql -u root -h localhost -e "CREATE DATABASE rerekisho_reaction_db;"
+
+          # SSMパラメータストアから取得
+          DB_USER_NAME="$(aws ssm get-parameter \
+            --region "$CURRENT_REGION" \
+            --name "/RerekishoReaction/DBUserName" \
+            --query 'Parameter.Value' \
+            --with-decryption \
+            --output text)"
+          DB_PASSWORD="$(aws ssm get-parameter \
+            --region "$CURRENT_REGION" \
+            --name "/RerekishoReaction/DBPassword" \
+            --query 'Parameter.Value' \
+            --with-decryption \
+            --output text)"
+          # 念の為エスケープ
+          esc_for_sql() { printf "%s" "$1" | sed "s/'/''/g"; }
+          DB_USER_NAME="$(esc_for_sql "$DB_USER_NAME")"
+          DB_PASSWORD="$(esc_for_sql "$DB_PASSWORD")"
+          # DBにprismaのユーザーを作成
+          mysql -u root -h localhost <<<"
+            CREATE USER IF NOT EXISTS '$DB_USER_NAME'@'localhost' IDENTIFIED BY '$DB_PASSWORD';
+            GRANT ALL PRIVILEGES on rerekisho_reaction_db.* TO '$DB_USER_NAME'@'localhost';
+            FLUSH PRIVILEGES;
+          "
+          # 変数をクリア
+          unset DB_USER_NAME
+          unset DB_PASSWORD
 
           echo 'UserData Finished'
     Metadata:
