@@ -1,6 +1,6 @@
 import { ThemeProvider } from 'styled-components';
-import { theme } from '@/styles/theme'
-import { GlobalStyle } from '@/styles/GlobalStyle';
+import { theme } from '@/shared/styles/theme'
+import { GlobalStyle } from '@/shared/styles/GlobalStyle';
 import { AppRouter } from './router/AppRouter'
 
 export const App = () => {
