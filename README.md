@@ -158,3 +158,8 @@ npm run dev
 npm i
 npm run dev
 ```
+
+# その他
+## 画像ファイルについて
+faviconとロゴ画像はAI生成です。  
+
