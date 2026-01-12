@@ -8,12 +8,15 @@ type PropsWithTheme = WithTheme<Props>;
 
 const mediaQueryStyle = ({ theme, size = 'xxxl' }: PropsWithTheme): Interpolation<Props> => {
   const fontSize = theme.typography.fontSize[size];
+  const lineHeight = theme.typography.lineHeight;
 
   return css`
     font-size: ${ fontSize.pc };
+    line-height: ${ lineHeight.tight.pc };
     
     @media (max-width: ${ theme.breakpoints.sp}) {
       font-size: ${ fontSize.sp };
+      line-height: ${ lineHeight.tight.sp };
     }
   `;
 };
