@@ -1,8 +1,8 @@
 import React from 'react';
 import type { Preview } from '@storybook/react-vite';
 import { ThemeProvider } from 'styled-components';
-import { theme } from '../src/styles/theme';
-import { GlobalStyle } from '../src/styles/GlobalStyle';
+import { theme } from '../src/shared/styles/theme';
+import { GlobalStyle } from '../src/shared/styles/GlobalStyle';
 
 const preview: Preview = {
   decorators: [
