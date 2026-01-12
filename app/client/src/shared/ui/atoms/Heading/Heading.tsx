@@ -2,7 +2,7 @@ import type { theme, WithTheme } from '@/shared/styles/theme';
 import styled, { css, type Interpolation } from 'styled-components'
 
 type Props = {
-  size?: keyof typeof theme.typography.fontSize,
+  size?: keyof typeof theme.typography.fontSize;
 };
 type PropsWithTheme = WithTheme<Props>;
 
