@@ -40,6 +40,8 @@ const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<
 export const Button = styled.button<Props>`
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.lg };
+  outline-style: solid;
+  outline-width: 0;
   cursor: pointer;
   transition:
     box-shadow 0.15s ease,
@@ -55,35 +57,35 @@ export const Button = styled.button<Props>`
       case 'primary': {
         return css`
           color: ${ color.white };
-          border: 1px solid ${ color.paperIvory };
+          outline-color: ${ color.paperIvory };
           background-color: ${ color.primary };
         `;
       }
       case 'secondary': {
         return css`
           color: ${ color.white };
-          border: 1px solid ${ color.paperIvory };
+          outline-color: ${ color.paperIvory };
           background-color: ${ color.secondary };
         `;
       }
       case 'cancel': {
         return css`
           color: ${ color.white };
-          border: 1px solid ${ color.paperIvory };
+          outline-color: ${ color.paperIvory };
           background-color: ${ color.cancel };
         `;
       }
       case 'danger': {
         return css`
           color: ${ color.white };
-          border: 1px solid ${ color.paperIvory };
+          outline-color: ${ color.paperIvory };
           background-color: ${ color.danger };
         `;
       }
       default: {
         return css`
           color: ${ color.inkBlack };
-          border: 1px solid ${ color.inkBlack };
+          outline-color: ${ color.inkBlack };
           background-color: ${ color.paperIvory };
         `;
       }
@@ -91,15 +93,15 @@ export const Button = styled.button<Props>`
   } }
 
   &:hover {
-    opacity: ${ ({ theme }) => theme.opacity.hover };
+    outline-width: 2px;
   }
 
   &:active {
-    transform: translateY(2px);
+    opacity: ${ ({ theme }) => theme.opacity.active };
   }
 
   &:focus-visible {
-    border-width: 2px;
+    outline-width: 2px;
   }
 
   &:disabled {
