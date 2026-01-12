@@ -3,8 +3,8 @@ import styled, { css, type Interpolation } from 'styled-components'
 
 export const BUTTON_TYPES = [
   'default',
-  'success',
-  'proceed',
+  'primary',
+  'secondary',
   'cancel',
   'danger',
 ] as const;
@@ -52,32 +52,32 @@ export const Button = styled.button<Props>`
     const color = theme.color;
 
     switch (type) {
-      case 'success': {
+      case 'primary': {
         return css`
           color: ${ color.white };
           border: 1px solid ${ color.paperIvory };
-          background-color: ${ color.successGreen };
+          background-color: ${ color.primary };
         `;
       }
-      case 'proceed': {
+      case 'secondary': {
         return css`
           color: ${ color.white };
           border: 1px solid ${ color.paperIvory };
-          background-color: ${ color.proceedBlue };
+          background-color: ${ color.secondary };
         `;
       }
       case 'cancel': {
         return css`
           color: ${ color.white };
           border: 1px solid ${ color.paperIvory };
-          background-color: ${ color.cancelGray };
+          background-color: ${ color.cancel };
         `;
       }
       case 'danger': {
         return css`
           color: ${ color.white };
           border: 1px solid ${ color.paperIvory };
-          background-color: ${ color.dangerRed };
+          background-color: ${ color.danger };
         `;
       }
       default: {
