@@ -1,4 +1,5 @@
 import React from 'react';
+import '../node_modules/destyle.css'
 import type { Preview } from '@storybook/react-vite';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../src/shared/styles/theme';
