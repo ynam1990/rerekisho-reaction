@@ -5,7 +5,7 @@ export const BUTTON_TYPES = [
   'default',
   'primary',
   'secondary',
-  'cancel',
+  'tertiary',
   'danger',
 ] as const;
 export type ButtonTypes = typeof BUTTON_TYPES[number];
@@ -68,11 +68,11 @@ export const Button = styled.button<Props>`
           background-color: ${ color.secondary };
         `;
       }
-      case 'cancel': {
+      case 'tertiary': {
         return css`
           color: ${ color.white };
           outline-color: ${ color.paperIvory };
-          background-color: ${ color.cancel };
+          background-color: ${ color.tertiary };
         `;
       }
       case 'danger': {

@@ -9,11 +9,11 @@ const meta: Meta<typeof ButtonGroup> = {
     size: 'md',
     buttonPropsList: [
       {
-        type: 'proceed',
+        type: 'primary',
         children: 'button1'
       },
       {
-        type: 'cancel',
+        type: 'tertiary',
         children: 'button2',
       },
     ],
