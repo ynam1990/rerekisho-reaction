@@ -9,5 +9,8 @@ export const AppWrapper = styled.div`
 
   &> main {
     flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
   }
 `;

@@ -2,6 +2,7 @@ import { Heading } from '@/shared/ui/atoms/Heading';
 import styled, { css } from 'styled-components';
 
 export const HomePageWrapper = styled.div`
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
