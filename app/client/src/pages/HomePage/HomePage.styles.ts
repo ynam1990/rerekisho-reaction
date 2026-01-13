@@ -1,3 +1,4 @@
+import { Heading } from '@/shared/ui/atoms/Heading';
 import styled, { css } from 'styled-components';
 
 export const HomePageWrapper = styled.div`
@@ -21,4 +22,8 @@ export const HomePageWrapper = styled.div`
 
 export const LogoImg = styled.img`
   max-width: min(180px, 80%);
+`;
+
+export const ColoredHeading = styled(Heading)`
+  color: ${ ({ theme }) => theme.color.primary};
 `;

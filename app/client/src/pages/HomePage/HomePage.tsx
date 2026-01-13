@@ -1,6 +1,5 @@
-import { HomePageWrapper, LogoImg } from "./HomePage.styles"
+import { ColoredHeading, HomePageWrapper, LogoImg } from "./HomePage.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
-import { Heading } from "@/shared/ui/atoms/Heading";
 import { Paragraph } from "@/shared/ui/atoms/Paragraph";
 import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules/ButtonGroup";
 
@@ -24,7 +23,7 @@ export const HomePage = () => {
     <HomePageWrapper>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
 
-      <Heading size="xxxl">Rerekishon</Heading>
+      <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
 
       <Paragraph align="center" line_height="relaxed">
         Rerekishonはブラウザ上でA4履歴書を作成するアプリです。<br />
