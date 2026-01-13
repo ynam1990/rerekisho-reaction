@@ -2,16 +2,14 @@ import type { theme, WithTheme } from '@/shared/styles/theme';
 import styled, { css, type Interpolation } from 'styled-components'
 
 export const BUTTON_TYPES = [
-  'default',
-  'primary',
-  'secondary',
-  'tertiary',
-  'danger',
+  'solid',
+  'outline',
 ] as const;
 export type ButtonTypes = typeof BUTTON_TYPES[number];
 
 type Props = {
   type?: ButtonTypes;
+  color?: keyof typeof theme.color;
   size?: keyof typeof theme.typography.fontSize;
 };
 type PropsWithTheme = WithTheme<Props>;
@@ -40,72 +38,54 @@ const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<
 export const Button = styled.button<Props>`
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.lg };
-  outline-style: solid;
-  outline-width: 0;
   cursor: pointer;
   transition:
     box-shadow 0.15s ease,
     transform 0.15s ease,
     background-color 0.15s ease;
-
-  ${ mediaQueryStyle }
-
-  ${ ({ theme, type = 'default' }) => {
-    const color = theme.color;
-
-    switch (type) {
-      case 'primary': {
-        return css`
-          color: ${ color.white };
-          outline-color: ${ color.paperIvory };
-          background-color: ${ color.primary };
-        `;
-      }
-      case 'secondary': {
-        return css`
-          color: ${ color.white };
-          outline-color: ${ color.paperIvory };
-          background-color: ${ color.secondary };
-        `;
-      }
-      case 'tertiary': {
-        return css`
-          color: ${ color.white };
-          outline-color: ${ color.paperIvory };
-          background-color: ${ color.tertiary };
-        `;
-      }
-      case 'danger': {
-        return css`
-          color: ${ color.white };
-          outline-color: ${ color.paperIvory };
-          background-color: ${ color.danger };
-        `;
-      }
-      default: {
-        return css`
-          color: ${ color.inkBlack };
-          outline-color: ${ color.inkBlack };
-          background-color: ${ color.paperIvory };
-        `;
-      }
-    }
-  } }
-
-  &:hover {
-    outline-width: 2px;
-  }
-
+  
   &:active {
     opacity: ${ ({ theme }) => theme.opacity.active };
-  }
-
-  &:focus-visible {
-    outline-width: 2px;
   }
 
   &:disabled {
     cursor: not-allowed;
     opacity: ${ ({ theme }) => theme.opacity.disabled };
   }
+
+  ${ mediaQueryStyle }
+
+  ${ ({ theme, type = 'solid', color = 'primary' }) => {
+    const mainColor = theme.color[color];
+    const subColor = (color === 'white' || color === 'paperIvory') ? theme.color.inkBlack : theme.color.white;
+
+    switch (type) {
+      case 'outline': {
+        return css`
+          color: ${ mainColor };
+          background-color: ${ subColor };
+          box-shadow: inset 0 0 0 2px ${ mainColor };
+
+          &:hover, &:focus-visible {
+            color: ${ subColor };
+            background-color: ${ mainColor };
+            box-shadow: inset 0 0 0 2px ${ subColor };
+          }
+        `;
+      }
+      case 'solid':
+      default: {
+        return css`
+          color: ${ subColor };
+          background-color: ${ mainColor };
+          
+          &:hover, &:focus-visible {
+            color: ${ mainColor };
+            background-color: ${ subColor };
+            box-shadow: inset 0 0 0 2px ${ mainColor };
+          }
+        `;
+      }
+    }
+  } }
 `;

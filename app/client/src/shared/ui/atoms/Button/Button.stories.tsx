@@ -7,13 +7,18 @@ const meta: Meta<typeof Button> = {
   component: Button,
   args: {
     children: 'Button',
-    type:'default',
+    type:'solid',
+    color:'primary',
     size: 'md',
   },
   argTypes: {
     type: {
       control: { type: 'select' },
       options: BUTTON_TYPES,
+    },
+    color: {
+      control: { type: 'select' },
+      options: Object.keys(theme.color),
     },
     size: {
       control: { type: 'select' },

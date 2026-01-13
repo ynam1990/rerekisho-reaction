@@ -7,12 +7,14 @@ import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules/Butt
 export const HomePage = () => {
   const buttonPropsList: GroupedButtonProps[] = [
     {
-      type: 'primary',
+      type: 'solid',
+      color: 'primary',
       size: 'xl',
       children: 'ログイン',
     },
     {
-      type: 'secondary',
+      type: 'outline',
+      color: 'primary',
       size: 'xl',
       children: '新規登録',
     },

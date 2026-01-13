@@ -46,7 +46,7 @@ export const Header = (props: Props) => (
         props.isAuthenticated ? (
           <div></div>
         ) : (
-          <Button type='primary'>
+          <Button type='outline' color='primary'>
             ログイン
           </Button>
         )
