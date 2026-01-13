@@ -9,17 +9,16 @@ export const HomePageWrapper = styled.div`
   ${ ({ theme }) => {
     return css`
     row-gap: ${ theme.spacing.lg.pc };
-    padding: ${ theme.spacing.lg.pc };
+    padding: ${ theme.spacing.xxl.pc };
     
     @media (max-width: ${ theme.breakpoints.sp}) {
-      font-size: ${ theme.spacing.lg.sp };
-      line-height: ${ theme.spacing.lg.sp };
+      row-gap: ${ theme.spacing.lg.sp };
+      padding: ${ `${ theme.spacing.xxl.sp } ${ theme.spacing.lg.sp }` };
     }
   `;
   } }
 `;
 
 export const LogoImg = styled.img`
-  width: 80%;
-  max-width: 180px;
+  max-width: min(180px, 80%);
 `;
