@@ -36,6 +36,7 @@ const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<
 };
 
 export const Button = styled.button<Props>`
+  text-align: center;
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.lg };
   cursor: pointer;
