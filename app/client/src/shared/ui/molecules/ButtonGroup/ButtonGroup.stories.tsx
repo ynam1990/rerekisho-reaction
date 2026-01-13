@@ -3,7 +3,7 @@ import { ButtonGroup } from './ButtonGroup';
 import { theme } from '@/shared/styles/theme';
 
 const meta: Meta<typeof ButtonGroup> = {
-  title: 'Atoms/ButtonGroup',
+  title: 'Molecules/ButtonGroup',
   component: ButtonGroup,
   args: {
     size: 'md',
