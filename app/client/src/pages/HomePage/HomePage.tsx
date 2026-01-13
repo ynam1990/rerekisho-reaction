@@ -22,10 +22,10 @@ export const HomePage = () => {
     <HomePageWrapper>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
 
-      <Heading size="xxxl">RerekishoReaction</Heading>
+      <Heading size="xxxl">Rerekishon</Heading>
 
       <Paragraph align="center" line_height="relaxed">
-        RerekishoReactionはブラウザ上でA4履歴書を作成するアプリです。<br />
+        Rerekishonはブラウザ上でA4履歴書を作成するアプリです。<br />
         ユーザー登録することで履歴書を作成、保存、公開することができます。<br />
       </Paragraph>
 

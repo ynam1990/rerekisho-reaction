@@ -28,7 +28,7 @@ const FooterWrapper = styled.footer`
 
 export const Footer = () => (
   <FooterWrapper>
-    <Text size='sm'>© { new Date().getFullYear() } RerekishoReaction</Text>
+    <Text size='sm'>© { new Date().getFullYear() } Rerekishon</Text>
     <Text size='sm'>/</Text>
     <Text size='sm'>
       <Anchor href='https://github.com/ynam1990/RerekishoReaction'>githubリポジトリ</Anchor>
