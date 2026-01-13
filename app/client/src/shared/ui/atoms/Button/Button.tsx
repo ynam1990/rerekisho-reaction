@@ -1,4 +1,6 @@
 import type { theme, WithTheme } from '@/shared/styles/theme';
+import type { ColorKey } from '@/shared/styles/theme';
+import { pickMainSubColors } from '@/shared/utils/style';
 import styled, { css, type Interpolation } from 'styled-components'
 
 export const BUTTON_TYPES = [
@@ -9,7 +11,7 @@ export type ButtonTypes = typeof BUTTON_TYPES[number];
 
 type Props = {
   type?: ButtonTypes;
-  color?: keyof typeof theme.color;
+  color?: ColorKey;
   size?: keyof typeof theme.typography.fontSize;
 };
 type PropsWithTheme = WithTheme<Props>;
@@ -57,8 +59,7 @@ export const Button = styled.button<Props>`
   ${ mediaQueryStyle }
 
   ${ ({ theme, type = 'solid', color = 'primary' }) => {
-    const mainColor = theme.color[color];
-    const subColor = (color === 'white' || color === 'paperIvory') ? theme.color.inkBlack : theme.color.white;
+    const { mainColor, subColor } = pickMainSubColors(theme, color);
 
     switch (type) {
       case 'outline': {
