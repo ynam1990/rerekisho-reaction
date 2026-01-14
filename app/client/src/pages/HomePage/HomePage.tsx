@@ -8,13 +8,13 @@ import { urlWithCacheBuster } from "@/shared/utils/url";
 export const HomePage = () => {
   const buttonPropsList: GroupedButtonProps[] = [
     {
-      type: 'solid',
+      styleType: 'solid',
       color: 'primary',
       size: 'xl',
       children: 'ログイン',
     },
     {
-      type: 'outline',
+      styleType: 'outline',
       color: 'primary',
       size: 'xl',
       children: '新規登録',

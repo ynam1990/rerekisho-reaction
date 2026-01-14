@@ -6,11 +6,11 @@ const meta: Meta<typeof Input> = {
   title: 'Atoms/Input',
   component: Input,
   args: {
-    $type: 'default',
+    styleType: 'default',
     type: 'text',
   },
   argTypes: {
-    $type: {
+    styleType: {
       control: { type: 'select' },
       options: INPUT_STYLE_TYPES,
     },

@@ -88,7 +88,7 @@ export const Header = (props: Props) => (
         props.isAuthenticated ? (
           <div></div>
         ) : (
-          <Button type='outline' color='primary' $noWrap={ true }>
+          <Button styleType='outline' color='primary' noWrap={ true }>
             ログイン
           </Button>
         )

@@ -8,11 +8,13 @@ export const INPUT_STYLE_TYPES = [
 export type InputStyleTypes = typeof INPUT_STYLE_TYPES[number];
 
 type Props = {
-  $type?: InputStyleTypes;
+  styleType?: InputStyleTypes;
 } & ComponentPropsWithoutRef<'input'>;
 
 
-const StyledInput = styled.input<Props>`
+const StyledInput = styled.input.withConfig({
+    shouldForwardProp: (prop) => prop !== 'styleType',
+  })<Props>`
   outline-color: ${ ({ theme }) => theme.color.primary };
 
   ${ ({ theme }) => {
@@ -34,7 +36,7 @@ const StyledInput = styled.input<Props>`
     `;
   }}
 
-  ${ ({ $type }) => {
+  ${ ({ styleType: $type }) => {
     switch ($type) {
       case 'transparent': {
         return css`

@@ -10,12 +10,16 @@ export const BUTTON_TYPES = [
 export type ButtonTypes = typeof BUTTON_TYPES[number];
 
 type Props = {
-  type?: ButtonTypes;
+  styleType?: ButtonTypes;
   color?: ColorKey;
   size?: keyof typeof theme.typography.fontSize;
-  $noWrap?: boolean;
+  noWrap?: boolean;
 };
 type PropsWithTheme = WithTheme<Props>;
+const propsToStop = new Set([
+  'styleType',
+  'noWrap',
+]);
 
 const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<Props> => {
   const fontSize = theme.typography.fontSize[size];
@@ -38,13 +42,15 @@ const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<
   `;
 };
 
-export const Button = styled.button<Props>`
+export const Button = styled.button.withConfig({
+    shouldForwardProp: (prop) => !propsToStop.has(prop),
+  })<Props>`
   text-align: center;
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.md };
   cursor: pointer;
 
-  ${ ({ $noWrap: noWrap }) => noWrap && css`white-space: nowrap;` }
+  ${ ({ noWrap }) => noWrap && css`white-space: nowrap;` }
 
   transition:
     box-shadow 0.15s ease,
@@ -62,10 +68,10 @@ export const Button = styled.button<Props>`
 
   ${ mediaQueryStyle }
 
-  ${ ({ theme, type = 'solid', color = 'primary' }) => {
+  ${ ({ theme, styleType = 'solid', color = 'primary' }) => {
     const { mainColor, subColor } = pickMainSubColors(theme, color);
 
-    switch (type) {
+    switch (styleType) {
       case 'outline': {
         return css`
           color: ${ mainColor };
