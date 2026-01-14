@@ -3,7 +3,11 @@ import type { ColorKey } from '@/shared/styles/theme';
 
 export const pickMainSubColors = (theme: DefaultTheme, colorKey: ColorKey) => {
   const mainColor = theme.color[colorKey];
-  const subColor = (colorKey === 'white' || colorKey === 'paperIvory') ? theme.color.inkBlack : theme.color.white;
+  const subColor = (colorKey === 'white' || colorKey === 'paperWhite') ? theme.color.inkBlack : theme.color.paperWhite;
 
   return { mainColor, subColor };
+};
+
+export const pickWhite = (theme: DefaultTheme) => {
+  return theme.color.paperWhite;
 };

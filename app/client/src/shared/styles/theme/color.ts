@@ -1,6 +1,7 @@
 export const color = {
   white: '#ffffff',
-  paperIvory: '#fafafa',
+  paperWhite: '#fbfbfd',
+  backgroundGray: '#f5f5f5',
   inkBlack: '#111111',
   primary: '#3c5f9c',
   secondary: '#3f7a5a',
