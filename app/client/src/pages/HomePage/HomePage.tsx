@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { HomePageWrapper, LogoImg, LogoTextImg } from "./HomePage.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 import logoTextImg from '@/shared/assets/logos/logo_text.gif'
@@ -6,18 +7,26 @@ import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules/Butt
 import { urlWithCacheBuster } from "@/shared/utils/url";
 
 export const HomePage = () => {
+  const navigate = useNavigate();
+
   const buttonPropsList: GroupedButtonProps[] = [
     {
       styleType: 'solid',
       color: 'primary',
       size: 'xl',
       children: 'ログイン',
+      onClick: () => {
+        navigate('/auth/signin');
+      },
     },
     {
       styleType: 'outline',
       color: 'primary',
       size: 'xl',
       children: '新規登録',
+      onClick: () => {
+        navigate('/auth/signup');
+      },
     },
   ];
 

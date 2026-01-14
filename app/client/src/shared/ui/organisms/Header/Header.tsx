@@ -88,7 +88,14 @@ export const Header = (props: Props) => (
         props.isAuthenticated ? (
           <div></div>
         ) : (
-          <Button styleType='outline' color='primary' noWrap={ true }>
+          <Button
+            styleType='outline'
+            color='primary'
+            noWrap={ true }
+            onClick={ () => {
+              window.location.href = '/auth/signin';
+            }}
+          >
             ログイン
           </Button>
         )
