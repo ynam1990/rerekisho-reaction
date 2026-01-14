@@ -18,7 +18,7 @@ const StyledCard = styled.div< Omit<Props, 'title' | 'body'> >`
 
   ${ ({ theme, color = 'primary', paddingY = 'lg', paddingX = 'md' }) => {
     const { mainColor, subColor } = pickMainSubColors(theme, color);
-    const borderRadius = theme.radius.lg;
+    const borderRadius = theme.radius.md;
     const { spacing } = theme;
 
     return css`
