@@ -1,5 +1,6 @@
 import { forwardRef, type ComponentPropsWithoutRef } from 'react';
 import styled, { css } from 'styled-components'
+import type { ColorKey } from '@/shared/styles/theme';
 
 export const INPUT_STYLE_TYPES = [
   'default',
@@ -9,13 +10,17 @@ export type InputStyleTypes = typeof INPUT_STYLE_TYPES[number];
 
 type Props = {
   styleType?: InputStyleTypes;
+  outlineColor?: ColorKey;
 } & ComponentPropsWithoutRef<'input'>;
-
+const propsToStop = new Set([
+  'styleType',
+  'outlineColor',
+]);
 
 const StyledInput = styled.input.withConfig({
-    shouldForwardProp: (prop) => prop !== 'styleType',
+    shouldForwardProp: (prop) => !propsToStop.has(prop),
   })<Props>`
-  outline-color: ${ ({ theme }) => theme.color.primary };
+  outline-color: ${ ({ theme, outlineColor = 'primary' }) => theme.color[outlineColor] };
 
   ${ ({ theme }) => {
     const { typography, spacing } = theme;
@@ -36,8 +41,8 @@ const StyledInput = styled.input.withConfig({
     `;
   }}
 
-  ${ ({ styleType: $type }) => {
-    switch ($type) {
+  ${ ({ styleType, outlineColor = 'primary' }) => {
+    switch (styleType) {
       case 'transparent': {
         return css`
           border: none;
@@ -46,7 +51,7 @@ const StyledInput = styled.input.withConfig({
           border-bottom: solid 1px ${ ({ theme }) => theme.color.paleGray };
 
           &:focus-visible {
-            border-bottom: solid 2px ${ ({ theme }) => theme.color.primary };
+            border-bottom: solid 2px ${ ({ theme }) => theme.color[outlineColor] };
           }
         `;
       }
