@@ -3,9 +3,9 @@ export const typography = {
     sm: { pc: '12px', sp: '12px' },
     md: { pc: '16px', sp: '14px' },
     lg: { pc: '20px', sp: '18px' },
-    xl: { pc: '24px', sp: '20px' },
-    xxl: { pc: '32px', sp: '24px' },
-    xxxl: { pc: '48px', sp: '32px' },
+    xl: { pc: '24px', sp: '22px' },
+    xxl: { pc: '32px', sp: '28px' },
+    xxxl: { pc: '48px', sp: '42px' },
   },
   lineHeight: {
     none: { pc: 1, sp: 1 },
