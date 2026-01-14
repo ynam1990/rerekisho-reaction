@@ -32,11 +32,14 @@ const LogoWrapperAnchor = styled(Anchor)`
 `;
 
 const LogoImg = styled.img`
+  max-height: 100%;
+  aspect-ratio: 579 / 640;
+
   ${ ({ theme }) => css`
-    max-height: 46px;
+    height: 46px;
 
     @media (max-width: ${ theme.breakpoints.sp}) {
-      max-height: 38px;
+      height: 38px;
     }
   ` }
 `;

@@ -21,19 +21,17 @@ export const HomePageWrapper = styled.div`
 `;
 
 export const LogoImg = styled.img`
-  max-width: min(180px, 80%);
+  width: min(180px, 80%);
+  aspect-ratio: 579 / 640;
 `;
 
 export const LogoTextImg = styled.img`
   ${ ({ theme }) => css`
-    max-height: 36px;
+    height: 76px;
 
     @media (max-width: ${ theme.breakpoints.sp}) {
-      max-height: 30px;
+      height: 72px;
     }
-
-    @media (max-width: ${ theme.breakpoints.min}) {
-      display: none;
-    }
+    
   ` }
 `;

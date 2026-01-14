@@ -3,6 +3,7 @@ import logoImg from '@/shared/assets/logos/logo.png'
 import logoTextImg from '@/shared/assets/logos/logo_text.gif'
 import { Paragraph } from "@/shared/ui/atoms/Paragraph";
 import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules/ButtonGroup";
+import { urlWithCacheBuster } from "@/shared/utils/url";
 
 export const HomePage = () => {
   const buttonPropsList: GroupedButtonProps[] = [
@@ -24,7 +25,7 @@ export const HomePage = () => {
     <HomePageWrapper>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
 
-      <LogoTextImg src={ logoTextImg } alt="ロゴテキストのアニメーションGIFです" />
+      <LogoTextImg src={ urlWithCacheBuster(logoTextImg) } alt="ロゴテキストのアニメーションGIFです" />
 
       <Paragraph align="center" line_height="relaxed">
         Rerekishonはブラウザ上でA4履歴書を作成するアプリです。<br />
