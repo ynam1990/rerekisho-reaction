@@ -6,7 +6,7 @@ import { boxShadow } from '@/shared/styles/mixins';
 
 export const SignInFormWrapper = styled.div`
   min-width: 320px;
-  max-width: min(600px, 90%);
+  width: min(600px, 90%);
   display: flex;
   flex-direction: column;
   align-items: center;

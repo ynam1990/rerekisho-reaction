@@ -50,7 +50,7 @@ export const SignInForm = () => {
           </Paragraph>
 
           <Paragraph align="left" line_height="tight" size="sm">
-            パスワード再設定機能はありません。ログインできない場合は新規にご登録の上、ご利用ください。<br />
+            パスワード再設定機能はありません。ログインできない場合は新規にご登録ください。<br />
             ※30日間ログインの無い場合、登録は自動的に抹消されます
           </Paragraph>
         </FormFooterWrapper>
