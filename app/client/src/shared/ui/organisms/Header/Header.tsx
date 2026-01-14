@@ -1,8 +1,10 @@
 import styled, { css } from 'styled-components'
 import logoImg from '@/shared/assets/logos/logo.png'
-import logoTextImg from '@/shared/assets/logos/logo_text.gif'
 import { Button } from '@/shared/ui/atoms/Button';
 import { Anchor } from '@/shared/ui/atoms/Anchor';
+import { Heading } from '@/shared/ui/atoms/Heading';
+import { pickWhite } from '@/shared/utils/style';
+import { hideOnMin } from '@/shared/styles/mixins';
 
 type Props = {
   isAuthenticated: boolean;
@@ -13,7 +15,7 @@ const LogoWrapperAnchor = styled(Anchor)`
   justify-content: left;
   align-items: center;
   margin-right: auto;
-  
+
   cursor: pointer;
   * {
     pointer-events: none;
@@ -21,10 +23,10 @@ const LogoWrapperAnchor = styled(Anchor)`
   }
 
   ${ ({ theme }) => css`
-    column-gap: ${ theme.spacing.xs.pc };
+    column-gap: ${ theme.spacing.sm.pc };
     
     @media (max-width: ${ theme.breakpoints.sp}) {
-      column-gap: ${ theme.spacing.xxs.sp };
+      column-gap: ${ theme.spacing.xs.sp };
     }
   ` }
 `;
@@ -39,20 +41,18 @@ const LogoImg = styled.img`
   ` }
 `;
 
-const LogoTextImg = styled.img`
-  ${ ({ theme }) => css`
-    max-height: 36px;
+export const ColoredHeading = styled(Heading)`
+  font-weight: normal;
+  color: ${ ({ theme }) => pickWhite(theme) };
 
-    @media (max-width: ${ theme.breakpoints.sp}) {
-      max-height: 30px;
-    }
+  ${ hideOnMin }
 
-    @media (max-width: ${ theme.breakpoints.min}) {
-      display: none;
-    }
-  ` }
+  transform: translateY(2px);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
-
 
 const HeaderWrapper = styled.header`
   display: flex;
@@ -77,7 +77,7 @@ export const Header = (props: Props) => (
   <HeaderWrapper>
     <LogoWrapperAnchor href='/'>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
-      <LogoTextImg src={ logoTextImg } alt="ロゴテキストのアニメーションGIFです" />
+      <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
     </LogoWrapperAnchor>
 
     <>
@@ -85,7 +85,7 @@ export const Header = (props: Props) => (
         props.isAuthenticated ? (
           <div></div>
         ) : (
-          <Button type='outline' color='primary'>
+          <Button type='outline' color='primary' $noWrap={ true }>
             ログイン
           </Button>
         )

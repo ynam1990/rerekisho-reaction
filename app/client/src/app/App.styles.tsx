@@ -12,5 +12,6 @@ export const AppWrapper = styled.div`
     display: flex;
     justify-content: flex-start;
     align-items: flex-start;
+    background-color: ${ ({ theme }) => theme.color.backgroundGray };
   }
 `;

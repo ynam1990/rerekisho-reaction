@@ -13,6 +13,7 @@ type Props = {
   type?: ButtonTypes;
   color?: ColorKey;
   size?: keyof typeof theme.typography.fontSize;
+  $noWrap?: boolean;
 };
 type PropsWithTheme = WithTheme<Props>;
 
@@ -42,6 +43,9 @@ export const Button = styled.button<Props>`
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.lg };
   cursor: pointer;
+
+  ${ ({ $noWrap: noWrap }) => noWrap && css`white-space: nowrap;` }
+
   transition:
     box-shadow 0.15s ease,
     transform 0.15s ease,
