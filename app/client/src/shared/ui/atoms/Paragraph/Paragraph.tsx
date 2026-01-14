@@ -24,7 +24,7 @@ const mediaQueryStyle = ({ theme, size = 'md', line_height = 'body' }: PropsWith
   `;
 };
 
-export const Paragraph = styled.h1<Props>`
+export const Paragraph = styled.p<Props>`
   word-break: break-all;
   text-align: ${ ({ align = 'left' }) => align };
 
