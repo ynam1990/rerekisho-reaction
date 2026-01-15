@@ -21,3 +21,7 @@ export const hideOnMin = css`
 export const boxShadow = css`
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
 `;
+
+export const boxShadowTop = css`
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.2);
+`;

@@ -4,7 +4,7 @@ import { Button } from '@/shared/ui/atoms/Button';
 import { Anchor } from '@/shared/ui/atoms/Anchor';
 import { Heading } from '@/shared/ui/atoms/Heading';
 import { pickWhite } from '@/shared/utils/style';
-import { hideOnMin } from '@/shared/styles/mixins';
+import { boxShadow, hideOnMin } from '@/shared/styles/mixins';
 
 type Props = {
   isAuthenticated: boolean;
@@ -61,6 +61,7 @@ const HeaderWrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: right;
+  ${ boxShadow };
 
   ${ ({ theme }) => {
     const { color, spacing } = theme;

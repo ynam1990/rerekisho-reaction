@@ -2,11 +2,13 @@ import styled, { css } from 'styled-components'
 import { Text } from '@/shared/ui/atoms/Text'
 import { Anchor } from '@/shared/ui/atoms/Anchor';
 import { pickWhite } from '@/shared/utils/style';
+import { boxShadowTop } from '@/shared/styles/mixins';
 
 const FooterWrapper = styled.footer`
   display: flex;
   align-items: center;
   justify-content: center;
+  ${ boxShadowTop }
   
   ${ ({ theme }) => {
     const { color, spacing } = theme;
