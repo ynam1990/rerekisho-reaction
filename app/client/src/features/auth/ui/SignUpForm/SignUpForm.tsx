@@ -54,7 +54,7 @@ export const SignUpForm = () => {
         </StyledLabel>
 
         <FormFooterWrapper>
-          <Paragraph align="left" line_height="tight" size="sm">
+          <Paragraph align="left" lineHeight="tight" size="sm">
             30日間ログインの無い場合、ユーザー登録は自動的に抹消され、データは削除されます。<br />
             本アプリはサンプル用です。本アプリの利用により、もし何らかの損害が発生した場合、当方はその賠償責任を負えません。<br />
             ご利用は自己責任にてお願いいたします。<br />
@@ -69,7 +69,7 @@ export const SignUpForm = () => {
 
           <Button styleType="solid" color="secondary">登録実行</Button>
 
-          <Paragraph align="left" line_height="tight" size="sm">
+          <Paragraph align="left" lineHeight="tight" size="sm">
             ログインは
             <Link to="/auth/signin">
               <Text decoration="underline">こちら</Text>

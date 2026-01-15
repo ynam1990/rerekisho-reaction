@@ -5,6 +5,9 @@ type Props = {
   size?: keyof typeof theme.typography.fontSize;
 };
 type PropsWithTheme = WithTheme<Props>;
+const propsToStop = new Set([
+  'size',
+]);
 
 const mediaQueryStyle = ({ theme, size = 'xxxl' }: PropsWithTheme): Interpolation<Props> => {
   const fontSize = theme.typography.fontSize[size];
@@ -21,7 +24,9 @@ const mediaQueryStyle = ({ theme, size = 'xxxl' }: PropsWithTheme): Interpolatio
   `;
 };
 
-export const Heading = styled.h1<Props>`
+export const Heading = styled.h1.withConfig({
+  shouldForwardProp: (prop) => !propsToStop.has(prop),
+})<Props>`
   font-weight: bold;
   word-break: break-all;
   text-align: center;

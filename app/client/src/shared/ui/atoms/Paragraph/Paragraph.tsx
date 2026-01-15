@@ -5,26 +5,33 @@ import type { TextAlignTypes, LineHeightTypes } from '@/shared/styles/constants'
 type Props = {
   size?: keyof typeof theme.typography.fontSize;
   align?: TextAlignTypes;
-  line_height?: LineHeightTypes;
+  lineHeight?: LineHeightTypes;
 };
 type PropsWithTheme = WithTheme<Props>;
+const propsToStop = new Set([
+  'size',
+  'align',
+  'lineHeight',
+]);
 
-const mediaQueryStyle = ({ theme, size = 'md', line_height = 'body' }: PropsWithTheme): Interpolation<Props> => {
+const mediaQueryStyle = ({ theme, size = 'md', lineHeight = 'body' }: PropsWithTheme): Interpolation<Props> => {
   const fontSize = theme.typography.fontSize[size];
-  const lineHeight = theme.typography.lineHeight[line_height];
+  const lineHeightObj = theme.typography.lineHeight[lineHeight];
 
   return css`
     font-size: ${ fontSize.pc };
-    line-height: ${ lineHeight.pc };
+    line-height: ${ lineHeightObj.pc };
     
     @media (max-width: ${ theme.breakpoints.sp}) {
       font-size: ${ fontSize.sp };
-      line-height: ${ lineHeight.sp };
+      line-height: ${ lineHeightObj.sp };
     }
   `;
 };
 
-export const Paragraph = styled.p<Props>`
+export const Paragraph = styled.p.withConfig({
+  shouldForwardProp: (prop) => !propsToStop.has(prop),
+})<Props>`
   word-break: break-all;
   text-align: ${ ({ align = 'left' }) => align };
 

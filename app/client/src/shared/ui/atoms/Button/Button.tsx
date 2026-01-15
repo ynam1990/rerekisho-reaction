@@ -18,6 +18,8 @@ type Props = {
 type PropsWithTheme = WithTheme<Props>;
 const propsToStop = new Set([
   'styleType',
+  'color',
+  'size',
   'noWrap',
 ]);
 

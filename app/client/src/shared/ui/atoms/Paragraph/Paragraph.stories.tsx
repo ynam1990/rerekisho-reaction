@@ -19,7 +19,7 @@ const meta: Meta<typeof Paragraph> = {
       control: { type: 'select' },
       options: TEXT_ALIGN_TYPES,
     },
-    line_height: {
+    lineHeight: {
       control: { type: 'select' },
       options: LINE_HEIGHT_TYPES,
     },

@@ -6,20 +6,20 @@ const meta: Meta<typeof ButtonGroup> = {
   title: 'Molecules/ButtonGroup',
   component: ButtonGroup,
   args: {
-    size: 'md',
+    $size: 'md',
     buttonPropsList: [
       {
-        type: 'primary',
+        styleType: 'solid',
         children: 'button1'
       },
       {
-        type: 'tertiary',
+        styleType: 'outline',
         children: 'button2',
       },
     ],
   },
   argTypes: {
-    size: {
+    $size: {
       control: { type: 'select'},
       options: Object.keys(theme.spacing),
     }

@@ -11,19 +11,19 @@ type Props =  {
 };
 
 const CheckboxWrapper = styled.div<{
-  checked: boolean,
-  disabled: boolean,
-  color: ColorKey
+  $checked: boolean,
+  $disabled: boolean,
+  $color: ColorKey
 }>`
   position: relative;
   display: inline-flex;
   cursor: pointer;
   
-  ${ ({ theme, checked, disabled, color }) => {
+  ${ ({ theme, $checked, $disabled, $color }) => {
     return css`
       width: 22px;
       height: 22px;
-      opacity: ${ disabled ? theme.opacity.disabled : 1 };
+      opacity: ${ $disabled ? theme.opacity.disabled : 1 };
       border: solid 2px ${ theme.color.tertiary };
 
       &::after {
@@ -35,9 +35,9 @@ const CheckboxWrapper = styled.div<{
         width: 8px;
         height: 12px;
         transform: translate(-45%, -65%) rotate(45deg);
-        border-right: solid 2px ${({ theme }) => theme.color[color]};
-        border-bottom: solid 2px ${({ theme }) => theme.color[color]};
-        opacity: ${ checked ? 1 : 0 };
+        border-right: solid 2px ${({ theme }) => theme.color[$color]};
+        border-bottom: solid 2px ${({ theme }) => theme.color[$color]};
+        opacity: ${ $checked ? 1 : 0 };
         transition: opacity 100ms ease;
       }
     `;
@@ -57,9 +57,9 @@ export const Checkbox = forwardRef<HTMLDivElement, Props>((
   return (
     <CheckboxWrapper
       ref={ fowardedRef }
-      checked={ value }
-      disabled={ !!props.disabled }
-      color={ props.color ?? 'tertiary' }
+      $checked={ value }
+      $disabled={ !!props.disabled }
+      $color={ props.color ?? 'tertiary' }
       onClick={ (e) => {
         e.stopPropagation();
         setValue(!value);

@@ -7,6 +7,11 @@ type Props = {
   decoration?: 'auto' | 'none' | 'underline' | 'overline' | 'line-through';
 };
 type PropsWithTheme = WithTheme<Props>;
+const propsToStop = new Set([
+  'size',
+  'weight',
+  'decoration',
+]);
 
 const mediaQueryStyle = ({ theme, size }: PropsWithTheme): Interpolation<Props> => {
   const fontSize = size && theme.typography.fontSize[size];
@@ -20,7 +25,9 @@ const mediaQueryStyle = ({ theme, size }: PropsWithTheme): Interpolation<Props> 
   `;
 };
 
-export const Text = styled.span<Props>`
+export const Text = styled.span.withConfig({
+  shouldForwardProp: (prop) => !propsToStop.has(prop),
+})<Props>`
   font-weight: ${ ({ weight }) => weight ?? 'normal' };
   text-decoration: ${ ({ decoration }) => decoration ?? 'auto' };
 

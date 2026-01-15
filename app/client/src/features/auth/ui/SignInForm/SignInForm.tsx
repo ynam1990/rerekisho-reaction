@@ -42,14 +42,14 @@ export const SignInForm = () => {
         <FormFooterWrapper>
           <Button styleType="solid">ログイン</Button>
 
-          <Paragraph align="left" line_height="tight" size="sm">
+          <Paragraph align="left" lineHeight="tight" size="sm">
             新規登録は
             <Link to="/auth/signup">
               <Text decoration="underline">こちら</Text>
             </Link>
           </Paragraph>
 
-          <Paragraph align="left" line_height="tight" size="sm">
+          <Paragraph align="left" lineHeight="tight" size="sm">
             パスワード再設定機能はありません。ログインできない場合は新規にご登録ください。<br />
             ※30日間ログインの無い場合、登録は自動的に抹消されます
           </Paragraph>

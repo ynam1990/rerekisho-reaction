@@ -5,18 +5,18 @@ import { theme } from '@/shared/styles/theme';
 export type GroupedButtonProps = typeof Button.defaultProps;
 
 type Props = {
-  size?: keyof typeof theme.spacing;
-  isBreakWhenSP?: boolean;
+  $size?: keyof typeof theme.spacing;
+  $isBreakWhenSP?: boolean;
   buttonPropsList: GroupedButtonProps[];
 };
 
-const ButtonGroupWrapper = styled.div<{ size: Props['size'], $isBreakWhenSP: Props['isBreakWhenSP'] }>`
+const ButtonGroupWrapper = styled.div<{ $size: Props['$size'], $isBreakWhenSP: Props['$isBreakWhenSP'] }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  ${ ({ size, $isBreakWhenSP }) => {
-    const spacing = theme.spacing[size ?? 'md'];
+  ${ ({ $size, $isBreakWhenSP }) => {
+    const spacing = theme.spacing[$size ?? 'md'];
 
     return css`
       column-gap: ${ spacing.pc };
@@ -40,7 +40,7 @@ const ButtonGroupWrapper = styled.div<{ size: Props['size'], $isBreakWhenSP: Pro
 `
 
 export const ButtonGroup = (props: Props) => (
-  <ButtonGroupWrapper size={ props.size } $isBreakWhenSP={ props.isBreakWhenSP }>
+  <ButtonGroupWrapper $size={ props.$size } $isBreakWhenSP={ props.$isBreakWhenSP }>
     {
       props.buttonPropsList.map((buttonProps, index: number) => {
         return <Button key={ index } { ...buttonProps } />
