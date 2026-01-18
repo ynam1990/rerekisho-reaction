@@ -1,6 +1,6 @@
 import { Navigate, type RouteObject } from 'react-router-dom';
-import { HomePage } from '@/pages/HomePage'
-import { AuthPage } from '@/pages/AuthPage';
+import { HomePage } from '@/pages/home'
+import { AuthPage } from '@/pages/auth';
 
 export const routes: RouteObject[] = [
   { path: '/', element: <HomePage /> },
