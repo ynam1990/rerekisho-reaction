@@ -3,8 +3,8 @@ import { theme } from '@/shared/styles/theme'
 import { GlobalStyle } from '@/shared/styles/GlobalStyle';
 import { AppRouter } from './router/AppRouter'
 import { AppWrapper } from './App.styles';
-import { Header } from '@/shared/ui/organisms/Header';
-import { Footer } from '@/shared/ui/organisms/Footer';
+import { Header } from '@/widgets/header';
+import { Footer } from '@/widgets/footer';
 
 export const App = () => {
   return (
