@@ -21,7 +21,6 @@ const PopoverWrapper = styled.div<{ $id: string }>`
   display: flex;
   width: fit-content;
   height: fit-content;
-  overflow: visible;
 
   position: relative;
   
@@ -42,6 +41,7 @@ const ContentWrapper = styled.div<{ $id: string, $isOpen: boolean }>`
   
   inset: auto;
   position: fixed;
+  overflow: visible;
   /* アンカーポジショニングのlint対応待ち */
   /* stylelint-disable-next-line property-no-unknown */
   position-anchor: ${ ({ $id }) => popoverAnchorName($id) };
