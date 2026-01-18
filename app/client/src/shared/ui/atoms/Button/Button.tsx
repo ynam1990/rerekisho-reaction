@@ -6,6 +6,7 @@ import styled, { css, type Interpolation } from 'styled-components'
 export const BUTTON_TYPES = [
   'solid',
   'outline',
+  'text',
 ] as const;
 export type ButtonTypes = typeof BUTTON_TYPES[number];
 
@@ -74,6 +75,17 @@ export const Button = styled.button.withConfig({
     const { mainColor, subColor } = pickMainSubColors(theme, color);
 
     switch (styleType) {
+      case 'text': {
+        return css`
+          color: ${ mainColor };
+          background-color: transparent;
+          padding: 0;
+          
+          &:hover, &:focus-visible {
+            opacity: ${ theme.opacity.hover };
+          }
+        `;
+      }
       case 'outline': {
         return css`
           color: ${ mainColor };
