@@ -21,6 +21,7 @@ const PopoverWrapper = styled.div<{ $id: string }>`
   display: flex;
   width: fit-content;
   height: fit-content;
+  overflow: visible;
 
   position: relative;
   
