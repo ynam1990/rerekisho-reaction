@@ -79,7 +79,7 @@ export const Button = styled.button.withConfig({
         return css`
           color: ${ mainColor };
           background-color: transparent;
-          padding: 0;
+          padding: 0 !important;
           
           &:hover, &:focus-visible {
             opacity: ${ theme.opacity.hover };
