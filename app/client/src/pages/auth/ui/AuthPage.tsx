@@ -1,7 +1,6 @@
 import { Navigate, useParams } from "react-router-dom";
 import { AuthPageWrapper } from "./AuthPage.styles"
-import { SignInForm } from "@/features/auth/ui/SignInForm";
-import { SignUpForm } from "@/features/auth/ui/SignUpForm/SignUpForm";
+import { SignInForm, SignUpForm } from "@/features/auth";
 
 const AUTH_FORM_ACTIONS = [
   'signin',
