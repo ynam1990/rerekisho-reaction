@@ -1,12 +1,13 @@
 import styled, { css } from 'styled-components'
 import logoImg from '@/shared/assets/logos/logo.png'
-import { Button, Anchor, Heading } from '@/shared/ui/atoms';
+import { Button, Anchor, Heading, Text } from '@/shared/ui/atoms';
 import { Popover } from '@/shared/ui/molecules';
 import { pickWhite } from '@/shared/utils/style';
-import { boxShadow, hideOnMin } from '@/shared/styles/mixins';
+import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
 
 type Props = {
   isAuthenticated: boolean;
+  currentUserName?: string;
 };
 
 const LogoWrapperAnchor = styled(Anchor)`
@@ -76,6 +77,30 @@ const HeaderWrapper = styled.header`
   } };
 `
 
+const HamburgerMenuContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 100%;
+  ${ boxShadow }
+  ${ postItStickLeft }
+  
+  ${ ({ theme }) => {
+    return css`
+      background-color: ${ pickWhite(theme) };
+      padding: ${ theme.spacing.md.pc } ${ theme.spacing.sm.pc };
+      row-gap: ${ theme.spacing.md.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        padding: ${ theme.spacing.md.pc } ${ theme.spacing.sm.pc };
+        row-gap: ${ theme.spacing.md.sp };
+      }
+    `;
+  } }
+`;
+
+
 export const Header = (props: Props) => (
   <HeaderWrapper>
     <LogoWrapperAnchor href='/'>
@@ -83,30 +108,55 @@ export const Header = (props: Props) => (
       <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
     </LogoWrapperAnchor>
 
-    <>
-      {
-        props.isAuthenticated ? (
-          <Popover
-            id='header_pop'
-            type='hamburger'
-            color='paperWhite'
-            content={(
-              <div></div>
-            )}
-          />
-        ) : (
-          <Button
-            styleType='outline'
-            color='primary'
-            noWrap={ true }
-            onClick={ () => {
-              window.location.href = '/auth/signin';
-            }}
-          >
-            ログイン
-          </Button>
-        )
-      }
-    </>
+    {
+      props.isAuthenticated ? (
+        <Popover
+          id='header_pop'
+          type='hamburger'
+          color='paperWhite'
+          content={(
+            <HamburgerMenuContent>
+              <Text>ユーザー名：{ props.currentUserName ?? '-' }</Text>
+
+              <Button
+                styleType='text'
+                color='tertiary'
+                noWrap={ true }
+                size='sm'
+                onClick={ () => {
+                  
+                }}
+              >
+                ユーザー登録の削除
+              </Button>
+
+              <Button
+                styleType='solid'
+                color='tertiary'
+                noWrap={ true }
+                onClick={ () => {
+                  
+                }}
+              >
+                ログアウト
+              </Button>
+
+              
+            </HamburgerMenuContent>
+          )}
+        />
+      ) : (
+        <Button
+          styleType='outline'
+          color='primary'
+          noWrap={ true }
+          onClick={ () => {
+            window.location.href = '/auth/signin';
+          }}
+        >
+          ログイン
+        </Button>
+      )
+    }
   </HeaderWrapper>
 );
