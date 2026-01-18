@@ -37,6 +37,7 @@ const IconWrapper = styled.div`
 
 const ContentWrapper = styled.div<{ $id: string, $isOpen: boolean }>`
   display: ${ ({ $isOpen }) => $isOpen ? 'flex' : 'none' };
+  padding: 0;
   
   inset: auto;
   position: fixed;
