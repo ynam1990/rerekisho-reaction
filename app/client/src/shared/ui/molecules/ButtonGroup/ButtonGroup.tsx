@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components'
-import { Button } from '@/shared/ui/atoms/Button';
+import { Button } from '@/shared/ui/atoms';
 import { theme } from '@/shared/styles/theme';
 
 export type GroupedButtonProps = typeof Button.defaultProps;

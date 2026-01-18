@@ -1,6 +1,5 @@
 import styled, { css } from 'styled-components'
-import { Text } from '@/shared/ui/atoms/Text'
-import { Anchor } from '@/shared/ui/atoms/Anchor';
+import { Text, Anchor } from '@/shared/ui/atoms'
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadowTop } from '@/shared/styles/mixins';
 

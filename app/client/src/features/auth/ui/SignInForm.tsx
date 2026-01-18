@@ -1,9 +1,7 @@
-import { Button } from "@/shared/ui/atoms/Button";
-import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
-import { Paragraph } from "@/shared/ui/atoms/Paragraph";
-import logoImg from '@/shared/assets/logos/logo.png'
-import { Text } from "@/shared/ui/atoms/Text";
 import { Link } from "react-router-dom";
+import { Button, Paragraph, Text } from "@/shared/ui/atoms";
+import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
+import logoImg from '@/shared/assets/logos/logo.png'
 
 const onSubmit = (formData: FormData) => {
   console.log(formData)

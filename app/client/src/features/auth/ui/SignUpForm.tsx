@@ -1,9 +1,7 @@
-import { Button } from "@/shared/ui/atoms/Button";
-import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
-import { Paragraph } from "@/shared/ui/atoms/Paragraph";
-import { Text } from "@/shared/ui/atoms/Text";
 import { Link } from "react-router-dom";
-import { CheckboxWithLabel } from "@/shared/ui/molecules/CheckboxWithLabel";
+import { Button, Paragraph, Text } from "@/shared/ui/atoms";
+import { CheckboxWithLabel } from "@/shared/ui/molecules";
+import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
 
 const onSubmit = (formData: FormData) => {
   console.log(formData)

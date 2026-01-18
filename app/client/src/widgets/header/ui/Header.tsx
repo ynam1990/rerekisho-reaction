@@ -1,8 +1,7 @@
 import styled, { css } from 'styled-components'
 import logoImg from '@/shared/assets/logos/logo.png'
-import { Button } from '@/shared/ui/atoms/Button';
-import { Anchor } from '@/shared/ui/atoms/Anchor';
-import { Heading } from '@/shared/ui/atoms/Heading';
+import { Button, Anchor, Heading } from '@/shared/ui/atoms';
+import { Popover } from '@/shared/ui/molecules';
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin } from '@/shared/styles/mixins';
 
@@ -44,7 +43,7 @@ const LogoImg = styled.img`
   ` }
 `;
 
-export const ColoredHeading = styled(Heading)`
+const ColoredHeading = styled(Heading)`
   font-weight: normal;
   color: ${ ({ theme }) => pickWhite(theme) };
 
@@ -87,7 +86,14 @@ export const Header = (props: Props) => (
     <>
       {
         props.isAuthenticated ? (
-          <div></div>
+          <Popover
+            id='header_pop'
+            type='hamburger'
+            color='paperWhite'
+            content={(
+              <div></div>
+            )}
+          />
         ) : (
           <Button
             styleType='outline'

@@ -2,8 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { HomePageWrapper, LogoImg, LogoTextImg } from "./HomePage.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 import logoTextImg from '@/shared/assets/logos/logo_text.gif'
-import { Paragraph } from "@/shared/ui/atoms/Paragraph";
-import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules/ButtonGroup";
+import { Paragraph } from "@/shared/ui/atoms";
+import { ButtonGroup, type GroupedButtonProps } from "@/shared/ui/molecules";
 import { urlWithCacheBuster } from "@/shared/utils/url";
 
 export const HomePage = () => {

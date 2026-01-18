@@ -1,6 +1,6 @@
 import { useRef, type ComponentPropsWithoutRef } from 'react';
 import styled, { css } from 'styled-components'
-import { Checkbox } from '@/shared/ui/atoms/Checkbox';
+import { Checkbox } from '@/shared/ui/atoms';
 
 type Props = ComponentPropsWithoutRef<typeof Checkbox> & {
   label?: React.ReactNode;
