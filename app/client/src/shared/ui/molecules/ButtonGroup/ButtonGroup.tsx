@@ -7,26 +7,30 @@ export type GroupedButtonProps = typeof Button.defaultProps;
 type Props = {
   $size?: keyof typeof theme.spacing;
   $isBreakWhenSP?: boolean;
+  $flexDirection?: 'row' | 'column';
   buttonPropsList: GroupedButtonProps[];
 };
 
-const ButtonGroupWrapper = styled.div<{ $size: Props['$size'], $isBreakWhenSP: Props['$isBreakWhenSP'] }>`
+
+const ButtonGroupWrapper = styled.div<Omit<Props, 'buttonPropsList'>>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  ${ ({ $size, $isBreakWhenSP }) => {
-    const spacing = theme.spacing[$size ?? 'md'];
+  ${ ({ $size, $isBreakWhenSP, $flexDirection }) => {
+    const spacingSelected = theme.spacing[$size ?? 'md'];
 
     return css`
-      column-gap: ${ spacing.pc };
+      flex-direction: ${ $flexDirection };
+      column-gap: ${ spacingSelected.pc };
+      row-gap: ${ spacingSelected.pc };
       
       @media (max-width: ${ theme.breakpoints.sp}) {
-          column-gap: ${ spacing.sp };
+          column-gap: ${ spacingSelected.sp };
+          row-gap: ${ spacingSelected.sp };
           
           ${ $isBreakWhenSP ? `
             flex-direction: column;
-            row-gap: ${ theme.spacing.md.sp };
             width: 100%;
 
             button {
@@ -40,7 +44,11 @@ const ButtonGroupWrapper = styled.div<{ $size: Props['$size'], $isBreakWhenSP: P
 `
 
 export const ButtonGroup = (props: Props) => (
-  <ButtonGroupWrapper $size={ props.$size } $isBreakWhenSP={ props.$isBreakWhenSP }>
+  <ButtonGroupWrapper
+    $size={ props.$size }
+    $isBreakWhenSP={ props.$isBreakWhenSP }
+    $flexDirection={ props.$flexDirection }
+  >
     {
       props.buttonPropsList.map((buttonProps, index: number) => {
         return <Button key={ index } { ...buttonProps } />
