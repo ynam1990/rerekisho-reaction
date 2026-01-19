@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 
 type Props = {
   isOpen: boolean;
-  onToggle: () => void;
+  onToggle: (e: React.MouseEvent<HTMLButtonElement>) => void;
   color: ColorKey;
 };
 

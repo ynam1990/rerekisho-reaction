@@ -60,11 +60,14 @@ export const Popover = (props: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const contentWrapperRef = useRef<HTMLDivElement>(null);
 
-  const onIconToggle = () => {
+  const onIconToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    
     setIsOpen(!isOpen);
     // ポップオーバーの表示中フラグを立てます
     contentWrapperRef.current?.showPopover();
   };
+
   let icon = null;
   switch (type) {
     case 'hamburger':
@@ -94,6 +97,7 @@ export const Popover = (props: Props) => {
           const isPopoverOpen = contentWrapperRef.current?.matches(':popover-open');
           if (!isPopoverOpen) setIsOpen(false);
         } }
+        onClick={ (e) => e.stopPropagation() }
       >
         { content }
       </ContentWrapper>
