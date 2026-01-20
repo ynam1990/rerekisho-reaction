@@ -98,10 +98,10 @@ export const StyledHeading = styled(Heading)`
 export const PublishedImg = styled.img`
   ${ ({ theme }) => {
     return css`
-      height: ${ theme.typography.fontSize.xxxl.pc };
+      height: ${ theme.typography.fontSize.xxl.pc };
       
       @media (max-width: ${ theme.breakpoints.sp}) {
-        height: ${ theme.typography.fontSize.xxxl.sp };
+        height: ${ theme.typography.fontSize.xxl.sp };
       }
     `;
   } }
