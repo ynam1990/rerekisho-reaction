@@ -3,6 +3,10 @@ import { Text, Anchor } from '@/shared/ui/atoms'
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadowTop } from '@/shared/styles/mixins';
 
+type Props = {
+  ref: React.Ref<HTMLDivElement>;
+};
+
 const FooterWrapper = styled.footer`
   display: flex;
   align-items: center;
@@ -26,10 +30,10 @@ const FooterWrapper = styled.footer`
       }
     `;
   } };
-`
+`;
 
-export const Footer = () => (
-  <FooterWrapper>
+export const Footer = (props: Props) => (
+  <FooterWrapper ref={ props.ref }>
     <Text size='sm'>© { new Date().getFullYear() } Rerekishon</Text>
     <Text size='sm'>/</Text>
     <Text size='sm'>

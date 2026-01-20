@@ -6,6 +6,7 @@ import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
 
 type Props = {
+  ref: React.Ref<HTMLDivElement>;
   isAuthenticated: boolean;
   currentUserName?: string;
 };
@@ -102,7 +103,7 @@ const HamburgerMenuContent = styled.div`
 
 
 export const Header = (props: Props) => (
-  <HeaderWrapper>
+  <HeaderWrapper ref={ props.ref }>
     <LogoWrapperAnchor href='/'>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
       <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
