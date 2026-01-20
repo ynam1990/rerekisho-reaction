@@ -7,6 +7,7 @@ export const BUTTON_TYPES = [
   'solid',
   'outline',
   'text',
+  'icon',
 ] as const;
 export type ButtonTypes = typeof BUTTON_TYPES[number];
 
@@ -78,6 +79,19 @@ export const Button = styled.button.withConfig({
       case 'text': {
         return css`
           color: ${ mainColor };
+          background-color: transparent;
+          padding: 0 !important;
+          
+          &:hover, &:focus-visible {
+            opacity: ${ theme.opacity.hover };
+          }
+        `;
+      }
+      case 'icon': {
+        return css`
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
           background-color: transparent;
           padding: 0 !important;
           
