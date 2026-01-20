@@ -3,15 +3,15 @@ import styled from "styled-components";
 import { Hamburger } from "@/shared/ui/atoms/Hamburger";
 import type { ColorKey } from "@/shared/styles/theme";
 
-export const POP_OVER_TYPES = [
+export const POPOVER_TYPES = [
   'hamburger',
 ] as const;
-type PopOverTypes = typeof POP_OVER_TYPES[number];
+type PopoverTypes = typeof POPOVER_TYPES[number];
 
 type Props = {
   id: string;
   content: React.ReactNode;
-  type?: PopOverTypes;
+  type?: PopoverTypes;
   color?: ColorKey;
 };
 

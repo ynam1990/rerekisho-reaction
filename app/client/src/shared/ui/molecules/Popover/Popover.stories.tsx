@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { POP_OVER_TYPES, Popover } from './Popover';
+import { POPOVER_TYPES, Popover } from './Popover';
 import { color } from '@/shared/styles/theme/color';
 
 const meta: Meta<typeof Popover> = {
@@ -16,7 +16,7 @@ const meta: Meta<typeof Popover> = {
   argTypes: {
     type: {
       control: 'select',
-      options: POP_OVER_TYPES,
+      options: POPOVER_TYPES,
     },
     color: {
       control: 'select',
