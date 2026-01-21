@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/app/store/hooks";
 import { HomePageWrapper, LogoImg, LogoTextImg } from "./HomePage.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 import logoTextImg from '@/shared/assets/logos/logo_text.gif'
@@ -9,26 +10,40 @@ import { urlWithCacheBuster } from "@/shared/utils/url";
 export const HomePage = () => {
   const navigate = useNavigate();
 
-  const buttonPropsList: GroupedButtonProps[] = [
-    {
-      styleType: 'solid',
-      color: 'primary',
-      size: 'xl',
-      children: 'ログイン',
-      onClick: () => {
-        navigate('/auth/signin');
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  const buttonPropsList: GroupedButtonProps[] = isAuthenticated
+    ? [
+      {
+        styleType: 'solid',
+        color: 'primary',
+        size: 'xl',
+        children: '履歴書一覧',
+        onClick: () => {
+          navigate('/resumes');
+        },
       },
-    },
-    {
-      styleType: 'outline',
-      color: 'primary',
-      size: 'xl',
-      children: '新規登録',
-      onClick: () => {
-        navigate('/auth/signup');
+    ]
+    : [
+      {
+        styleType: 'solid',
+        color: 'primary',
+        size: 'xl',
+        children: 'ログイン',
+        onClick: () => {
+          navigate('/auth/signin');
+        },
       },
-    },
-  ];
+      {
+        styleType: 'outline',
+        color: 'primary',
+        size: 'xl',
+        children: '新規登録',
+        onClick: () => {
+          navigate('/auth/signup');
+        },
+      },
+    ];
 
   return (
     <HomePageWrapper>
