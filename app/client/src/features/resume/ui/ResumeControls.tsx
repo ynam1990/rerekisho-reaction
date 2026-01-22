@@ -10,15 +10,7 @@ import zoomOutImg from '@/shared/assets/icons/icon_zoom_out.png';
 import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
-
-// 一時的なモックデータ
-const resume = {
-  name: '新規履歴書',
-  isPublished: true,
-  updatedAt: '2026-01-04',
-};
-type Resume = typeof resume;
-
+import { resume } from "../model/resume_mock";
 
 type Props = {
   scale: number;
@@ -64,9 +56,9 @@ export const ResumeControls = (props: Props) => {
             styleType: 'solid',
             color: 'secondary',
             size: 'md',
-            children: '公開',
+            children: 'PDF',
             onClick: () => {
-              // 公開処理
+              // PDF化処理
             },
           },
           {

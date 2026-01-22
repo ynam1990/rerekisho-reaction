@@ -4,25 +4,7 @@ import { Button, Text } from "@/shared/ui/atoms";
 import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molecules";
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
-
-// 一時的なモックデータ
-const resumeList = [
-  {
-    id: 'sample1',
-    name: '新規履歴書1',
-    isPublished: true,
-    updatedAt: '2026-01-03',
-  },
-  {
-    id: 'sample2',
-    name: '新規履歴書2',
-    isPublished: false,
-    updatedAt: '2026-01-04',
-  },
-];
-
-type ResumeListItem = typeof resumeList[number];
-
+import { resumeList, type ResumeListItem } from "../model/resume_mock";
 
 const createNewResume = () => {
   // 新規作成処理
@@ -40,15 +22,6 @@ export const ResumeList = () => {
         children: '編集',
         onClick: () => {
           navigate(`/resumes/${ resume.id }`);
-        },
-      },
-      {
-        styleType: 'solid',
-        color: 'secondary',
-        size: 'md',
-        children: '公開',
-        onClick: () => {
-          // 公開処理
         },
       },
       {
