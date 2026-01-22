@@ -16,10 +16,11 @@ type Props = {
   scale: number;
   setScale: (scale: number) => void;
   fitScale: () => void;
+  onConvertToPdf: () => void;
 };
 
 export const ResumeControls = (props: Props) => {
-  const { scale, setScale, fitScale } = props;
+  const { scale, setScale, fitScale, onConvertToPdf } = props;
 
   const [isWarped, setIsWarped] = useState(false);
 
@@ -58,7 +59,7 @@ export const ResumeControls = (props: Props) => {
             size: 'md',
             children: 'PDF',
             onClick: () => {
-              // PDF化処理
+              onConvertToPdf();
             },
           },
           {

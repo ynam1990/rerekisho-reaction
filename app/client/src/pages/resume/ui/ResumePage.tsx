@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
-import { Resume, ResumeControls } from "@/features/resume";
+import { Resume, ResumeControls, type ResumeHandle } from "@/features/resume";
 
 export const ResumePage = () => {
   const [scale, setScale] = useState(1);
@@ -19,6 +19,11 @@ export const ResumePage = () => {
   useEffect(() => {
     fitScale();
   }, [elHeight]);
+
+  const resumeRef = useRef<ResumeHandle>(null);
+  const handleConvertToPdf = () => {
+    resumeRef.current?.convertToPdf();
+  };
   
   return (
     <ResumePageWrapper ref={ ref }>
@@ -27,9 +32,10 @@ export const ResumePage = () => {
           scale={ scale }
           setScale={ setScale }
           fitScale={ fitScale }
+          onConvertToPdf={ handleConvertToPdf }
         />
         
-        <Resume scale={scale} />
+        <Resume ref={ resumeRef } scale={ scale } />
       </ResumePageContentWrapper>
     </ResumePageWrapper>
   );
