@@ -14,6 +14,8 @@
     "@reduxjs/toolkit": "^2.11.2",
     "dayjs": "^1.11.19",
     "destyle.css": "^4.0.1",
+    "html-to-image": "^1.11.13",
+    "pdf-lib": "^1.17.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-redux": "^9.2.0",
