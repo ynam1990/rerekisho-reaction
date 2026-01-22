@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { boxShadow } from '@/shared/styles/mixins';
 import { isUndefined } from '@/shared/utils/check';
+import { pickWhite } from '@/shared/utils/style';
 
 export const ResumeWrapper = styled.div`
   display: flex;
@@ -28,6 +29,12 @@ export const ResumePaperScaler = styled.div<{ $scale: number }>`
   overflow: visible;
 `;
 
+export const ResumePaperBackground = styled.div`
+  background-color: ${ ({ theme }) => pickWhite(theme) };
+  width: fit-content;
+  height: fit-content;
+`;
+
 export const ResumePaper = styled.div`
   position: relative;
   ${ boxShadow }
@@ -44,7 +51,7 @@ export const ResumePaper = styled.div`
   place-items: stretch;
 
   color: ${ ({ theme }) => theme.color.inkBlack };
-  background-color: ${ ({ theme }) => theme.color.paperWhite };
+  background-color: transparent;
   
   /* print時のスタイル */
   @media print {
