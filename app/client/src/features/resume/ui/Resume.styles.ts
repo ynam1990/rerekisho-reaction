@@ -93,6 +93,7 @@ export const GridItem = styled.div<GridItemConfig>`
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: ${ props.$noWrap ? 'nowrap' : 'pre-wrap' };
+      word-break: break-all;
 
       display: flex;
       justify-content: ${ props.$justifyContent || 'start' };
