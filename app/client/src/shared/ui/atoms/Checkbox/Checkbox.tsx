@@ -1,4 +1,5 @@
 import type { ColorKey } from '@/shared/styles/theme';
+import { pickWhite } from '@/shared/utils/style';
 import { forwardRef, useState } from 'react';
 import styled, { css } from 'styled-components'
 
@@ -8,6 +9,7 @@ type Props =  {
   value?: boolean;
   disabled?: boolean;
   color?: ColorKey;
+  onChange?: (e: React.MouseEvent<HTMLDivElement>, newValue: boolean) => void;
 };
 
 const CheckboxWrapper = styled.div<{
@@ -25,6 +27,7 @@ const CheckboxWrapper = styled.div<{
       height: 22px;
       opacity: ${ $disabled ? theme.opacity.disabled : 1 };
       border: solid 2px ${ theme.color.tertiary };
+      background-color: ${ pickWhite(theme) };
 
       &::after {
         content: '';
@@ -63,6 +66,8 @@ export const Checkbox = forwardRef<HTMLDivElement, Props>((
       onClick={ (e) => {
         e.stopPropagation();
         setValue(!value);
+
+        props.onChange?.(e, !value);
       } }
     >
       { value && (
