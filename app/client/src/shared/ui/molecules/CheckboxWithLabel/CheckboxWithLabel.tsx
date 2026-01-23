@@ -1,9 +1,11 @@
 import { useRef, type ComponentPropsWithoutRef } from 'react';
 import styled, { css } from 'styled-components'
 import { Checkbox } from '@/shared/ui/atoms';
+import type { ColorKey } from '@/shared/styles/theme';
 
 type Props = ComponentPropsWithoutRef<typeof Checkbox> & {
   label?: React.ReactNode;
+  labelColor?: ColorKey;
 };
 
 const CheckboxWithLabelWrapper = styled.div`
@@ -22,20 +24,23 @@ const CheckboxWithLabelWrapper = styled.div`
   } }
 `;
 
-const LabelWrapper = styled.div`
+const LabelWrapper = styled.div<{ $labelColor?: ColorKey }>`
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
+  color: ${ ({ theme, $labelColor }) => $labelColor ? theme.color[$labelColor] : 'inherit' };
+  cursor: pointer;
 `;
 
 export const CheckboxWithLabel = (props: Props) => {
-  const { label, ...rest } = props;
+  const { label, labelColor, ...rest } = props;
   const checkboxRef = useRef<HTMLDivElement>(null);
 
   return (
     <CheckboxWithLabelWrapper>
       <Checkbox ref={ checkboxRef } { ...rest } />
       <LabelWrapper
+        $labelColor={ labelColor }
         onClick={ (e) => {
           e.stopPropagation();
           checkboxRef.current?.click();
