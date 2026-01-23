@@ -6,5 +6,6 @@ export * from './Hamburger';
 export * from './Heading';
 export * from './Input';
 export * from './Label';
+export * from './MonthInput';
 export * from './Paragraph';
 export * from './Text';
