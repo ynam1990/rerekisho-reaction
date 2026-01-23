@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/app/store/hooks";
+import { useAuthSelector } from "@/app/store/hooks";
 import { HomePageWrapper, LogoImg, LogoTextImg } from "./HomePage.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 import logoTextImg from '@/shared/assets/logos/logo_text.gif'
@@ -10,7 +10,7 @@ import { urlWithCacheBuster } from "@/shared/utils/url";
 export const HomePage = () => {
   const navigate = useNavigate();
 
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated } = useAuthSelector();
 
   const buttonPropsList: GroupedButtonProps[] = isAuthenticated
     ? [
