@@ -2,14 +2,20 @@ import styled, { css } from 'styled-components'
 import { pickWhite } from '@/shared/utils/style';
 
 type Props = {
+  name: string;
   value: { year: string; month: string };
   onChange: (newValue: { year: string; month: string, dateString: string }) => void;
+  dataYear?: any;
+  dataMonth?: any;
 };
 
 export const MonthInput = (props: Props) => {
   const {
+    name,
     value,
     onChange,
+    dataYear,
+    dataMonth,
   } = props;
 
 
@@ -33,10 +39,10 @@ export const MonthInput = (props: Props) => {
   
   return (
     <MonthInputWrapper>
-      <StyledSelect onChange={handleYearChange} value={value.year}>
+      <StyledSelect name={ name + '_year' } onChange={handleYearChange} value={value.year} { ...dataYear }>
         { YEAR_SELECT_LIST }
       </StyledSelect>
-      <StyledSelect onChange={handleMonthChange} value={value.month}>
+      <StyledSelect name={ name + '_month' } onChange={handleMonthChange} value={value.month} { ...dataMonth }>
         { MONTH_SELECT_LIST }
       </StyledSelect>
     </MonthInputWrapper>

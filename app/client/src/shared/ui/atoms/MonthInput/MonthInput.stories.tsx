@@ -18,7 +18,7 @@ export const Default: Story = {
     const [value, setValue] = useState({ year: '2000', month: '1' });
 
     return (
-      <MonthInput value={ value } onChange={ ({ dateString, ...newValue }) => {
+      <MonthInput name='sample' value={ value } onChange={ ({ dateString, ...newValue }) => {
         console.log('Selected month:', dateString);
         setValue(newValue);
       } } />
