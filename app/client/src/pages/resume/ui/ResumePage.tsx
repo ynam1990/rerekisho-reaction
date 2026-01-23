@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useElementRect } from "@/shared/hooks/useElementRect";
-import { ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
-import { Resume, ResumeControls, type ResumeHandle } from "@/features/resume";
+import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
+import { Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
+import { type ResumeObj } from "@/features/resume/model/resume_mock";
+import { useResumeSelector } from "@/app/store/hooks";
 
 export const ResumePage = () => {
+  const { resume } = useResumeSelector();
+
   const [scale, setScale] = useState(1);
   const { ref, elHeight } = useElementRect<HTMLDivElement>();
   
@@ -24,19 +28,42 @@ export const ResumePage = () => {
   const handleConvertToPdf = () => {
     resumeRef.current?.convertToPdf();
   };
-  
+
+  const resumeEditorRef = useRef<ResumeEditorHandle>(null);
+  const handleResumeClick = (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => {
+    resumeEditorRef.current?.open(key, propId, entityKey);
+  };
+  const handleResumeBlankSpaceClick = () => {
+    resumeEditorRef.current?.close();
+  };
+
   return (
     <ResumePageWrapper ref={ ref }>
-      <ResumePageContentWrapper>
-        <ResumeControls
-          scale={ scale }
-          setScale={ setScale }
-          fitScale={ fitScale }
-          onConvertToPdf={ handleConvertToPdf }
-        />
-        
-        <Resume ref={ resumeRef } scale={ scale } />
-      </ResumePageContentWrapper>
+      <ResumePageContentScrollWrapper>        
+        <ResumePageContentWrapper
+          onClick={ handleResumeBlankSpaceClick }
+        >
+          <ResumeControls
+            scale={ scale }
+            resume={ resume }
+            setScale={ setScale }
+            fitScale={ fitScale }
+            onConvertToPdf={ handleConvertToPdf }
+          />
+          
+          <Resume
+            ref={ resumeRef }
+            scale={ scale }
+            resume={ resume }
+            onResumeClick={ handleResumeClick }
+          />
+        </ResumePageContentWrapper>
+      </ResumePageContentScrollWrapper>
+
+      <ResumeEditor
+        ref={ resumeEditorRef }
+        resume={ resume }
+      />
     </ResumePageWrapper>
   );
 };

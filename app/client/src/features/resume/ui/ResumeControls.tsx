@@ -10,24 +10,28 @@ import zoomOutImg from '@/shared/assets/icons/icon_zoom_out.png';
 import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
-import { resume } from "../model/resume_mock";
+import type { ResumeObj } from "../model/resume_mock";
 
 type Props = {
   scale: number;
+  resume: ResumeObj;
   setScale: (scale: number) => void;
   fitScale: () => void;
   onConvertToPdf: () => void;
 };
 
 export const ResumeControls = (props: Props) => {
-  const { scale, setScale, fitScale, onConvertToPdf } = props;
+  const { scale, resume, setScale, fitScale, onConvertToPdf } = props;
 
   const [isWarped, setIsWarped] = useState(false);
 
   const navigate = useNavigate();
 
   return (
-    <ResumeControlsWrapper $isWarped={ isWarped }>
+    <ResumeControlsWrapper
+      $isWarped={ isWarped }
+      onClick={ (e) => e.stopPropagation() }
+    >
       <ResumeNameWrapper>
         <ResumeName>
           <StyledHeading size="lg">
@@ -37,7 +41,7 @@ export const ResumeControls = (props: Props) => {
           { resume.isPublished && <PublishedImg src={ publishedImg } alt="アイコンはAI生成です" /> }
         </ResumeName>
         <Text size="sm">
-          { `最終更新: ${ dayjs(resume.updatedAt).format('YYYY年MM月DD日 hh時mm分') }` }
+          { `最終更新: ${ resume.updatedAt && dayjs(resume.updatedAt).format('YYYY年MM月DD日 hh時mm分') }` }
         </Text>
       </ResumeNameWrapper>
 

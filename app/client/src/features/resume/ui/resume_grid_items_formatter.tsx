@@ -8,6 +8,9 @@ export type ResumeGridItem = GridItemConfig & {
   content: React.ReactNode;
   innerContent?: React.ReactNode;
   innerContentConfig?: GridItemContentConfig;
+  key?: keyof ResumeObj['values'];
+  propId?: string;
+  entityKey?: string;
 };
 
 export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], ResumeGridItem[]] => {
@@ -48,27 +51,33 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     },
     {
       $cols: [14, 23], $rows: [2, 4], $paddings: { right: 0 }, $justifyContent: 'end', $fontSize: 14,
-      content: dayjs(resume.values.displayDate ?? new Date()).format('YYYY年 MM月 DD日現在'),
+      content: resume.values.displayDate ? dayjs(resume.values.displayDate).format('YYYY年 MM月 DD日現在') : `年    月    日現在`,
+      key: 'displayDate',
     },
     {
       $cols: [2, 23], $rows: [4, 5], $borders: { top: true, bottom: 'thin', right: true, left: true },
       content: 'ふりがな',
       innerContent: `${ resume.values.familyNameRuby } ${ resume.values.nameRuby }`,
       innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
+      key: 'familyNameRuby',
     },
     {
       $cols: [2, 23], $rows: [5, 8], $borders: { top: false, bottom: false, right: true, left: true },
       content: '氏名',
       innerContent: `${ resume.values.familyName } ${ resume.values.name }`,
       innerContentConfig: { $paddings: { left: 12 + 28.5 }, $fontSize: 22 },
+      key: 'familyName',
     },
     {
       $cols: [2, resume.isGenderVisible ? 18 : 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: true }, $paddings: { right: 12 }, $justifyContent: 'end', $fontSize: 16,
       content: (() => {
+        if (!resume.values.birthdate) return '年    月    日生 (満    歳)';
+
         const birthDay = dayjs(resume.values.birthdate);
         const age = dayjs().diff(birthDay, 'year');
         return `${ birthDay.format('YYYY年 MM月 DD日生') } (満${ age }歳)`;
       })(),
+      key: 'birthdate',
     },
     {
       $cols: [24, 31], $rows: [2, 8], $justifyContent: 'center', $alignItems: 'end',
@@ -78,6 +87,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
           alt="履歴書写真"
         />
       ),
+      key: 'photoImg',
     },
   ]);
 
@@ -88,6 +98,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       content: '性別',
       innerContent: resume.values.gender,
       innerContentConfig: { $justifyContent: 'center' },
+      key: 'gender',
     },
   ]);
   
@@ -98,18 +109,24 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       content: 'ふりがな',
       innerContent: `${ resume.values.address.line1Ruby } ${ resume.values.address.line2Ruby }`,
       innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
+      key: 'address',
+      propId: 'line1Ruby',
     },
     {
       $cols: [2, 24], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: true },
       content: '現住所',
       innerContent: `〒${ formatPostalCode(resume.values.address.postalCode) }\n${ resume.values.address.line1 }\n${ resume.values.address.line2 }`,
-        innerContentConfig: { $paddings: { left: 12 + 13.5 } },
+      innerContentConfig: { $paddings: { left: 12 + 13.5 } },
+      key: 'address',
+      propId: 'line1',
     },
     {
       $cols: [24, 32], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: false }, $noWrap: true,
       content: '電話',
       innerContent: resume.values.address.tel,
       innerContentConfig: { $justifyContent: 'center' },
+      key: 'address',
+      propId: 'tel',
     },
     {
       $cols: [24, 32], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: false },
@@ -119,6 +136,8 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
           <div>{ resume.values.address.email }</div>
         </ResumeEmailContent>
       ),
+      key: 'address',
+      propId: 'email',
     },
   ]);
 
@@ -130,18 +149,24 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         content: 'ふりがな',
         innerContent: `${ resume.values.contactAddress.line1Ruby } ${ resume.values.contactAddress.line2Ruby }`,
         innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
+        key: 'contactAddress',
+        propId: 'line1Ruby',
       },
       {
         $cols: [2, 24], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: true },
         content: '連絡先',
         innerContent: `〒${ formatPostalCode(resume.values.contactAddress.postalCode) }\n${ resume.values.contactAddress.line1 }\n${ resume.values.contactAddress.line2 }`,
         innerContentConfig: { $paddings: { left: 12 + 13.5 } },
+        key: 'contactAddress',
+        propId: 'line1',
       },
       {
         $cols: [24, 32], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: false }, $noWrap: true,
         content: '電話',
         innerContent: resume.values.contactAddress.tel,
         innerContentConfig: { $justifyContent: 'center' },
+        key: 'contactAddress',
+        propId: 'tel',
       },
       {
         $cols: [24, 32], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: false },
@@ -151,6 +176,8 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
             <div>{ resume.values.contactAddress.email }</div>
           </ResumeEmailContent>
         ),
+        key: 'contactAddress',
+        propId: 'email',
       },
     ]);
   }
@@ -163,18 +190,24 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     {
       $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: true }, $justifyContent: 'center',
       content: '年',
+      key: 'educations',
+      entityKey: 'year',
     },
     {
       $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: false }, $justifyContent: 'center',
       content: '月',
+      key: 'educations',
+      entityKey: 'month',
     },
     {
       $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: false }, $justifyContent: 'center',
       content: '学歴・職歴',
+      key: 'educations',
+      entityKey: 'content',
     },
   ]);
 
-  const fillWithEmptyRows = () => {
+  const fillWithEmptyRows = (key: 'educations' | 'experiences') => {
     while (remainingGridRows() >= 2) {
       const isLastRow = remainingGridRows() <= 3;
       const borderBottom = isLastRow ? true : 'thin';
@@ -183,14 +216,20 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         {
           $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: true },
           content: '',
+          key: key,
+          entityKey: 'year',
         },
         {
           $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
           content: '',
+          key: key,
+          entityKey: 'month',
         },
         {
           $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
           content: '',
+          key: key,
+          entityKey: 'content',
         },
       ]);
 
@@ -205,21 +244,29 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     { label: '学歴', items: resume.values.educations },
     { label: '職歴', items: resume.values.experiences },
   ].forEach(({ label, items }, listIndex) => {
+    const key = listIndex === 0 ? 'educations' : 'experiences';
+
     // 見出し行
     appendList(2, [
       {
         $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: 'thin', right: true, left: true }, $justifyContent: 'center',
         content: '',
+        key: key,
+        entityKey: 'year',
       },
       {
         $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: 'thin', right: true, left: false }, $justifyContent: 'center',
         content: '',
+        key: key,
+        entityKey: 'month',
       },
       {
         $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: 'thin', right: true, left: false },
         content: null,
         innerContent: label,
         innerContentConfig: { $justifyContent: 'center' },
+        key: key,
+        entityKey: 'content',
       },
     ]);
 
@@ -237,7 +284,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       const borderTop = !isFirstPaper() && currentGridRowStart() <= 2 ? true : false;
 
       // 最後の行になる場合は、欄を閉じる
-      const isLastRow = remainingGridRows() <= 3 || (!isFirstPaper() && listIndex === 1 && isLastItem);
+      const isLastRow = remainingGridRows() <= 3 || (!isFirstPaper() && key === 'experiences' && isLastItem);
       let borderBottom: (boolean | 'thin') = isLastRow ? true : 'thin';
   
       appendList(2, [
@@ -246,18 +293,27 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
           content: null,
           innerContent: item.year,
           innerContentConfig: { $justifyContent: 'center' },
+          key: key,
+          propId: id,
+          entityKey: 'year',
         },
         {
           $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: borderTop, bottom: borderBottom, right: true, left: false },
           content: null,
           innerContent: item.month,
           innerContentConfig: { $justifyContent: 'center' },
+          key: key,
+          propId: id,
+          entityKey: 'month',
         },
         {
           $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: borderTop, bottom: borderBottom, right: true, left: false },
           content: null,
           innerContent: item.content,
           innerContentConfig: { $paddings: { left: 8, right: 8 } },
+          key: key,
+          propId: id,
+          entityKey: 'content',
         },
       ]);
 
@@ -266,36 +322,42 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       // 空白埋めチェック
       if (isLastItem) {
         // パターン1: 最後の学歴の時点で、残りの行数が1行分のみの場合（「職歴」の記載直後が改ページにならないように）
-        if (listIndex === 0 && remainingGridRows() === 2) {
-          fillWithEmptyRows();
+        if (key === 'educations' && remainingGridRows() === 2) {
+          fillWithEmptyRows(key);
         }
 
         // パターン2: 最後の職歴の時点でまだ1ページ目の場合
-        if (listIndex === 1 && isFirstPaper()) {
-          fillWithEmptyRows();
+        if (key === 'experiences' && isFirstPaper()) {
+          fillWithEmptyRows(key);
         }
 
         // パターン3: 最後の職歴の時点で2ページ目の場合、直後に空行を追加する
-        if (listIndex === 1 && !isFirstPaper()) {
+        if (key === 'experiences' && !isFirstPaper()) {
           appendList(1, []);
         }
       }
     });
-  });
+  });  
 
   // 資格欄
   appendList(2, [
     {
       $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: true }, $justifyContent: 'center',
       content: '年',
+      key: 'certifications',
+      entityKey: 'year',
     },
     {
       $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: false }, $justifyContent: 'center',
       content: '月',
+      key: 'certifications',
+      entityKey: 'month',
     },
     {
       $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: false }, $justifyContent: 'center',
       content: '資格・免許',
+      key: 'certifications',
+      entityKey: 'content',
     },
   ]);
 
@@ -304,14 +366,20 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     {
       $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: true, right: true, left: true },
       content: '',
+      key: 'certifications',
+      entityKey: 'year',
     },
     {
       $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: true, right: true, left: false },
       content: '',
+      key: 'certifications',
+      entityKey: 'month',
     },
     {
       $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: true, right: true, left: false },
       content: '',
+      key: 'certifications',
+      entityKey: 'content',
     },
   ]);
 
@@ -332,18 +400,27 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         content: null,
         innerContent: item.year,
         innerContentConfig: { $justifyContent: 'center' },
+        key: 'certifications',
+        propId: id,
+        entityKey: 'year',
       },
       {
         $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
         content: null,
         innerContent: item.month,
         innerContentConfig: { $justifyContent: 'center' },
+        key: 'certifications',
+        propId: id,
+        entityKey: 'month',
       },
       {
         $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
         content: null,
-          innerContent: item.content,
-          innerContentConfig: { $paddings: { left: 8, right: 8 } },
+        innerContent: item.content,
+        innerContentConfig: { $paddings: { left: 8, right: 8 } },
+        key: 'certifications',
+        propId: id,
+        entityKey: 'content',
       },
     ]);
   });
@@ -372,6 +449,9 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       {
         $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: true },
         content: item.label,
+        key: 'customs',
+        propId: id,
+        entityKey: 'label',
       },
     ]);
     
@@ -381,6 +461,9 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       content: null,
       innerContent: item.content,
       innerContentConfig: { $paddings: { left: 8, right: 8 } },
+      key: 'customs',
+      propId: id,
+      entityKey: 'content',
     };
     appendList(contentRowHeight, [lastAppended]);
   });

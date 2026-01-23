@@ -4,13 +4,19 @@ import { Button, Text } from "@/shared/ui/atoms";
 import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molecules";
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
-import { resumeList, type ResumeListItem } from "../model/resume_mock";
+import { type ResumeListItem } from "../model/resume_mock";
 
 const createNewResume = () => {
   // 新規作成処理
 };
 
-export const ResumeList = () => {
+type Props = {
+  resumeList: ResumeListItem[];
+};
+
+export const ResumeList = (props: Props) => {
+  const { resumeList } = props;
+  
   const navigate = useNavigate();
 
   const buttonProps = (resume: ResumeListItem) : GroupedButtonProps[] => {

@@ -1,11 +1,13 @@
 import { forwardRef, useImperativeHandle, useRef } from "react";
 import { ResumeWrapper, ResumePaper, ResumePaperScaler, GridItem, GridItemContent, ResumePaperBackground } from "./Resume.styles"
 import { formatResumeGridItems } from "./resume_grid_items_formatter";
-import { resume } from "../model/resume_mock";
 import { convertToPdf } from "@/shared/utils/convert_to_pdf";
+import { type ResumeObj } from "../model/resume_mock";
 
 type Props = {
   scale: number;
+  resume: ResumeObj;
+  onResumeClick: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => void;
 };
 
 export type ResumeHandle = {
@@ -13,7 +15,7 @@ export type ResumeHandle = {
 };
 
 export const Resume = forwardRef<ResumeHandle, Props>((props, ref) => {
-  const { scale } = props;
+  const { scale, resume, onResumeClick } = props;
 
   const paperRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
 
@@ -35,10 +37,25 @@ export const Resume = forwardRef<ResumeHandle, Props>((props, ref) => {
             <ResumePaperBackground>
               <ResumePaper ref={ paperRefs[listIndex] }>
                 { list.map((item, index) => {
-                  const { content, innerContent, innerContentConfig, ...rest } = item;
+                  const {
+                    content,
+                    innerContent,
+                    innerContentConfig,
+                    key,
+                    propId,
+                    entityKey,
+                    ...rest
+                  } = item;
 
                   return (
-                    <GridItem key={ index } { ...rest }>
+                    <GridItem
+                      key={ index }
+                      { ...rest }
+                      onClick={ key && ((e) => {
+                        e.stopPropagation();
+                        onResumeClick(key, propId, entityKey);
+                      }) }
+                    >
                       { content }
 
                       {

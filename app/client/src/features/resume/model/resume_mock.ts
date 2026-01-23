@@ -3,7 +3,7 @@ export const resumeList = [
   {
     id: 'sample1',
     name: '新規履歴書1',
-    isPublished: true,
+    isPublished: false,
     updatedAt: '2026-01-03',
   },
   {
@@ -20,7 +20,7 @@ export type ResumeListItem = typeof resumeList[number];
 export const resume = {
   id: 'sample',
   name: '新規履歴書',
-  isPublished: true,
+  isPublished: false,
   isGenderVisible: true,
   isContactVisible: true,
   updatedAt: '2026-01-04',
@@ -87,14 +87,14 @@ export const resume = {
       },
     },
     certifications: {
-      ids: ['cer_1', 'cer_2'],
+      ids: ['cert_1', 'cert_2'],
       entities: {
-        cer_1: {
+        cert_1: {
           year: '2005',
           month: '5',
           content: '資格x',
         },
-        cer_2: {
+        cert_2: {
           year: '2006',
           month: '6',
           content: '資格xx',
@@ -114,8 +114,6 @@ export const resume = {
         },
       },
     },
-    customP1: 'xxx',
-    customP1Ruby: 'xxx',
   },
 };
 export type ResumeObj = typeof resume;

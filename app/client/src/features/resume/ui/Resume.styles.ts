@@ -12,7 +12,6 @@ export const ResumeWrapper = styled.div`
   ${ ({ theme }) => {
     return css`
       column-gap: ${ theme.spacing.lg.pc };
-      padding-right: ${ theme.spacing.lg.pc };
       
       @media (max-width: ${ theme.breakpoints.sp}) {
         column-gap: ${ theme.spacing.lg.sp };

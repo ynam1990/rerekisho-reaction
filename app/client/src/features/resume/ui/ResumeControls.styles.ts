@@ -29,7 +29,7 @@ export const ResumeControlsWrapper = styled.div<{ $isWarped: boolean }>`
     position: fixed;
     top: 0;
     left: 0;
-    z-index: ${ theme.zIndex.modal - 1 };
+    z-index: ${ theme.zIndex.resumeControls };
   ` }
 `;
 
