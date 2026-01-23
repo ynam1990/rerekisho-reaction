@@ -1,6 +1,7 @@
 export * from './Anchor';
 export * from './Button';
 export * from './Checkbox';
+export * from './Close';
 export * from './Hamburger';
 export * from './Heading';
 export * from './Input';
