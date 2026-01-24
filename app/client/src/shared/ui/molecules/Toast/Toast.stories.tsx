@@ -5,7 +5,7 @@ import { useRef } from 'react';
 const meta: Meta<typeof Toast> = {
   title: 'Molecules/Toast',
   component: (props) => {
-    const ref = useRef<ToastHandle>(null);
+    const ref = useRef<ToastHandle | null>(null);
     
     return (
       <>

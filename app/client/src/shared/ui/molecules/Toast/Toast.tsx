@@ -4,6 +4,8 @@ import { boxShadow } from "@/shared/styles/mixins";
 import logoImg from '@/shared/assets/logos/logo.png'
 import successImg from '@/shared/assets/icons/icon_success.png'
 import errorImg from '@/shared/assets/icons/icon_error.png'
+import { isUndefined } from "@/shared/utils/check";
+import { pickWhite } from "@/shared/utils/style";
 
 export const TOAST_ICONS = [
   'none',
@@ -14,13 +16,14 @@ export const TOAST_ICONS = [
 type ToastIcons = typeof TOAST_ICONS[number];
 
 type Props = {
-  content: React.ReactNode;
+  content?: React.ReactNode;
   icon?: ToastIcons;
 };
 
 export type ToastHandle = {
   show: () => void;
   hide: () => void;
+  setOptions: (options: Props) => void;
 };
 
 const ToastWrapper = styled.div<{ $isShow: boolean }>`
@@ -35,6 +38,7 @@ const ToastWrapper = styled.div<{ $isShow: boolean }>`
   right: 0;
   overflow: visible;
   ${ boxShadow }
+  background-color: ${ ({ theme }) => pickWhite(theme) };
 
   ${ ({ theme }) => {
     return css`
@@ -92,10 +96,8 @@ const ContentWrapper = styled.div`
 `;
 
 export const Toast = forwardRef<ToastHandle, Props>((props: Props, ref: React.Ref<ToastHandle>) => {
-  const {
-    content,
-    icon = 'none',
-  } = props;
+  const [content, setContent] = useState<React.ReactNode>(props.content);
+  const [icon, setIcon] = useState<ToastIcons>(props.icon || 'none');
 
   const [isShow, setIsShow] = useState(false);
   
@@ -128,6 +130,14 @@ export const Toast = forwardRef<ToastHandle, Props>((props: Props, ref: React.Re
       }, 5000);
     },
     hide,
+    setOptions: (options: Props) => {
+      if (!isUndefined(options.content)) {
+        setContent(options.content);
+      }
+      if (!isUndefined(options.icon)) {
+        setIcon(options.icon);
+      }
+    },
   }));
   
   let iconEl = null;
