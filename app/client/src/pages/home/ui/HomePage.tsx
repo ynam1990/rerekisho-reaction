@@ -53,7 +53,7 @@ export const HomePage = () => {
 
       <Paragraph align="center" lineHeight="relaxed">
         Rerekishonはブラウザ上でA4履歴書を作成するアプリです。<br />
-        ユーザー登録することで履歴書を作成、保存、公開することができます。<br />
+        ユーザー登録することで履歴書を作成し、PDFとして保存できます。<br />
       </Paragraph>
 
       <ButtonGroup
@@ -63,7 +63,7 @@ export const HomePage = () => {
       />
 
       <Paragraph align="center" lineHeight="relaxed">
-        ※本アプリはサンプルアプリです。予告なく停止・再開・変更される可能性があります
+        ※本アプリは動作確認用です。予告なく停止・再開・変更される可能性があります
       </Paragraph>
       
     </HomePageWrapper>
