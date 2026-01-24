@@ -1,5 +1,11 @@
 # RerekishoReaction
-履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。
+履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。 
+
+公開Webサイト  
+https://rerekishon.ynam.click
+  
+※履歴書の様式は厚生労働省の定める通りです  
+https://www.mhlw.go.jp/stf/newpage_kouseisaiyou030416.html
 
 # ディレクトリ
 インフラ、バックエンド、フロントエンドをモノレポにしています。  
