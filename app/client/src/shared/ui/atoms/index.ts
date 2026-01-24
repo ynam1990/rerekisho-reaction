@@ -9,3 +9,4 @@ export * from './Label';
 export * from './MonthInput';
 export * from './Paragraph';
 export * from './Text';
+export * from './TextArea';
