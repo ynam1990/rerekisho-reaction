@@ -2,10 +2,12 @@ import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import styled, { css } from "styled-components";
 import { boxShadow } from "@/shared/styles/mixins";
 import { Heading } from "@/shared/ui/atoms/Heading";
+import { pickWhite } from "@/shared/utils/style";
+import { isUndefined } from "@/shared/utils/check";
 
 type Props = {
-  title: string;
-  content: React.ReactNode;
+  title?: React.ReactNode;
+  content?: React.ReactNode;
   footerContent?: React.ReactNode;
   onEnterPress?: () => void;
 };
@@ -13,6 +15,11 @@ type Props = {
 export type ModalHandle = {
   show: () => void;
   hide: () => void;
+  setContent: (args: {
+    title?: React.ReactNode,
+    content?: React.ReactNode,
+    footerContent?: React.ReactNode,
+  }) => void;
 };
 
 const ModalBackground = styled.div<{ $isShow: boolean }>`
@@ -38,6 +45,7 @@ const ModalWrapper = styled.div<{ $isShow: boolean }>`
   height: min(400px, 90%);
   overflow: hidden;
   ${ boxShadow }
+  background-color: ${ ({ theme }) => pickWhite(theme) };
 
   ${ ({ theme }) => {
     return css`
@@ -51,7 +59,8 @@ const ModalWrapper = styled.div<{ $isShow: boolean }>`
     `;
   } }
   
-  transition: all 600ms ease-in-out;
+  transition: 600ms ease-in-out;
+  transition-property: opacity, transform;
   transform: translateY(-20px);
   ${ ({ $isShow }) => {
     if ($isShow) {
@@ -106,6 +115,10 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
   const [isShow, setIsShow] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
 
+  const [title, setTitle] = useState<React.ReactNode>(props.title || null);
+  const [content, setContent] = useState<React.ReactNode>(props.content || null);
+  const [footerContent, setFooterContent] = useState<React.ReactNode>(props.footerContent || null);
+
   useImperativeHandle(ref, () => ({
     show: () => {
       setIsShow(true);
@@ -115,6 +128,11 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       }, 0);
     },
     hide: () => setIsShow(false),
+    setContent: ({ title, content, footerContent }) => {
+      if (!isUndefined(title)) setTitle(title);
+      if (!isUndefined(content)) setContent(content);
+      if (!isUndefined(footerContent)) setFooterContent(footerContent);
+    },
   }));
   
   return (
@@ -147,17 +165,17 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       >
         <ModalTitle>
           <Heading size="lg">
-            { props.title }
+            { title }
           </Heading>
         </ModalTitle>
 
         <ContentWrapper>
-          { props.content }
+          { content }
         </ContentWrapper>
 
-        { props.footerContent && (
+        { footerContent && (
           <FooterContentWrapper>
-            { props.footerContent }
+            { footerContent }
           </FooterContentWrapper>
         ) }
       </ModalWrapper>
