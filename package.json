@@ -1,0 +1,22 @@
+{
+  "name": "rerekisho_reaction",
+  "version": "1.0.0",
+  "description": "履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ynam1990/RerekishoReaction.git"
+  },
+  "license": "MIT",
+  "author": "ynam1990",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "mock:api": "prism mock ./openapi/spec/openapi.yml -p 4010"
+  },
+  "overrides": {
+    "lodash": "4.17.23"
+  },
+  "devDependencies": {
+    "@stoplight/prism-cli": "^5.14.2"
+  }
+}
