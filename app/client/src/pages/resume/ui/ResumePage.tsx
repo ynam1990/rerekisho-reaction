@@ -26,7 +26,7 @@ export const ResumePage = () => {
 
   const resumeRef = useRef<ResumeHandle>(null);
   const handleConvertToPdf = () => {
-    resumeRef.current?.convertToPdf();
+    return resumeRef.current ? resumeRef.current.convertToPdf() : Promise.resolve();
   };
 
   const resumeEditorRef = useRef<ResumeEditorHandle>(null);

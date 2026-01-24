@@ -17,13 +17,15 @@ type Props = {
   resume: ResumeObj;
   setScale: (scale: number) => void;
   fitScale: () => void;
-  onConvertToPdf: () => void;
+  onConvertToPdf: () => Promise<void>;
 };
 
 export const ResumeControls = (props: Props) => {
   const { scale, resume, setScale, fitScale, onConvertToPdf } = props;
 
   const [isWarped, setIsWarped] = useState(false);
+
+  const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
 
   const navigate = useNavigate();
 
@@ -52,27 +54,51 @@ export const ResumeControls = (props: Props) => {
             styleType: 'solid',
             color: 'primary',
             size: 'md',
+            noWrap: true,
+            loading: buttonsLoading['save'] || false,
             children: '保存',
-            onClick: () => {
-              // 保存処理
+            onClick: async() => {
+              setButtonsLoading(prev => ({ ...prev, save: true }));
+              
+              try {
+                // 保存処理
+              } finally {
+                setButtonsLoading(prev => ({ ...prev, save: false }));
+              }
             },
           },
           {
             styleType: 'solid',
             color: 'secondary',
             size: 'md',
+            noWrap: true,
             children: 'PDF',
-            onClick: () => {
-              onConvertToPdf();
+            loading: buttonsLoading['pdf'] || false,
+            onClick: async () => {
+              setButtonsLoading(prev => ({ ...prev, pdf: true }));
+
+              try {
+                await onConvertToPdf();
+              } finally {
+                setButtonsLoading(prev => ({ ...prev, pdf: false }));
+              }
             },
           },
           {
             styleType: 'solid',
             color: 'danger',
             size: 'md',
+            noWrap: true,
+            loading: buttonsLoading['delete'] || false,
             children: '削除',
-            onClick: () => {
-              // 削除処理
+            onClick: async () => {
+              setButtonsLoading(prev => ({ ...prev, delete: true }));
+              
+              try {
+                // 削除処理
+              } finally {
+                setButtonsLoading(prev => ({ ...prev, delete: false }));
+              }
             },
           },
         ] }
