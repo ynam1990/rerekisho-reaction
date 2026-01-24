@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # Mac対応
 .DS_Store
+
+# プロジェクトに関連するローカルファイル
+.local
