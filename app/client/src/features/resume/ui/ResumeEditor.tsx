@@ -1,11 +1,11 @@
-import { forwardRef, use, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useAppDispatch } from "@/app/store/hooks";
 import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, ModalButtonsWrapper } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "../model/resume_mock";
 import { Button, Close, MonthInput } from "@/shared/ui/atoms";
 import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
-import { CheckboxWithLabel, Modal, type ModalHandle } from "@/shared/ui/molecules";
+import { CheckboxWithLabel, ImgInput, Modal, type ModalHandle } from "@/shared/ui/molecules";
 
 type Props = {
   resume: ResumeObj;
@@ -191,6 +191,27 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               labelColor="tertiary"
               onChange={ (e, newValue) => dispatch(updateResume({ isGenderVisible: newValue })) }
             />
+          </EditorRow>
+
+          <EditorRow>
+            <StyledLabel>
+              証明写真
+              <ImgInput
+                name='photo_img'
+                dataset={ { 'data-key': 'photoImg' } }
+                value={ resume.values.photoImg }
+                onChange={ (newValue) => dispatch(updateValues({ photoImg: newValue })) }
+              />
+              
+              <Button
+                styleType="text"
+                color="tertiary"
+                size="sm"
+                onClick={ () => dispatch(updateValues({ photoImg: '' })) }
+              >
+                クリア
+              </Button>
+            </StyledLabel>
           </EditorRow>
 
           <EditorRow>

@@ -83,7 +83,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       $cols: [24, 31], $rows: [2, 8], $justifyContent: 'center', $alignItems: 'end',
       content: (
         <ResumePhotoImg
-          src={ resume.values.photoImg ?? resumePhotoDefaultImg }
+          src={ resume.values.photoImg || resumePhotoDefaultImg }
           alt="履歴書写真"
         />
       ),

@@ -32,7 +32,7 @@ export const resume = {
     familyNameRuby: 'やまだ',
     birthdate: '2000-01-01',
     gender: '女',
-    photoImg: null,
+    photoImg: '',
     address: {
       postalCode: '0010001',
       line1: 'xx県xx区xxx-xx',
