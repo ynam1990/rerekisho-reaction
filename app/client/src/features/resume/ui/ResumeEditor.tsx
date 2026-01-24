@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/store/hooks";
 import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, ModalButtonsWrapper } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "../model/resume_mock";
-import { Button, Close, MonthInput } from "@/shared/ui/atoms";
+import { Button, Close, MonthInput, TextArea } from "@/shared/ui/atoms";
 import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
 import { CheckboxWithLabel, ImgInput, Modal, type ModalHandle } from "@/shared/ui/molecules";
 
@@ -669,7 +669,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
 
                   <StyledLabel>
                     内容
-                    <StyledInput
+                    <TextArea
                       name={ `customs_${ cusId }_content` }
                       data-key='customs'
                       data-prop-id={ cusId }
