@@ -1,7 +1,7 @@
 import type { theme, WithTheme } from '@/shared/styles/theme';
 import type { ColorKey } from '@/shared/styles/theme';
-import { pickMainSubColors } from '@/shared/utils/style';
-import styled, { css, type Interpolation } from 'styled-components'
+import { pickMainSubColors, pickWhite } from '@/shared/utils/style';
+import styled, { css, keyframes, type Interpolation } from 'styled-components'
 
 export const BUTTON_TYPES = [
   'solid',
@@ -16,6 +16,7 @@ type Props = {
   color?: ColorKey;
   size?: keyof typeof theme.typography.fontSize;
   noWrap?: boolean;
+  loading?: boolean;
 };
 type PropsWithTheme = WithTheme<Props>;
 const propsToStop = new Set([
@@ -23,6 +24,7 @@ const propsToStop = new Set([
   'color',
   'size',
   'noWrap',
+  'loading',
 ]);
 
 const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<Props> => {
@@ -46,9 +48,15 @@ const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<
   `;
 };
 
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`;
+
 export const Button = styled.button.withConfig({
     shouldForwardProp: (prop) => !propsToStop.has(prop),
   })<Props>`
+  position: relative;
   text-align: center;
   font-weight: bold;
   border-radius: ${ ({ theme }) => theme.radius.md };
@@ -71,6 +79,30 @@ export const Button = styled.button.withConfig({
   }
 
   ${ mediaQueryStyle }
+
+  ${({ loading }) => loading && css`
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: ${ ({ theme }) => theme.opacity.disabled };
+
+    &::before {
+      content: "";
+      display: inline-block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: auto;
+      height: 66%;
+      aspect-ratio: 1 / 1;
+      border-radius: 9999px;
+      border: 2px solid ${ ({ theme }) => pickWhite(theme) };
+      border-right-color: transparent;
+      animation: ${ spin } 0.8s linear infinite;
+    }
+  ` }
 
   ${ ({ theme, styleType = 'solid', color = 'primary' }) => {
     const { mainColor, subColor } = pickMainSubColors(theme, color);
