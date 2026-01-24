@@ -19,7 +19,7 @@ export const MonthInput = (props: Props) => {
   } = props;
 
 
-  const handleOnthChange = (month: string, year: string) => {
+  const handleOnChange = (month: string, year: string) => {
     onChange({
       year: year,
       month: month,
@@ -29,12 +29,12 @@ export const MonthInput = (props: Props) => {
 
   const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newYear = e.target.value;
-    handleOnthChange(value.month, newYear);
+    handleOnChange(value.month, newYear);
   };
 
   const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newMonth = e.target.value;
-    handleOnthChange(newMonth, value.year);
+    handleOnChange(newMonth, value.year);
   };
   
   return (
