@@ -1,11 +1,11 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, use, useImperativeHandle, useRef, useState } from "react";
 import { useAppDispatch } from "@/app/store/hooks";
-import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner } from "./ResumeEditor.styles";
+import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, ModalButtonsWrapper } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "../model/resume_mock";
 import { Button, Close, MonthInput } from "@/shared/ui/atoms";
 import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
-import { CheckboxWithLabel } from "@/shared/ui/molecules";
+import { CheckboxWithLabel, Modal, type ModalHandle } from "@/shared/ui/molecules";
 
 type Props = {
   resume: ResumeObj;
@@ -18,6 +18,8 @@ export type ResumeEditorHandle = {
 
 export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) => {
   const { resume } = props;
+  
+  const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useAppDispatch();
 
@@ -41,7 +43,40 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     },
   }));
 
-  const [isOpen, setIsOpen] = useState(false);
+  // 削除確認
+  const modalRef = useRef<ModalHandle>(null);
+  const showConfirmModal = (onConfirm: () => void, title?: string, content?: string) => {
+    modalRef.current?.setContent({
+      title: title ?? '項目削除',
+      content: content ?? '項目を削除しますか？',
+      footerContent: (
+        <ModalButtonsWrapper>
+          <Button
+            styleType="solid"
+            color="tertiary"
+            size="md"
+            onClick={ () => modalRef.current?.hide() }
+          >
+            キャンセル
+          </Button>
+          <Button
+            styleType="solid"
+            color="primary"
+            size="md"
+            onClick={ () => {
+              modalRef.current?.hide();
+              onConfirm();
+            } }
+          >
+            削除する
+          </Button>
+        </ModalButtonsWrapper>
+      ),
+    });
+
+    modalRef.current?.show();
+  };
+
 
   return (
     <ResumeEditorWrapper $isOpen={ isOpen }>
@@ -473,9 +508,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                     data: newEntity,
                   }));
                 } }
-                onRemove={ (entityId: string) => {
-                  dispatch(removeFromEntities({ key: 'educations', id: entityId }));
-                } }
+                onRemove={ () => showConfirmModal(
+                  () => {
+                    dispatch(removeFromEntities({ key: 'educations', id: eduId }));
+                  },
+                  '学歴の項目削除',
+                  `「${ edu.year || '-' }年 ${ edu.month || '-' }月 ${ edu.content || '' }」の項目を削除しますか？`
+                ) }
               />;
             })  
           }
@@ -513,9 +552,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                     data: newEntity,
                   }));
                 } }
-                onRemove={ (entityId: string) => {
-                  dispatch(removeFromEntities({ key: 'experiences', id: entityId }));
-                } }
+                onRemove={ () => showConfirmModal(
+                  () => {
+                    dispatch(removeFromEntities({ key: 'experiences', id: expId }));
+                  },
+                  '職歴の項目削除',
+                  `「${ exp.year || '-' }年 ${ exp.month || '-' }月 ${ exp.content || '' }」の項目を削除しますか？`
+                ) }
               />;
             })
           }
@@ -553,9 +596,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                     data: newEntity,
                   }));
                 } }
-                onRemove={ (entityId: string) => {
-                  dispatch(removeFromEntities({ key: 'certifications', id: entityId }));
-                } }
+                onRemove={ () => showConfirmModal(
+                  () => {
+                    dispatch(removeFromEntities({ key: 'certifications', id: certId }));
+                  },
+                  '資格・免許の項目削除',
+                  `「${ cert.year || '-' }年 ${ cert.month || '-' }月 ${ cert.content || '' }」の項目を削除しますか？`
+                ) }
               />;
             })
           }
@@ -623,7 +670,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                       styleType="text"
                       color="tertiary"
                       size="sm"
-                      onClick={ () => dispatch(removeFromEntities({ key: 'customs', id: cusId })) }
+                      onClick={ () => showConfirmModal(
+                        () => {
+                          dispatch(removeFromEntities({ key: 'customs', id: cusId }));
+                        },
+                        'カスタム項目の削除',
+                        `「${ custom.label || '-' }」の項目を削除しますか？`
+                      ) }
                     >
                       項目を削除
                     </Button>
@@ -635,6 +688,8 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
 
         </ResumeEditorBody>
       </ResumeEditorInnerWrapper>
+
+      <Modal ref={ modalRef } />
     </ResumeEditorWrapper>
   );
 });
@@ -646,7 +701,7 @@ const YearMonthContentEditorRow = (props: {
   $month: string;
   $content: string;
   onChange: (newEntity: { year: string; month: string; content: string }) => void;
-  onRemove: (entityId: string) => void;
+  onRemove: () => void;
 }) => {
   const {
     $sectionKey,
@@ -681,7 +736,7 @@ const YearMonthContentEditorRow = (props: {
           styleType="text"
           color="tertiary"
           size="sm"
-          onClick={ () => onRemove($entityId) }
+          onClick={ () => {onRemove() } }
         >
           削除
         </Button>

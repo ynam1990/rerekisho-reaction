@@ -26,7 +26,6 @@ export const ResumeEditorInnerWrapper = styled.div`
   justify-content: flex-start;
   min-height: 100%;
   width: var(--editor-width);
-  max-width: 100%;
 
   ${ ({ theme }) => {
     return css`
@@ -123,4 +122,20 @@ export const StyledInput = styled(Input)`
 
 export const StyledHeading = styled(Heading)`
   color: ${ ({ theme }) => theme.color.tertiary };
+`;
+
+export const ModalButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ${ ({ theme }) => {
+    return css`
+      column-gap: ${ theme.spacing.md.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        column-gap: ${ theme.spacing.md.sp };
+      } 
+    `;
+  } }
 `;
