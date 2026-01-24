@@ -1,0 +1,488 @@
+openapi: 3.0.0
+info:
+  title: Rerekisho Reaction API
+  version: 1.0.0
+
+tags:
+  - name: ログイン前API
+    description: 未ログインユーザが利用可能なAPI群
+  - name: ログイン後API
+    description: ログイン中ユーザが利用可能なAPI群
+
+security:
+  - cookieAuth: []
+
+paths:
+  /api/auth/register:
+    post:
+      summary: ユーザ新規登録
+      tags:
+        - ログイン前API
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationData'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '409':
+          description: ユーザID重複エラー
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 409
+                  message:
+                    type: string
+                    example: "指定されたユーザIDは既に使用されています。"
+                  ok:
+                    type: boolean
+                    example: false
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/login:
+    post:
+      summary: ユーザログイン
+      tags:
+        - ログイン前API
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationData'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          description: ログイン失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    example: 401
+                  message:
+                    type: string
+                    example: "パスワードが一致しませんでした。"
+                  ok:
+                    type: boolean
+                    example: false
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/logout:
+    post:
+      summary: ユーザログアウト
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/auth/account:
+    delete:
+      summary: ユーザアカウント削除
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/resumes:
+    get:
+      summary: ログイン中ユーザの履歴書一覧の取得
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          description: 一覧画面表示用に絞られた履歴書オブジェクトの配列
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ResumeListItem'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      summary: 履歴書データの新規作成
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  
+  /api/resumes/{resumeId}:
+    get:
+      summary: 履歴書IDに紐づく履歴書データの取得
+      tags:
+        - ログイン後API
+      parameters:
+        - name: resumeId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 取得対象の履歴書ID
+      responses:
+        '200':
+          description: 指定された履歴書IDに紐づく履歴書データ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeObj'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      summary: 履歴書IDを指定して、履歴書データを更新
+      tags:
+        - ログイン後API
+      parameters:
+        - name: resumeId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 更新対象の履歴書ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeObj'
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      summary: 履歴書IDを指定して、履歴書データを削除
+      tags:
+        - ログイン後API
+      parameters:
+        - name: resumeId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: 削除対象の履歴書ID
+      responses:
+        '200':
+          $ref: '#/components/responses/Success'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+  schemas:
+    AuthenticationData:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: "username123"
+        password:
+          type: string
+          example: "password123"
+    ResumeListItem:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sample1"
+        name:
+          type: string
+          example: "新規履歴書1"
+        isPublished:
+          type: boolean
+          example: false
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-01-03T12:00:00Z"
+    ResumeObj:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "sample"
+        name:
+          type: string
+          example: "新規履歴書"
+        isPublished:
+          type: boolean
+          example: false
+        isGenderVisible:
+          type: boolean
+          example: true
+        isContactVisible:
+          type: boolean
+          example: true
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2026-01-04T12:00:00Z"
+        values:
+          type: object
+          properties:
+            displayDate:
+              type: string
+              example: "2026-01-01"
+            name:
+              type: string
+              example: "花子"
+            nameRuby:
+              type: string
+              example: "はなこ"
+            familyName:
+              type: string
+              example: "山田"
+            familyNameRuby:
+              type: string
+              example: "やまだ"
+            birthdate:
+              type: string
+              example: "2000-01-01"
+            gender:
+              type: string
+              example: "女"
+            photoImg:
+              type: string
+              example: ""
+            address:
+              type: object
+              properties:
+                postalCode:
+                  type: string
+                  example: "0010001"
+                line1:
+                  type: string
+                  example: "xx県xx区xxx-xx"
+                line2:
+                  type: string
+                  example: "マンション名xx号室"
+                line1Ruby:
+                  type: string
+                  example: "xxけんxxくxxx-xx"
+                line2Ruby:
+                  type: string
+                  example: "マンションxxごうしつ"
+                tel:
+                  type: string
+                  example: "001-0000-0000"
+                email:
+                  type: string
+                  example: "example@example.com"
+            contactAddress:
+              type: object
+              properties:
+                postalCode:
+                  type: string
+                  example: "0010001"
+                line1:
+                  type: string
+                  example: "xx県xx区xxx-xx"
+                line2:
+                  type: string
+                  example: "マンション名xx号室"
+                line1Ruby:
+                  type: string
+                  example: "xxけんxxくxxx-xx"
+                line2Ruby:
+                  type: string
+                  example: "マンションxxごうしつ"
+                tel:
+                  type: string
+                  example: "001-0000-0000"
+                email:
+                  type: string
+                  example: "example@example.com"
+            educations:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  example: ["edu_1", "edu_2"]
+                entities:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      year:
+                        type: string
+                      month:
+                        type: string
+                      content:
+                        type: string
+                  example:
+                    edu_1:
+                      year: "2000"
+                      month: "4"
+                      content: "学歴x"
+                    edu_2:
+                      year: "2004"
+                      month: "3"
+                      content: "学歴xx"
+            experiences:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  example: ["exp_1", "exp_2"]
+                entities:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      year:
+                        type: string
+                      month:
+                        type: string
+                      content:
+                        type: string
+                  example:
+                    exp_1:
+                      year: "2004"
+                      month: "4"
+                      content: "職歴x"
+                    exp_2:
+                      year: "2006"
+                      month: "3"
+                      content: "職歴xx"
+            certifications:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  example: ["cert_1", "cert_2"]
+                entities:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      year:
+                        type: string
+                      month:
+                        type: string
+                      content:
+                        type: string
+                  example:
+                    cert_1:
+                      year: "2005"
+                      month: "5"
+                      content: "資格x"
+                    cert_2:
+                      year: "2007"
+                      month: "6"
+                      content: "資格xx"
+            customs:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  example: ["cus_1", "cus_2"]
+                entities:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    properties:
+                      label:
+                        type: string
+                      content:
+                        type: string
+                  example:
+                    cus_1:
+                      label: "志望の動機、特技、好きな学科、アピールポイントなど"
+                      content: "xxxxxxxxxxxx"
+                    cus_2:
+                      label: "本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）"
+                      content: "xxxxxxxxxxxx"
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        ok:
+          type: boolean
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+        message:
+          type: string
+        ok:
+          type: boolean
+  responses:
+    Success:
+      description: 成功レスポンス
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+          example:
+            message: "正常に完了しました。"
+            ok: true
+    UnauthorizedError:
+      description: 認証失敗
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 401
+            message: "要求された操作にはログインが必要です。"
+            ok: false
+    InternalServerError:
+      description: サーバー内部エラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 500
+            message: "サーバー内部でエラーが発生しました。"
+            ok: false
