@@ -1,5 +1,5 @@
 import React from 'react';
-import '../node_modules/destyle.css'
+import 'destyle.css'
 import type { Preview } from '@storybook/react-vite';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '../src/shared/styles/theme';
@@ -9,7 +9,10 @@ const preview: Preview = {
   decorators: [
     (Story) => (
       <ThemeProvider theme={theme}>
-        <GlobalStyle />
+        <GlobalStyle
+          headerHeight={0}
+          footerHeight={0}
+        />
         <Story />
       </ThemeProvider>
     ),

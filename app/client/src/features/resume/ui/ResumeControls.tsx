@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { ResumeControlsWrapper, ResumeNameWrapper, PublishedImg, ResumeName, StyledHeading, ButtonIcon } from "./ResumeControls.styles";
 import { Text } from "@/shared/ui/atoms";
@@ -27,7 +27,7 @@ export const ResumeControls = (props: Props) => {
 
   const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <ResumeControlsWrapper

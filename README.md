@@ -23,13 +23,34 @@ Expressのバックエンドコード群です。
 
 /app/client
 Reactのフロントエンドコード群です。
+
+/openapi
+バックエンド・フロントエンドでAPI仕様を共有するためのOpenAPI記述です。
+
+/packages
+上記OpenAPIのopenapi.ymlから生成されるAPIの型情報を、リポジトリ内で共通利用するためのパッケージです。
 ```
+
+## 利用させていただいたフレームワーク、ツールなど
+- インフラ系
+  - AWS VPC、Route53、IAM、S3、EC2
+  - AWS CloudFormation (インフラ構造の自動デプロイ)
+  - AWS CodeDeploy (コードの自動デプロイ)
+- バックエンド Node.js + MariaDB
+  - Express
+  - Prisma (ORM)
+  - Prism (モックサーバー)
+- フロントエンド JS
+  - React.js
+  - Redux (ストア管理)
+  - Styled-Components (CSS in JS)
+  - Storybook (JSXコンポーネントのプレビュー)
 
 # 環境構築
 
 ## 前提条件
-以下がローカルにインストール済みであることが必要です。
-Node.js、AWS CLI、AWS SSM Plugin、Docker
+以下がローカルにインストール済みであることが必要です。  
+Node.js、AWS CLI、AWS SSM Plugin、Docker、(必要に応じて)SwaggerViewer
 
 ## Node.jsバージョン
 v24.x系  
@@ -38,7 +59,7 @@ v24.x系
 
 ## cloudformation
 
-### 事前準備
+### AWS事前準備
 1.任意のリージョンに、VPCを作成します。サブネットも同時に作成されます。  
 2.任意のドメインでRoute53にホストゾーンを作成します。  
 3.SystemsManagerのパラメータストアに以下のパラメータを作成します。(SecureStringを使用するため、KMSで暗号化キーを一つ用意してください)  
@@ -50,15 +71,17 @@ v24.x系
 /RerekishoReaction/RecordName=ホストゾーンに作成するレコードのドメイン名
 /RerekishoReaction/DBUserName=データベースに接続する任意のユーザ名(例：prisma_user)
 /RerekishoReaction/DBPassword=データベースに設定する任意のパスワード(暗号化推奨)
-/RerekishoReaction/DevEmail=通知に使われる開発者のEmailアドレス(Let's Encryptから通知が届きます)
+/RerekishoReaction/DevEmail=Let's Encryptに登録する開発者のEmailアドレス
 ```
 
 ### 初回デプロイ
 以下のコマンドにて初回デプロイを行います。  
 EC2がVPC内に作成され、SecurityGroupにてhttps通信が許可され、ElasticIPが付与された上で、Route53にAレコードが追加されます。  
-CodeDeployのアプリ、デプロイグループ、デプロイ用リビジョンのアップロード先S3も同時に作成されます。  
+CodeDeployのアプリ、デプロイグループ、デプロイ用リビジョンファイルのアップロード先S3も同時に作成されます。  
 
 ```
+実行ディレクトリ: cloudformation/
+
 aws cloudformation deploy \
   --template-file template.yml \
   --capabilities CAPABILITY_NAMED_IAM \
@@ -71,13 +94,13 @@ aws cloudformation deploy \
 ```
 
 ### EC2へのセッション接続方法
-AWS CLIとsession-manager-pluginのインストールが済んでいる状態で、以下の通り接続します。
+ローカルPCにAWS CLIとsession-manager-pluginのインストールが済んでいる状態で、以下の通り接続します。
 
 ```
 aws ssm start-session --target 作成されたEC2のインスタンスID(例：i-xxxxx)
 ```
 
-### 本番系では
+### [TIPS] 本番系では
 費用はかかりますが、本プロジェクトでEC2+Nginx+LetsEncryptとしている部分は、ECS+ALB+ACMとして置き換えるとより良くなります。
 
 ### 削除方法
@@ -94,13 +117,20 @@ aws cloudformation delete-stack \
 ### ビルドとアップロード
 以下のようにappディレクトリでコードをビルドしてS3にアップロードします。
 ```
+実行ディレクトリ: ルート
+
 # ビルドしてrevision.zipを作成
-npm run create
+npm run build:app  
+npm run gen:revision  
 # revision.zipをS3にアップロード
-npm run upload
-# createとuploadは以下で一括実行できます
-npm run prepare
+npm run upload:revision  
 ```
+**「npm run gen:revision」はshファイルに実行権限を付けていないと失敗します**
+```
+実行権限の付与
+chmod +x app/codedeploy/gen_revision.sh
+```
+
 ### デプロイ
 以下のコマンドでS3にアップロードしたrevision.zipをEC2にデプロイできます。  
 
@@ -122,11 +152,48 @@ aws deploy create-deployment \
 ALBを利用していないため、Let's EncryptにてSSL証明書を取得しています。  
 CloudFormationでRoute53のAレコードを作成している都合上、DNSに浸透してからCodeDeployにてデプロイすることでLet's Encryptが通るようになります。  
 
+## serverとclient共通
+以下にてローカル環境が立ち上がります。  
+
+初回実行  
+```
+実行ディレクトリ: ルート
+
+パッケージインストール
+npm i
+
+openapi.ymlから、API返り値の型を生成
+npm run gen:contract
+npm run build:contract
+
+schema.prismaからprisma関連ファイルの生成
+npm run gen:prisma_client
+```
+
+開発環境の立ち上げ
+```
+実行ディレクトリ: ルート
+
+ローカルサーバ(下記のdockerが起動している状態が必要です)
+npm run dev:server
+
+ローカルクライアント
+npm run dev:client
+
+モックAPIサーバ
+npm run dev:mockapi
+
+Storybook
+npm run dev:storybook
+```
+
 ## server
 
 ### ローカル環境構築
 MariaDBをdocker上で立ち上げます。
 ```
+実行ディレクトリ: app/server/
+
 # docker立ち上げ
 docker compose up -d
 # dockerシャットダウン
@@ -146,7 +213,8 @@ CURRENT_ENV="local"
 APP_PORT= "3000"
 
 # prisma
-DATABASE_URL="mysql://prisma_user_local:パスワード(docker-compose.ymlにて設定)@127.0.0.1:3306/rerekisho_reaction_app"
+DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3306/rerekisho_reaction_app"
+※passpassはdocker-compose.ymlにて設定した任意のパスワード
 ```
 
 以下にてローカル環境が立ち上がります。
@@ -159,11 +227,7 @@ npm run dev
 ## client
 
 ### ローカル環境構築
-以下にてローカル環境が立ち上がります。
-```
-npm i
-npm run dev
-```
+上記の共通手順以外は特にありません。  
 
 # その他
 ## 画像ファイルについて

@@ -22,7 +22,7 @@ const createInitialResumeObj = (): ResumeObj => {
       familyNameRuby: '',
       birthdate: '',
       gender: '',
-      photoImg: null,
+      photoImg: '',
       address: {
         postalCode: '',
         line1: '',

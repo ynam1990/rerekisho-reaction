@@ -1,0 +1,13 @@
+{
+  "name": "@rerekisho_reaction/contracts_api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "files": ["dist", "generated"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  }
+}

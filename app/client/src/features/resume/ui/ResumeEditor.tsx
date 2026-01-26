@@ -189,7 +189,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               value={ resume.isGenderVisible }
               color="tertiary"
               labelColor="tertiary"
-              onChange={ (e, newValue) => dispatch(updateResume({ isGenderVisible: newValue })) }
+              onChange={ (_e, newValue) => dispatch(updateResume({ isGenderVisible: newValue })) }
             />
           </EditorRow>
 
@@ -359,7 +359,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               value={ resume.isContactVisible }
               color="tertiary"
               labelColor="tertiary"
-              onChange={ (e, newValue) => dispatch(updateResume({ isContactVisible: newValue })) }
+              onChange={ (_e, newValue) => dispatch(updateResume({ isContactVisible: newValue })) }
             />
           </EditorRow>
 
