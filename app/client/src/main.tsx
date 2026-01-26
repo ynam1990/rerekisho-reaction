@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import '../node_modules/destyle.css'
+import 'destyle.css'
 import { StoreProvider } from './app/providers/StoreProvider'
 import { App } from './app/App';
 import dayjs from 'dayjs';
