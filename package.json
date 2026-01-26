@@ -18,8 +18,7 @@
     "gen:prisma_client": "npm run prisma:generate --workspace app/server",
     "build:app": "npm run build --workspace app/client && npm run build --workspace app/server",
     "gen:revision": "app/codedeploy/gen_revision.sh",
-    "upload:revision": "aws s3 cp revision.zip s3://rerekisho-reaction-code-deploy-s3-bucket/revision.zip",
-    "upload": "npm run gen:revision && npm run upload:revision"
+    "upload:revision": "aws s3 cp revision.zip s3://rerekisho-reaction-code-deploy-s3-bucket/revision.zip"
   },
   "workspaces": [
     "app/*",
