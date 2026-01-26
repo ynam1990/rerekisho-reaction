@@ -1,5 +1,6 @@
 {
   "name": "rerekisho_reaction",
+  "private": true,
   "version": "1.0.0",
   "description": "履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。",
   "repository": "github:ynam1990/RerekishoReaction",
@@ -11,15 +12,17 @@
     "dev:client": "npm run dev --workspace app/client",
     "dev:storybook": "npm run storybook --workspace app/client",
     "dev:server": "npm run dev --workspace app/server",
-    "mock:api": "prism mock ./openapi/spec/openapi.yml -p 4010",
+    "dev:mockapi": "prism mock ./openapi/spec/openapi.yml -p 4010",
     "gen:contract": "openapi-typescript openapi/spec/openapi.yml -o packages/contracts/api/generated/openapi.d.ts",
     "build:contract": "tsc -p tsconfig.json",
-    "upload:codedeploy": "npm run upload --workspace app"
+    "gen:prisma_client": "npm run prisma:generate --workspace app/server",
+    "build:app": "npm run build --workspace app/client && npm run build --workspace app/server",
+    "gen:revision": "app/codedeploy/gen_revision.sh",
+    "upload:revision": "aws s3 cp revision.zip s3://rerekisho-reaction-code-deploy-s3-bucket/revision.zip",
+    "upload": "npm run gen:revision && npm run upload:revision"
   },
   "workspaces": [
-    "app",
-    "app/client",
-    "app/server",
+    "app/*",
     "packages/contracts/*"
   ],
   "overrides": {

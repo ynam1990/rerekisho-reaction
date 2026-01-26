@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 
 # プロジェクトに関連するローカルファイル
 .local
+
+# リビジョンファイル
+revision.zip
