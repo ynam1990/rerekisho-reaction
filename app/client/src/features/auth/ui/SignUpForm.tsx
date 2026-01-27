@@ -1,19 +1,91 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useToast } from "@/shared/hooks/useToast";
+import { callAPI } from "@/shared/api/request";
+import type { Paths } from "@/shared/api/type";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { CheckboxWithLabel } from "@/shared/ui/molecules";
 import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
 
-const onSubmit = (formData: FormData) => {
-  console.log(formData)
-};
-
 export const SignUpForm = () => {
+  const navigate = useNavigate();
+  const showToastWithOptions = useToast();
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const username = String(formData.get('username') || '');
+    const password = String(formData.get('password') || '');
+    const passwordConfirmation = String(formData.get('password_confirmation') || '');
+    const agreement = formData.get('agreement') === 'true';
+
+    if (username.length < 4) {
+      showToastWithOptions({
+        icon: 'error',
+        content: 'ユーザ名は4文字以上である必要があります',
+      });
+      return; 
+    }
+    if (password.length < 8) {
+      showToastWithOptions({
+        icon: 'error',
+        content: 'パスワードは8文字以上である必要があります',
+      });
+      return;
+    }
+    if (password !== passwordConfirmation) {
+      showToastWithOptions({
+        icon: 'error',
+        content: 'パスワードと確認用パスワードが一致しません',
+      });
+      return;
+    }
+    if (!agreement) {
+      showToastWithOptions({
+        icon: 'error',
+        content: '同意チェックが必要です',
+      });
+      return;
+    }
+
+    const { promise } = callAPI<
+      Paths["/api/auth/signup"]["post"]["responses"]["200"]["content"]["application/json"],
+      Paths["/api/auth/signup"]["post"]["requestBody"]["content"]["application/json"]
+    >(
+      '/auth/signup',
+      {
+        method: 'POST',
+        body: {
+          username,
+          password,
+          agreement,
+        },
+        withCredentials: false,
+      }
+    );
+
+    await promise.then(() => {
+      showToastWithOptions({
+        icon: 'success',
+        content: '登録が完了しました。ご入力いただいた情報でログインください',
+      });
+      navigate('/auth/signin');
+    }).catch((error) => {
+      showToastWithOptions({
+        icon: 'error',
+        content: error.message || '登録に失敗しました。しばらく経ってから再度お試しください',
+      });
+    });
+  };
 
   return (
     <SignUpFormWrapper>
       <StyledHeading>新規登録</StyledHeading>
 
-      <StyledSignUpForm name="sign_in_form" action={ onSubmit }>
+      <StyledSignUpForm
+        name="sign_in_form"
+        onSubmit={ onSubmit }
+      >
 
         <StyledLabel>
           ユーザ名
