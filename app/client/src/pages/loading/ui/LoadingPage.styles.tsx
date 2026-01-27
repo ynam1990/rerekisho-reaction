@@ -8,6 +8,15 @@ export const LoadingPageWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+
+  /* フラッシュを避けるため、最初はopacityを0にしています。APIのレスポンスが遅延している場合に備えて、3秒経った後は表示します */
+  animation: fadeIn 1s ease-in-out 3s forwards;
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 export const LoadingText = styled.div`
