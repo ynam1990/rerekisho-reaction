@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/shared/styles/theme'
 import { GlobalStyle } from '@/shared/styles/GlobalStyle';
@@ -5,6 +6,8 @@ import { AppRouter } from '@/app/router/AppRouter'
 import { AppWrapper } from './App.styles';
 import { Header } from '@/widgets/header';
 import { Footer } from '@/widgets/footer';
+import { Toast, type ToastHandle, type ToastOptions } from '@/shared/ui/molecules';
+import { ToastContext } from './toast_context';
 import { useAuthSelector } from '@/app/store/hooks';
 import { useElementRect } from '@/shared/hooks/useElementRect';
 
@@ -13,6 +16,12 @@ export const App = () => {
   
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
   const { ref: headerRef, elHeight: headerHeight } = useElementRect<HTMLDivElement>();
+
+  const ref = useRef<ToastHandle | null>(null);
+  const showToastWithOptions = (options: ToastOptions) => {
+    ref.current?.setOptions(options);
+    ref.current?.show();
+  };
   
   return (
     <ThemeProvider theme={ theme }>
@@ -21,19 +30,23 @@ export const App = () => {
         footerHeight={ footerHeight }
       />
 
-      <AppWrapper>
-        <Header
-          ref={ headerRef }
-          isAuthenticated={ isAuthenticated }
-          currentUserName={ currentUserId ?? '-' }
-        />
-        
-        <main>
-          <AppRouter />
-        </main>
-        
-        <Footer ref={ footerRef } />
-      </AppWrapper>
+      <ToastContext.Provider value={ showToastWithOptions }>
+        <AppWrapper>
+          <Header
+            ref={ headerRef }
+            isAuthenticated={ isAuthenticated }
+            currentUserName={ currentUserId ?? '-' }
+          />
+          
+          <main>
+            <AppRouter />
+          </main>
+          
+          <Footer ref={ footerRef } />
+
+          <Toast ref={ ref } /> 
+        </AppWrapper>
+      </ToastContext.Provider>
     </ThemeProvider>
   );
 };
