@@ -13,7 +13,7 @@ security:
   - cookieAuth: []
 
 paths:
-  /api/auth/register:
+  /api/auth/signup:
     post:
       summary: ユーザ新規登録
       tags:
@@ -24,7 +24,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthenticationData'
+              $ref: '#/components/schemas/AuthenticationDataWithAgreement'
       responses:
         '200':
           $ref: '#/components/responses/Success'
@@ -47,7 +47,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/login:
+  /api/auth/signin:
     post:
       summary: ユーザログイン
       tags:
@@ -81,7 +81,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/logout:
+  /api/auth/signout:
     post:
       summary: ユーザログアウト
       tags:
@@ -219,6 +219,14 @@ components:
         password:
           type: string
           example: "password123"
+    AuthenticationDataWithAgreement:
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationData'
+        - type: object
+          properties:
+            agreement:
+              type: boolean
+              example: true
     ResumeListItem:
       type: object
       properties:

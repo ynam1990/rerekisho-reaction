@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/auth/register": {
+    "/api/auth/signup": {
         parameters: {
             query?: never;
             header?: never;
@@ -23,7 +23,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["AuthenticationData"];
+                    "application/json": components["schemas"]["AuthenticationDataWithAgreement"];
                 };
             };
             responses: {
@@ -53,7 +53,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login": {
+    "/api/auth/signin": {
         parameters: {
             query?: never;
             header?: never;
@@ -102,7 +102,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/logout": {
+    "/api/auth/signout": {
         parameters: {
             query?: never;
             header?: never;
@@ -302,6 +302,10 @@ export interface components {
             userId?: string;
             /** @example password123 */
             password?: string;
+        };
+        AuthenticationDataWithAgreement: components["schemas"]["AuthenticationData"] & {
+            /** @example true */
+            agreement?: boolean;
         };
         ResumeListItem: {
             /** @example sample1 */
