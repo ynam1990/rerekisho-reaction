@@ -9,22 +9,25 @@ export type RequestOptions<TBody = unknown> = {
   headers?: HeadersInit;
   signal?: AbortSignal;
   withCredentials?: boolean;
+  suppressError?: boolean;
   mockErrorCode?: number | null;
 };
 
 export class ApiError extends Error {
   public status: number;
   public body: ErrorResponse;
+  public suppressError: boolean;
 
-  constructor(status: number, method: HttpMethod, path: string, body: ErrorResponse) {
+  constructor(status: number, method: HttpMethod, path: string, body: ErrorResponse, suppressError: boolean) {
     super(`API Error: ${status}`);
 
     this.name = 'ApiError';
     this.status = status;
     this.body = body;
     this.message = body.message || '';
+    this.suppressError = suppressError;
 
-    console.error(`[API Error] Status: ${status}`, {
+    if (!suppressError) console.error(`[API Error] Status: ${status}`, {
       method,
       path,
       errorBody: body,
@@ -47,6 +50,7 @@ export function callAPI<TResponse, TBody = unknown> (
     headers,
     signal,
     withCredentials = true,
+    suppressError = false,
     mockErrorCode = null,
   } = options;
 
@@ -90,7 +94,8 @@ export function callAPI<TResponse, TBody = unknown> (
           res.status,
           method,
           path,
-          responseBody
+          responseBody,
+          suppressError,
         );
       }
 

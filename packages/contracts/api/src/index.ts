@@ -7,6 +7,7 @@ export type Operations = operations;
 export type Schemas = Components["schemas"];
 
 export type AuthenticationData = Schemas["AuthenticationData"];
+export type AuthenticationDataWithAgreement = Schemas["AuthenticationDataWithAgreement"];
 export type ResumeListItem = Schemas["ResumeListItem"];
 export type ResumeObj = Schemas["ResumeObj"];
 

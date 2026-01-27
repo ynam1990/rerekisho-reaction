@@ -94,7 +94,29 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/account:
+  /api/auth/me:
+    get:
+      summary: ログイン中のユーザ情報取得
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          description: ログイン中のユーザ情報
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    example: "username123"
+                  ok:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: ユーザアカウント削除
       tags:
@@ -213,7 +235,7 @@ components:
     AuthenticationData:
       type: object
       properties:
-        userId:
+        username:
           type: string
           example: "username123"
         password:

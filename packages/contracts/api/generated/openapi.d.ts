@@ -132,14 +132,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/account": {
+    "/api/auth/me": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** ログイン中ユーザ情報取得 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ログイン中ユーザ情報 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example username123 */
+                            username?: string;
+                            /** @example true */
+                            ok?: boolean;
+                        };
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
         put?: never;
         post?: never;
         /** ユーザアカウント削除 */
@@ -299,7 +326,7 @@ export interface components {
     schemas: {
         AuthenticationData: {
             /** @example username123 */
-            userId?: string;
+            username?: string;
             /** @example password123 */
             password?: string;
         };

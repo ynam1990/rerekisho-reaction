@@ -1,31 +1,39 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 type AuthState = {
+  isInitialized?: boolean;
   isAuthenticated: boolean;
-  currentUserId: string | null;
+  currentUserName: string | null;
 }
 
 const initialState: AuthState = {
+  isInitialized: false,
   isAuthenticated: false,
-  currentUserId: null,
+  currentUserName: null,
 }
 
 const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    login (state, action: { payload: { currentUserId: string } }) {
+    setAuthenticationState (state, action: { payload: { isInitialized: boolean; isAuthenticated: boolean; currentUserName: string } }) {
+      state.isInitialized = action.payload.isInitialized;
+      state.isAuthenticated = action.payload.isAuthenticated;
+      state.currentUserName = action.payload.currentUserName;
+    },
+    login (state, action: { payload: { currentUserName: string } }) {
       state.isAuthenticated = true;
-      state.currentUserId = action.payload.currentUserId;
+      state.currentUserName = action.payload.currentUserName;
     },
     logout (state) {
       state.isAuthenticated = false;
-      state.currentUserId = null;
+      state.currentUserName = null;
     },
   }
 });
 
 export const {
+  setAuthenticationState,
   login,
   logout,
 } = authSlice.actions;
