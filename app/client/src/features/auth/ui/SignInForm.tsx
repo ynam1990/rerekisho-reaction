@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/store/hooks";
 import { login } from "@/features/auth";
 import { useToast } from "@/shared/hooks/useToast";
 import { callAPI } from "@/shared/api/request";
-import type { Paths } from "@/shared/api/type";
+import type { PostSignInAPIPair } from "@/shared/api/type";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
@@ -29,10 +29,7 @@ export const SignInForm = () => {
       return; 
     }
 
-    const { promise } = callAPI<
-      Paths["/api/auth/signin"]["post"]["responses"]["200"]["content"]["application/json"],
-      Paths["/api/auth/signin"]["post"]["requestBody"]["content"]["application/json"]
-    >(
+    const { promise } = callAPI<PostSignInAPIPair>(
       '/auth/signin',
       {
         method: 'POST',

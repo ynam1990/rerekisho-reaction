@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAuthSelector } from '@/app/store/hooks';
-import type { Paths } from '@/shared/api/type';
+import type { GetMePair } from '@/shared/api/type';
 import { callAPI } from '@/shared/api/request';
 import { setAuthenticationState } from '@/features/auth';
 import { ThemeProvider } from 'styled-components';
@@ -20,9 +20,7 @@ export const App = () => {
 
   useEffect(() => {
     // 初回ロード時のログインチェック
-    const { promise, abort } = callAPI<
-      Paths["/api/auth/me"]["get"]["responses"]["200"]["content"]["application/json"]
-    >(
+    const { promise, abort } = callAPI<GetMePair>(
       '/auth/me',
       {
         method: 'GET',

@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/shared/hooks/useToast";
 import { callAPI } from "@/shared/api/request";
-import type { Paths } from "@/shared/api/type";
+import type { PostSignUpAPIPair } from "@/shared/api/type";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { CheckboxWithLabel } from "@/shared/ui/molecules";
 import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
@@ -48,10 +48,7 @@ export const SignUpForm = () => {
       return;
     }
 
-    const { promise } = callAPI<
-      Paths["/api/auth/signup"]["post"]["responses"]["200"]["content"]["application/json"],
-      Paths["/api/auth/signup"]["post"]["requestBody"]["content"]["application/json"]
-    >(
+    const { promise } = callAPI<PostSignUpAPIPair>(
       '/auth/signup',
       {
         method: 'POST',

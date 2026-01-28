@@ -1,5 +1,5 @@
 import { isUndefined } from "@/shared/utils/check";
-import type { ErrorResponse } from "@/shared/api/type";
+import type { ErrorResponse, APIPair } from "@/shared/api/type";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -37,11 +37,11 @@ export class ApiError extends Error {
 
 const BASE_URL = '/api';
 
-export function callAPI<TResponse, TBody = unknown> (
+export function callAPI<T extends APIPair<any, any>> (
   path: string,
-  options: RequestOptions<TBody> = {},
+  options: RequestOptions<T[0]> = {},
 ): {
-  promise: Promise<TResponse>;
+  promise: Promise<T[1]>;
   abort: () => void;
 } {
   const {
@@ -65,7 +65,7 @@ export function callAPI<TResponse, TBody = unknown> (
     timeoutController.abort();
   });
 
-  const requestPromise = new Promise<TResponse>(async (resolve, reject) => {
+  const requestPromise = new Promise<T[1]>(async (resolve, reject) => {
     try {
       const res = await fetch(
         `${BASE_URL}${path}`,
@@ -94,12 +94,12 @@ export function callAPI<TResponse, TBody = unknown> (
           res.status,
           method,
           path,
-          responseBody,
+          responseBody as ErrorResponse,
           suppressError,
         );
       }
 
-      resolve(responseBody as TResponse);
+      resolve(responseBody as T[1]);
     } catch (error) {
       clearTimeout(timeoutId);
       reject(error);
