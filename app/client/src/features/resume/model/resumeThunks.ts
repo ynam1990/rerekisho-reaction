@@ -1,5 +1,5 @@
 import { callAPI } from "@/shared/api/request";
-import type { ResumeListItem, ResumeObj, SuccessResponse } from "@/shared/api/types";
+import type { ResumeListItem, ResumeObj, SuccessResponseWithResumeId } from "@/shared/api/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { GetResumesPair, GetResumePair, PostResumePair, PutResumePair, DeleteResumePair } from "@/shared/api/types";
 
@@ -50,7 +50,7 @@ export const getResumeThunk = createAsyncThunk<
 );
 
 export const postResumeThunk = createAsyncThunk<
-  SuccessResponse,
+  SuccessResponseWithResumeId,
   void
 >(
   'resume.postResumeThunk',
@@ -73,7 +73,7 @@ export const postResumeThunk = createAsyncThunk<
 );
 
 export const putResumeThunk = createAsyncThunk<
-  SuccessResponse,
+  SuccessResponseWithResumeId,
   { resumeId: string; resumeData: ResumeObj; }
 >(
   'resume.putResumeThunk',
@@ -97,7 +97,7 @@ export const putResumeThunk = createAsyncThunk<
 );
 
 export const deleteResumeThunk = createAsyncThunk<
-  SuccessResponse & { resumeId: string; },
+  SuccessResponseWithResumeId,
   { resumeId: string; }
 >(
   'resume.deleteResumeThunk',
@@ -111,7 +111,7 @@ export const deleteResumeThunk = createAsyncThunk<
 
     return await promise.then((response) => {
       // 履歴書の削除成功
-      return { ...response, resumeId: payload.resumeId };
+      return response;
     }).catch((error) => {
       // 履歴書の削除失敗
       return thunkAPI.rejectWithValue({ message: error.message });

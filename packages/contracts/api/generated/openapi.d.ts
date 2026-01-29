@@ -230,7 +230,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeId"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -291,7 +291,7 @@ export interface paths {
                 };
             };
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeId"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -310,7 +310,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeId"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -535,6 +535,9 @@ export interface components {
             message: string;
             ok: boolean;
         };
+        SuccessResponseWithResumeId: components["schemas"]["SuccessResponse"] & {
+            resumeId: string;
+        };
         ErrorResponse: {
             code: number;
             message: string;
@@ -555,6 +558,22 @@ export interface components {
                  *     }
                  */
                 "application/json": components["schemas"]["SuccessResponse"];
+            };
+        };
+        /** @description 成功レスポンス（履歴書ID付き） */
+        SuccessWithResumeId: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "resumeId": "sample1",
+                 *       "ok": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponseWithResumeId"];
             };
         };
         /** @description 認証失敗 */

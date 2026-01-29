@@ -188,7 +188,7 @@ paths:
         - ログイン後API
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -236,7 +236,7 @@ paths:
               $ref: '#/components/schemas/ResumeObj'
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -254,7 +254,7 @@ paths:
           description: 削除対象の履歴書ID
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -591,6 +591,15 @@ components:
           type: string
         ok:
           type: boolean
+    SuccessResponseWithResumeId:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          required:
+            - resumeId
+          properties:
+            resumeId:
+              type: string
     ErrorResponse:
       type: object
       required:
@@ -613,6 +622,16 @@ components:
             $ref: '#/components/schemas/SuccessResponse'
           example:
             message: "正常に完了しました。"
+            ok: true
+    SuccessWithResumeId:
+      description: 成功レスポンス（履歴書ID付き）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+          example:
+            message: "正常に完了しました。"
+            resumeId: "sample1"
             ok: true
     UnauthorizedError:
       description: 認証失敗
