@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { initializeAuthThunk, signUpThunk, signInThunk } from './authThunks';
+import { initializeAuthThunk, signUpThunk, signInThunk, signOutThunk, deleteUserThunk } from './authThunks';
 
 type AuthState = {
   isInitialized?: boolean;
@@ -17,10 +17,6 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout (state) {
-      state.isAuthenticated = false;
-      state.currentUserName = '';
-    },
   },
   extraReducers: (builder) => {
     builder.addCase(initializeAuthThunk.fulfilled, (state, action) => {
@@ -38,10 +34,18 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.currentUserName = action.payload.currentUserName;
     });
+
+    builder.addCase(signOutThunk.fulfilled, (state) => {
+      state.isAuthenticated = false;
+      state.currentUserName = '';
+    });
+
+    builder.addCase(deleteUserThunk.fulfilled, (state) => {
+      state.isAuthenticated = false;
+      state.currentUserName = '';
+    });
   }
 });
 
-export const {
-  logout,
-} = authSlice.actions;
+export const {} = authSlice.actions;
 export const authReducer = authSlice.reducer;

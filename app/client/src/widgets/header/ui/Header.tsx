@@ -4,6 +4,11 @@ import { Button, Anchor, Heading, Text } from '@/shared/ui/atoms';
 import { Popover } from '@/shared/ui/molecules';
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
+import { useAppDispatch } from '@/app/store/hooks';
+import { useToast } from '@/shared/hooks/useToast';
+import { deleteUserThunk, signOutThunk } from '@/features/auth';
+import { hasMessage } from '@/shared/utils/check';
+import { moveToUrl } from '@/shared/utils/url';
 
 type Props = {
   ref: React.Ref<HTMLDivElement>;
@@ -102,62 +107,99 @@ const HamburgerMenuContent = styled.div`
 `;
 
 
-export const Header = (props: Props) => (
-  <HeaderWrapper ref={ props.ref }>
-    <LogoWrapperAnchor href='/'>
-      <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
-      <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
-    </LogoWrapperAnchor>
+export const Header = (props: Props) => {
+  const dispatch = useAppDispatch();
+  const showToastWithOptions = useToast();
 
-    {
-      props.isAuthenticated ? (
-        <Popover
-          id='header_pop'
-          type='hamburger'
-          color='paperWhite'
-          content={(
-            <HamburgerMenuContent>
-              <Text>ユーザー名：{ props.currentUserName || '-' }</Text>
+  const onSignOutButtonClick = async () => {
+    try {
+      await dispatch(signOutThunk()).unwrap();
 
-              <Button
-                styleType='text'
-                color='tertiary'
-                noWrap={ true }
-                size='sm'
-                onClick={ () => {
-                  
-                }}
-              >
-                ユーザー登録の削除
-              </Button>
+      showToastWithOptions({
+        icon: 'success',
+        content: 'ログアウトしました',
+      });
 
-              <Button
-                styleType='solid'
-                color='tertiary'
-                noWrap={ true }
-                onClick={ () => {
-                  
-                }}
-              >
-                ログアウト
-              </Button>
-
-              
-            </HamburgerMenuContent>
-          )}
-        />
-      ) : (
-        <Button
-          styleType='outline'
-          color='primary'
-          noWrap={ true }
-          onClick={ () => {
-            window.location.href = '/auth/signin';
-          }}
-        >
-          ログイン
-        </Button>
-      )
+      // トップページへ遷移してリロード
+      moveToUrl('/');
+    } catch (error) {
+      showToastWithOptions({
+        icon: 'error',
+        content: (hasMessage(error) && error.message) || 'ログアウトに失敗しました。ページをリロードして再度お試しください',
+      });
     }
-  </HeaderWrapper>
-);
+  };
+
+  const onDeleteUserButtonClick = async () => {
+    const execDelete = async () => {
+      try {
+        await dispatch(deleteUserThunk()).unwrap();
+
+        // TODO 削除完了モーダル表示
+      } catch (error) {
+        showToastWithOptions({
+          icon: 'error',
+          content: (hasMessage(error) && error.message) || 'ユーザー削除に失敗しました。ページをリロードして再度お試しください',
+        });
+      }
+    };
+    
+    // TODO 確認モーダル表示
+  };
+  
+  return (
+    <HeaderWrapper ref={ props.ref }>
+      <LogoWrapperAnchor href='/'>
+        <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
+        <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
+      </LogoWrapperAnchor>
+
+      {
+        props.isAuthenticated ? (
+          <Popover
+            id='header_pop'
+            type='hamburger'
+            color='paperWhite'
+            content={(
+              <HamburgerMenuContent>
+                <Text>ユーザー名：{ props.currentUserName || '-' }</Text>
+
+                <Button
+                  styleType='text'
+                  color='tertiary'
+                  noWrap={ true }
+                  size='sm'
+                  onClick={ onDeleteUserButtonClick }
+                >
+                  ユーザー登録の削除
+                </Button>
+
+                <Button
+                  styleType='solid'
+                  color='tertiary'
+                  noWrap={ true }
+                  onClick={ onSignOutButtonClick }
+                >
+                  ログアウト
+                </Button>
+
+                
+              </HamburgerMenuContent>
+            )}
+          />
+        ) : (
+          <Button
+            styleType='outline'
+            color='primary'
+            noWrap={ true }
+            onClick={ () => {
+              window.location.href = '/auth/signin';
+            }}
+          >
+            ログイン
+          </Button>
+        )
+      }
+    </HeaderWrapper>
+  );
+};
