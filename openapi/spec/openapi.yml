@@ -27,6 +27,12 @@ paths:
               $ref: '#/components/schemas/AuthenticationDataWithAgreement'
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookie
+              schema:
+                type: string
+              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '409':
           description: ユーザID重複エラー
@@ -61,6 +67,12 @@ paths:
               $ref: '#/components/schemas/AuthenticationData'
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookie
+              schema:
+                type: string
+              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '401':
           description: ログイン失敗
