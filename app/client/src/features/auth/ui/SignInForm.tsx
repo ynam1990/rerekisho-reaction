@@ -1,9 +1,8 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/store/hooks";
-import { login } from "@/features/auth";
+import { signInThunk } from "@/features/auth/model/authThunks";
+import { hasMessage } from "@/shared/utils/check";
 import { useToast } from "@/shared/hooks/useToast";
-import { callAPI } from "@/shared/api/request";
-import type { PostSignInAPIPair } from "@/shared/api/type";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
@@ -29,32 +28,20 @@ export const SignInForm = () => {
       return; 
     }
 
-    const { promise } = callAPI<PostSignInAPIPair>(
-      '/auth/signin',
-      {
-        method: 'POST',
-        body: {
-          username,
-          password,
-        },
-      }
-    );
+    try {
+      await dispatch(signInThunk({ username, password })).unwrap();
 
-    await promise.then(() => {
       showToastWithOptions({
         icon: 'success',
         content: 'ログインしました',
       });
-
-      dispatch(login({ currentUserName: username }));
-      
       navigate(location.state?.from?.pathname || '/resumes');
-    }).catch((error) => {
+    } catch (error) {
       showToastWithOptions({
         icon: 'error',
-        content: error.message || 'ログインに失敗しました。しばらく経ってから再度お試しください',
+        content: (hasMessage(error) && error.message) || 'ログインに失敗しました。しばらく経ってから再度お試しください',
       });
-    });
+    }
   };
 
   return (

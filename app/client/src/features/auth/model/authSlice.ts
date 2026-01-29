@@ -1,5 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { initializeAuthThunk } from './authThunks';
+import {
+  initializeAuthThunk,
+  signInThunk,
+} from './authThunks';
 
 type AuthState = {
   isInitialized?: boolean;
@@ -30,6 +33,11 @@ const authSlice = createSlice({
     builder.addCase(initializeAuthThunk.fulfilled, (state, action) => {
       state.isInitialized = true;
       state.isAuthenticated = action.payload.isAuthenticated;
+      state.currentUserName = action.payload.currentUserName;
+    });
+
+    builder.addCase(signInThunk.fulfilled, (state, action) => {
+      state.isAuthenticated = true;
       state.currentUserName = action.payload.currentUserName;
     });
   }
