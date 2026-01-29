@@ -36,11 +36,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @example 409 */
-                            code?: number;
+                            code: number;
                             /** @example 指定されたユーザIDは既に使用されています。 */
-                            message?: string;
+                            message: string;
                             /** @example false */
-                            ok?: boolean;
+                            ok: boolean;
                         };
                     };
                 };
@@ -85,11 +85,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @example 401 */
-                            code?: number;
+                            code: number;
                             /** @example パスワードが一致しませんでした。 */
-                            message?: string;
+                            message: string;
                             /** @example false */
-                            ok?: boolean;
+                            ok: boolean;
                         };
                     };
                 };
@@ -157,9 +157,9 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @example username123 */
-                            username?: string;
+                            username: string;
                             /** @example true */
-                            ok?: boolean;
+                            ok: boolean;
                         };
                     };
                 };
@@ -326,100 +326,100 @@ export interface components {
     schemas: {
         AuthenticationData: {
             /** @example username123 */
-            username?: string;
+            username: string;
             /** @example password123 */
-            password?: string;
+            password: string;
         };
         AuthenticationDataWithAgreement: components["schemas"]["AuthenticationData"] & {
             /** @example true */
-            agreement?: boolean;
+            agreement: boolean;
         };
         ResumeListItem: {
             /** @example sample1 */
-            id?: string;
+            id: string;
             /** @example 新規履歴書1 */
-            name?: string;
+            name: string;
             /** @example false */
-            isPublished?: boolean;
+            isPublished: boolean;
             /**
              * Format: date-time
              * @example 2026-01-03T12:00:00Z
              */
-            updatedAt?: string;
+            updatedAt: string;
         };
         ResumeObj: {
             /** @example sample */
-            id?: string;
+            id: string;
             /** @example 新規履歴書 */
-            name?: string;
+            name: string;
             /** @example false */
-            isPublished?: boolean;
+            isPublished: boolean;
             /** @example true */
-            isGenderVisible?: boolean;
+            isGenderVisible: boolean;
             /** @example true */
-            isContactVisible?: boolean;
+            isContactVisible: boolean;
             /**
              * Format: date-time
              * @example 2026-01-04T12:00:00Z
              */
-            updatedAt?: string;
-            values?: {
+            updatedAt: string;
+            values: {
                 /** @example 2026-01-01 */
-                displayDate?: string;
+                displayDate: string;
                 /** @example 花子 */
-                name?: string;
+                name: string;
                 /** @example はなこ */
-                nameRuby?: string;
+                nameRuby: string;
                 /** @example 山田 */
-                familyName?: string;
+                familyName: string;
                 /** @example やまだ */
-                familyNameRuby?: string;
+                familyNameRuby: string;
                 /** @example 2000-01-01 */
-                birthdate?: string;
+                birthdate: string;
                 /** @example 女 */
-                gender?: string;
+                gender: string;
                 /** @example  */
-                photoImg?: string;
-                address?: {
+                photoImg: string;
+                address: {
                     /** @example 0010001 */
-                    postalCode?: string;
+                    postalCode: string;
                     /** @example xx県xx区xxx-xx */
-                    line1?: string;
+                    line1: string;
                     /** @example マンション名xx号室 */
-                    line2?: string;
+                    line2: string;
                     /** @example xxけんxxくxxx-xx */
-                    line1Ruby?: string;
+                    line1Ruby: string;
                     /** @example マンションxxごうしつ */
-                    line2Ruby?: string;
+                    line2Ruby: string;
                     /** @example 001-0000-0000 */
-                    tel?: string;
+                    tel: string;
                     /** @example example@example.com */
-                    email?: string;
+                    email: string;
                 };
-                contactAddress?: {
+                contactAddress: {
                     /** @example 0010001 */
-                    postalCode?: string;
+                    postalCode: string;
                     /** @example xx県xx区xxx-xx */
-                    line1?: string;
+                    line1: string;
                     /** @example マンション名xx号室 */
-                    line2?: string;
+                    line2: string;
                     /** @example xxけんxxくxxx-xx */
-                    line1Ruby?: string;
+                    line1Ruby: string;
                     /** @example マンションxxごうしつ */
-                    line2Ruby?: string;
+                    line2Ruby: string;
                     /** @example 001-0000-0000 */
-                    tel?: string;
+                    tel: string;
                     /** @example example@example.com */
-                    email?: string;
+                    email: string;
                 };
-                educations?: {
+                educations: {
                     /**
                      * @example [
                      *       "edu_1",
                      *       "edu_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "edu_1": {
@@ -434,22 +434,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                experiences?: {
+                experiences: {
                     /**
                      * @example [
                      *       "exp_1",
                      *       "exp_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "exp_1": {
@@ -464,22 +464,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                certifications?: {
+                certifications: {
                     /**
                      * @example [
                      *       "cert_1",
                      *       "cert_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "cert_1": {
@@ -494,22 +494,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                customs?: {
+                customs: {
                     /**
                      * @example [
                      *       "cus_1",
                      *       "cus_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "cus_1": {
@@ -522,23 +522,23 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            label?: string;
-                            content?: string;
+                            label: string;
+                            content: string;
                         };
                     };
                 };
             };
         };
         SuccessResponse: {
-            message?: string;
-            ok?: boolean;
+            message: string;
+            ok: boolean;
         };
         ErrorResponse: {
-            code?: number;
-            message?: string;
-            ok?: boolean;
+            code: number;
+            message: string;
+            ok: boolean;
         };
     };
     responses: {

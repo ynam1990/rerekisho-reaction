@@ -40,6 +40,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
+                  - ok
                 properties:
                   code:
                     type: integer
@@ -80,6 +84,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
+                  - ok
                 properties:
                   code:
                     type: integer
@@ -124,6 +132,9 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - username
+                  - ok
                 properties:
                   username:
                     type: string
@@ -258,6 +269,9 @@ components:
   schemas:
     AuthenticationData:
       type: object
+      required:
+        - username
+        - password
       properties:
         username:
           type: string
@@ -269,12 +283,19 @@ components:
       allOf:
         - $ref: '#/components/schemas/AuthenticationData'
         - type: object
+          required:
+            - agreement
           properties:
             agreement:
               type: boolean
               example: true
     ResumeListItem:
       type: object
+      required:
+        - id
+        - name
+        - isPublished
+        - updatedAt
       properties:
         id:
           type: string
@@ -291,6 +312,14 @@ components:
           example: "2026-01-03T12:00:00Z"
     ResumeObj:
       type: object
+      required:
+        - id
+        - name
+        - isPublished
+        - isGenderVisible
+        - isContactVisible
+        - updatedAt
+        - values
       properties:
         id:
           type: string
@@ -313,6 +342,21 @@ components:
           example: "2026-01-04T12:00:00Z"
         values:
           type: object
+          required:
+            - displayDate
+            - name
+            - nameRuby
+            - familyName
+            - familyNameRuby
+            - birthdate
+            - gender
+            - photoImg
+            - address
+            - contactAddress
+            - educations
+            - experiences
+            - certifications
+            - customs
           properties:
             displayDate:
               type: string
@@ -340,6 +384,14 @@ components:
               example: ""
             address:
               type: object
+              required:
+                - postalCode
+                - line1
+                - line2
+                - line1Ruby
+                - line2Ruby
+                - tel
+                - email
               properties:
                 postalCode:
                   type: string
@@ -364,6 +416,14 @@ components:
                   example: "example@example.com"
             contactAddress:
               type: object
+              required:
+                - postalCode
+                - line1
+                - line2
+                - line1Ruby
+                - line2Ruby
+                - tel
+                - email
               properties:
                 postalCode:
                   type: string
@@ -388,6 +448,9 @@ components:
                   example: "example@example.com"
             educations:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -398,6 +461,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -416,6 +483,9 @@ components:
                       content: "学歴xx"
             experiences:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -426,6 +496,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -444,6 +518,9 @@ components:
                       content: "職歴xx"
             certifications:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -454,6 +531,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -472,6 +553,9 @@ components:
                       content: "資格xx"
             customs:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -482,6 +566,9 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - label
+                      - content
                     properties:
                       label:
                         type: string
@@ -496,6 +583,9 @@ components:
                       content: "xxxxxxxxxxxx"
     SuccessResponse:
       type: object
+      required:
+        - message
+        - ok
       properties:
         message:
           type: string
@@ -503,6 +593,10 @@ components:
           type: boolean
     ErrorResponse:
       type: object
+      required:
+        - code
+        - message
+        - ok
       properties:
         code:
           type: integer
