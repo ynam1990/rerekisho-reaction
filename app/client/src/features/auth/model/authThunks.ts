@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { callAPI } from "@/shared/api/request";
-import type { GetMePair, PostSignInAPIPair } from "@/shared/api/type";
+import type { GetMePair, PostSignUpAPIPair, PostSignInAPIPair } from "@/shared/api/type";
 
 export const initializeAuthThunk = createAsyncThunk<
   { isAuthenticated: boolean; currentUserName: string; },
@@ -32,6 +32,36 @@ export const initializeAuthThunk = createAsyncThunk<
     });
 
     return result;
+  }
+);
+
+export const signUpThunk = createAsyncThunk<
+  { currentUserName: string; },
+  { username: string; password: string; agreement: boolean; }
+>(
+  '/auth/signup',
+  async (payload, thunkAPI) => {
+    const { promise } = callAPI<PostSignUpAPIPair>(
+      '/auth/signup',
+      {
+        method: 'POST',
+        body: {
+          username: payload.username,
+          password: payload.password,
+          agreement: payload.agreement,
+        },
+      }
+    );
+
+    return await promise.then(() => {
+      // サインアップ成功
+      return {
+        currentUserName: payload.username,
+      };
+    }).catch((error) => {
+      // サインアップ失敗
+      return thunkAPI.rejectWithValue({ message: error.message });
+    });
   }
 );
 

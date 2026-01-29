@@ -10,7 +10,7 @@ import { Footer } from '@/widgets/footer';
 import { Toast, type ToastHandle, type ToastOptions } from '@/shared/ui/molecules';
 import { ToastContext } from './toast_context';
 import { useElementRect } from '@/shared/hooks/useElementRect';
-import { initializeAuthThunk } from '@/features/auth/model/authThunks';
+import { initializeAuthThunk } from '@/features/auth';
 
 export const App = () => {
   const { isAuthenticated, currentUserName } = useAuthSelector();

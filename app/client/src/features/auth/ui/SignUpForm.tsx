@@ -1,12 +1,14 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useToast } from "@/shared/hooks/useToast";
-import { callAPI } from "@/shared/api/request";
-import type { PostSignUpAPIPair } from "@/shared/api/type";
+import { useAppDispatch } from "@/app/store/hooks";
+import { signUpThunk } from "@/features/auth";
+import { hasMessage } from "@/shared/utils/check";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { CheckboxWithLabel } from "@/shared/ui/molecules";
 import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
 
 export const SignUpForm = () => {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const showToastWithOptions = useToast();
 
@@ -48,31 +50,21 @@ export const SignUpForm = () => {
       return;
     }
 
-    const { promise } = callAPI<PostSignUpAPIPair>(
-      '/auth/signup',
-      {
-        method: 'POST',
-        body: {
-          username,
-          password,
-          agreement,
-        },
-        withCredentials: false,
-      }
-    );
+    try {
+      await dispatch(signUpThunk({ username, password, agreement })).unwrap();
 
-    await promise.then(() => {
       showToastWithOptions({
         icon: 'success',
-        content: '登録が完了しました。ご入力いただいた情報でログインください',
+        content: '登録が完了しました。新規作成ボタンから、履歴書をご作成いただけます',
       });
-      navigate('/auth/signin');
-    }).catch((error) => {
+      navigate('/resumes');
+
+    } catch (error) {
       showToastWithOptions({
         icon: 'error',
-        content: error.message || '登録に失敗しました。しばらく経ってから再度お試しください',
+        content: (hasMessage(error) && error.message) || '登録に失敗しました。しばらく経ってから再度お試しください',
       });
-    });
+    }
   };
 
   return (

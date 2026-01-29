@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/app/store/hooks";
-import { signInThunk } from "@/features/auth/model/authThunks";
+import { signInThunk } from "@/features/auth";
 import { hasMessage } from "@/shared/utils/check";
 import { useToast } from "@/shared/hooks/useToast";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
