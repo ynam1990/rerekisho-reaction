@@ -1,8 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { useAppDispatch, useAuthSelector } from '@/app/store/hooks';
-import type { GetMePair } from '@/shared/api/type';
-import { callAPI } from '@/shared/api/request';
-import { setAuthenticationState } from '@/features/auth';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/shared/styles/theme'
 import { GlobalStyle } from '@/shared/styles/GlobalStyle';
@@ -13,6 +10,7 @@ import { Footer } from '@/widgets/footer';
 import { Toast, type ToastHandle, type ToastOptions } from '@/shared/ui/molecules';
 import { ToastContext } from './toast_context';
 import { useElementRect } from '@/shared/hooks/useElementRect';
+import { initializeAuthThunk } from '@/features/auth/model/authThunks';
 
 export const App = () => {
   const { isAuthenticated, currentUserName } = useAuthSelector();
@@ -20,33 +18,7 @@ export const App = () => {
 
   useEffect(() => {
     // 初回ロード時のログインチェック
-    const { promise, abort } = callAPI<GetMePair>(
-      '/auth/me',
-      {
-        method: 'GET',
-        suppressError: true,
-      },
-    );
-
-    promise.then((response) => {
-      // ログイン済み
-      dispatch(setAuthenticationState({
-        isInitialized: true,
-        isAuthenticated: true,
-        currentUserName: response.username || '',
-      }));
-    }).catch(() => {
-      // 未ログインまたはセッション切れ
-      dispatch(setAuthenticationState({
-        isInitialized: true,
-        isAuthenticated: false,
-        currentUserName: '',
-      }));
-    });
-
-    return () => {
-      abort();
-    };
+    dispatch(initializeAuthThunk());
   }, []);
   
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
@@ -70,7 +42,7 @@ export const App = () => {
           <Header
             ref={ headerRef }
             isAuthenticated={ isAuthenticated }
-            currentUserName={ currentUserName ?? '-' }
+            currentUserName={ currentUserName || '-' }
           />
           
           <main>

@@ -117,7 +117,7 @@ export const Header = (props: Props) => (
           color='paperWhite'
           content={(
             <HamburgerMenuContent>
-              <Text>ユーザー名：{ props.currentUserName ?? '-' }</Text>
+              <Text>ユーザー名：{ props.currentUserName || '-' }</Text>
 
               <Button
                 styleType='text'
