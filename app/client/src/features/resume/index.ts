@@ -3,3 +3,4 @@ export * from './ui/Resume';
 export * from './ui/ResumeControls';
 export * from './ui/ResumeEditor';
 export * from './model/resumeSlice';
+export * from './model/resumeThunks';
