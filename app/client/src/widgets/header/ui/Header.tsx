@@ -9,6 +9,7 @@ import { useToast } from '@/shared/hooks/useToast';
 import { deleteUserThunk, signOutThunk } from '@/features/auth';
 import { hasMessage } from '@/shared/utils/check';
 import { moveToUrl } from '@/shared/utils/url';
+import { useModal } from '@/shared/hooks/useModal';
 
 type Props = {
   ref: React.Ref<HTMLDivElement>;
@@ -122,10 +123,28 @@ const HamburgerMenuContent = styled.div`
   } }
 `;
 
+const ModalButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ${ ({ theme }) => {
+    return css`
+      column-gap: ${ theme.spacing.md.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        column-gap: ${ theme.spacing.md.sp };
+      } 
+    `;
+  } }
+`;
+
+
 
 export const Header = (props: Props) => {
   const dispatch = useAppDispatch();
   const showToastWithOptions = useToast();
+  const { showModalWithOptions, hideModal } = useModal();
 
   const onSignOutButtonClick = async () => {
     try {
@@ -151,7 +170,27 @@ export const Header = (props: Props) => {
       try {
         await dispatch(deleteUserThunk()).unwrap();
 
-        // TODO 削除完了モーダル表示
+        showModalWithOptions({
+          title: 'ユーザー登録の削除が完了しました',
+          content: 'ユーザー登録の削除が完了しました。ご利用いただきありがとうございました',
+          footerContent: (
+            <ModalButtonsWrapper>
+              <Button
+                styleType="solid"
+                color="tertiary"
+                size="md"
+                onClick={ () => {
+                  moveToUrl('/');
+                } }
+              >
+                閉じる
+              </Button>
+            </ModalButtonsWrapper>
+          ),
+          onEnterPress: () => {
+            moveToUrl('/');
+          },
+        });
       } catch (error) {
         showToastWithOptions({
           icon: 'error',
@@ -160,7 +199,36 @@ export const Header = (props: Props) => {
       }
     };
     
-    // TODO 確認モーダル表示
+    showModalWithOptions({
+      title: 'ユーザー登録の削除',
+      content: 'ユーザー登録を削除すると、作成した履歴書データも全て削除されます。削除してもよろしいですか？',
+      footerContent: (
+        <ModalButtonsWrapper>
+          <Button
+            styleType="solid"
+            color="tertiary"
+            size="md"
+            onClick={ () => hideModal() }
+          >
+            キャンセル
+          </Button>
+          <Button
+            styleType="solid"
+            color="primary"
+            size="md"
+            onClick={ () => {
+              hideModal();
+              execDelete();
+            } }
+          >
+            削除する
+          </Button>
+        </ModalButtonsWrapper>
+      ),
+      onEnterPress: () => {
+        execDelete();
+      },
+    });
   };
   
   return (
@@ -199,8 +267,6 @@ export const Header = (props: Props) => {
                   >
                     ログアウト
                   </Button>
-
-                  
                 </HamburgerMenuContent>
               )}
             />
