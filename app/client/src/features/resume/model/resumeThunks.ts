@@ -97,7 +97,7 @@ export const putResumeThunk = createAsyncThunk<
 );
 
 export const deleteResumeThunk = createAsyncThunk<
-  SuccessResponse,
+  SuccessResponse & { resumeId: string; },
   { resumeId: string; }
 >(
   'resume.deleteResumeThunk',
@@ -111,7 +111,7 @@ export const deleteResumeThunk = createAsyncThunk<
 
     return await promise.then((response) => {
       // 履歴書の削除成功
-      return response;
+      return { ...response, resumeId: payload.resumeId };
     }).catch((error) => {
       // 履歴書の削除失敗
       return thunkAPI.rejectWithValue({ message: error.message });
