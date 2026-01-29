@@ -1,12 +1,42 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
-import { Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
+import { getResumeThunk, Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
 import type { ResumeObj } from "@/shared/api/types";
-import { useResumeSelector } from "@/app/store/hooks";
+import { useAppDispatch, useResumeSelector } from "@/app/store/hooks";
+import { useToast } from "@/shared/hooks/useToast";
+import { hasMessage } from "@/shared/utils/check";
 
 export const ResumePage = () => {
+  const { resumeId } = useParams<{ resumeId: string; }>();
   const { resume } = useResumeSelector();
+
+  // 履歴書データの取得
+  const dispatch = useAppDispatch();
+  const showToastWithOptions = useToast();
+  useEffect(() => {
+    const fetchResume = async () => {
+      if (!resumeId) {
+        showToastWithOptions({
+          icon: 'error',
+          content: '無効な履歴書IDです。',
+        });
+        return;
+      }
+
+      try {
+        await dispatch(getResumeThunk({ resumeId })).unwrap();
+      } catch (error) {
+        showToastWithOptions({
+          icon: 'error',
+          content: (hasMessage(error) && error.message) || '履歴書の取得に失敗しました。',
+        });
+      }
+    };
+
+    fetchResume();
+  }, []);
 
   const [scale, setScale] = useState(1);
   const { ref, elHeight } = useElementRect<HTMLDivElement>();
