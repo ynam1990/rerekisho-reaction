@@ -1,6 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { callAPI } from "@/shared/api/request";
-import type { GetMePair, PostSignUpAPIPair, PostSignInAPIPair } from "@/shared/api/type";
+import type { GetMePair, PostSignUpAPIPair, PostSignInAPIPair } from "@/shared/api/types";
 
 export const initializeAuthThunk = createAsyncThunk<
   { isAuthenticated: boolean; currentUserName: string; },

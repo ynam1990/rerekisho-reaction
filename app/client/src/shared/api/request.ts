@@ -1,5 +1,5 @@
 import { isUndefined } from "@/shared/utils/check";
-import type { ErrorResponse, APIPair } from "@/shared/api/type";
+import type { ErrorResponse, APIPair } from "@/shared/api/types";
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
