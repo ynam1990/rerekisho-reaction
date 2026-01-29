@@ -116,7 +116,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
   const [title, setTitle] = useState<React.ReactNode>(props.title || null);
   const [content, setContent] = useState<React.ReactNode>(props.content || null);
   const [footerContent, setFooterContent] = useState<React.ReactNode>(props.footerContent || null);
-  const [onEnterPress, setOnEnterPress] = useState<(() => void) | undefined>(props.onEnterPress);
+  const [onEnterPress, setOnEnterPress] = useState<ModalOptions['onEnterPress']>(() => props.onEnterPress);
 
   useImperativeHandle(ref, () => ({
     show: () => {
@@ -131,7 +131,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       if (!isUndefined(title)) setTitle(title);
       if (!isUndefined(content)) setContent(content);
       if (!isUndefined(footerContent)) setFooterContent(footerContent);
-      setOnEnterPress(!isUndefined(onEnterPress) ? onEnterPress : undefined);
+      setOnEnterPress(() => onEnterPress);
     },
   }));
   
