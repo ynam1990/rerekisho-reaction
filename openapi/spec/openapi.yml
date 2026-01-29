@@ -100,6 +100,12 @@ paths:
         - ログイン後API
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookieの削除
+              schema:
+                type: string
+              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '401':
           $ref: '#/components/responses/UnauthorizedError'

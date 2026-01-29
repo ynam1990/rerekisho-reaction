@@ -139,7 +139,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** ログイン中ユーザ情報取得 */
+        /** ログイン中のユーザ情報取得 */
         get: {
             parameters: {
                 query?: never;
@@ -149,7 +149,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                /** @description ログイン中ユーザ情報 */
+                /** @description ログイン中のユーザ情報 */
                 200: {
                     headers: {
                         [name: string]: unknown;
