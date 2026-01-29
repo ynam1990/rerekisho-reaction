@@ -10,7 +10,7 @@ import zoomOutImg from '@/shared/assets/icons/icon_zoom_out.png';
 import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
-import type { ResumeObj } from "../model/resume_mock";
+import type { ResumeObj } from "@/shared/api/types";
 
 type Props = {
   scale: number;

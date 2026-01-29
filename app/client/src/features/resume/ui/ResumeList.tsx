@@ -4,7 +4,7 @@ import { Button, Text } from "@/shared/ui/atoms";
 import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molecules";
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
-import { type ResumeListItem } from "../model/resume_mock";
+import type { ResumeListItem } from "@/shared/api/types";
 
 const createNewResume = () => {
   // 新規作成処理

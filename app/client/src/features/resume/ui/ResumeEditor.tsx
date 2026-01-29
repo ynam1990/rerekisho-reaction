@@ -3,7 +3,7 @@ import { useAppDispatch } from "@/app/store/hooks";
 import { useModal } from "@/shared/hooks/useModal";
 import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, ModalButtonsWrapper } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
-import type { ResumeObj } from "../model/resume_mock";
+import type { ResumeObj } from "@/shared/api/types";
 import { Button, Close, MonthInput, TextArea } from "@/shared/ui/atoms";
 import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
 import { CheckboxWithLabel, ImgInput } from "@/shared/ui/molecules";

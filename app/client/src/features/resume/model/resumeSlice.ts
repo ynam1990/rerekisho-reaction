@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { type ResumeListItem, type ResumeObj } from './resume_mock';
+import type { ResumeListItem, ResumeObj } from '@/shared/api/types'
 
 type ResumeState = {
   resume: ResumeObj;

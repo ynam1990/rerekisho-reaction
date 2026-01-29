@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
 import { Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
-import { type ResumeObj } from "@/features/resume/model/resume_mock";
+import type { ResumeObj } from "@/shared/api/types";
 import { useResumeSelector } from "@/app/store/hooks";
 
 export const ResumePage = () => {

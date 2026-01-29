@@ -2,7 +2,7 @@ import { forwardRef, useImperativeHandle, useRef } from "react";
 import { ResumeWrapper, ResumePaper, ResumePaperScaler, GridItem, GridItemContent, ResumePaperBackground } from "./Resume.styles"
 import { formatResumeGridItems } from "./resume_grid_items_formatter";
 import { convertToPdf } from "@/shared/utils/convert_to_pdf";
-import { type ResumeObj } from "../model/resume_mock";
+import type { ResumeObj } from "@/shared/api/types";
 
 type Props = {
   scale: number;
