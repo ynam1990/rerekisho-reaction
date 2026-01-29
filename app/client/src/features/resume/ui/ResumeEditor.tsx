@@ -1,11 +1,12 @@
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { useAppDispatch } from "@/app/store/hooks";
+import { useModal } from "@/shared/hooks/useModal";
 import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, ModalButtonsWrapper } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "../model/resume_mock";
 import { Button, Close, MonthInput, TextArea } from "@/shared/ui/atoms";
 import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
-import { CheckboxWithLabel, ImgInput, Modal, type ModalHandle } from "@/shared/ui/molecules";
+import { CheckboxWithLabel, ImgInput } from "@/shared/ui/molecules";
 
 type Props = {
   resume: ResumeObj;
@@ -22,6 +23,8 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
   const [isOpen, setIsOpen] = useState(false);
 
   const dispatch = useAppDispatch();
+
+  const { showModalWithOptions, hideModal } = useModal();
 
   useImperativeHandle(ref, () => ({
     open: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => {
@@ -44,9 +47,8 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
   }));
 
   // 削除確認
-  const modalRef = useRef<ModalHandle>(null);
   const showConfirmModal = (onConfirm: () => void, title?: string, content?: string) => {
-    modalRef.current?.setContent({
+    showModalWithOptions({
       title: title ?? '項目削除',
       content: content ?? '項目を削除しますか？',
       footerContent: (
@@ -55,7 +57,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             styleType="solid"
             color="tertiary"
             size="md"
-            onClick={ () => modalRef.current?.hide() }
+            onClick={ () => hideModal() }
           >
             キャンセル
           </Button>
@@ -64,7 +66,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             color="primary"
             size="md"
             onClick={ () => {
-              modalRef.current?.hide();
+              hideModal();
               onConfirm();
             } }
           >
@@ -72,9 +74,10 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
           </Button>
         </ModalButtonsWrapper>
       ),
+      onEnterPress: () => {
+        onConfirm();
+      },
     });
-
-    modalRef.current?.show();
   };
 
 
@@ -709,8 +712,6 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
 
         </ResumeEditorBody>
       </ResumeEditorInnerWrapper>
-
-      <Modal ref={ modalRef } />
     </ResumeEditorWrapper>
   );
 });

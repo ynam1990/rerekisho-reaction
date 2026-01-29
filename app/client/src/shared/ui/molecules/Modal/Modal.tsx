@@ -5,21 +5,19 @@ import { Heading } from "@/shared/ui/atoms/Heading";
 import { pickWhite } from "@/shared/utils/style";
 import { isUndefined } from "@/shared/utils/check";
 
-type Props = {
+export type ModalOptions = {
   title?: React.ReactNode;
   content?: React.ReactNode;
   footerContent?: React.ReactNode;
   onEnterPress?: () => void;
 };
 
+type Props = ModalOptions;
+
 export type ModalHandle = {
   show: () => void;
   hide: () => void;
-  setContent: (args: {
-    title?: React.ReactNode,
-    content?: React.ReactNode,
-    footerContent?: React.ReactNode,
-  }) => void;
+  setOptions: (options: ModalOptions) => void;
 };
 
 const ModalBackground = styled.div<{ $isShow: boolean }>`
@@ -118,6 +116,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
   const [title, setTitle] = useState<React.ReactNode>(props.title || null);
   const [content, setContent] = useState<React.ReactNode>(props.content || null);
   const [footerContent, setFooterContent] = useState<React.ReactNode>(props.footerContent || null);
+  const [onEnterPress, setOnEnterPress] = useState<(() => void) | undefined>(props.onEnterPress);
 
   useImperativeHandle(ref, () => ({
     show: () => {
@@ -128,10 +127,11 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       }, 0);
     },
     hide: () => setIsShow(false),
-    setContent: ({ title, content, footerContent }) => {
+    setOptions: ({ title, content, footerContent, onEnterPress }) => {
       if (!isUndefined(title)) setTitle(title);
       if (!isUndefined(content)) setContent(content);
       if (!isUndefined(footerContent)) setFooterContent(footerContent);
+      setOnEnterPress(!isUndefined(onEnterPress) ? onEnterPress : undefined);
     },
   }));
   
@@ -154,7 +154,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
         }
         if (e.key === 'Enter') {
           e.stopPropagation();
-          props.onEnterPress?.();
+          onEnterPress?.();
           setIsShow(false);
         }
       } }

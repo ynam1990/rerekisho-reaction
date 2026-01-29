@@ -7,8 +7,9 @@ import { AppRouter } from '@/app/router/AppRouter'
 import { AppWrapper } from './App.styles';
 import { Header } from '@/widgets/header';
 import { Footer } from '@/widgets/footer';
-import { Toast, type ToastHandle, type ToastOptions } from '@/shared/ui/molecules';
+import { Modal, Toast, type ModalHandle, type ModalOptions, type ToastHandle, type ToastOptions } from '@/shared/ui/molecules';
 import { ToastContext } from './toast_context';
+import { ModalContext } from './modal_context';
 import { useElementRect } from '@/shared/hooks/useElementRect';
 import { initializeAuthThunk } from '@/features/auth';
 
@@ -24,10 +25,19 @@ export const App = () => {
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
   const { ref: headerRef, elHeight: headerHeight } = useElementRect<HTMLDivElement>();
 
-  const ref = useRef<ToastHandle | null>(null);
+  const toastRef = useRef<ToastHandle | null>(null);
   const showToastWithOptions = (options: ToastOptions) => {
-    ref.current?.setOptions(options);
-    ref.current?.show();
+    toastRef.current?.setOptions(options);
+    toastRef.current?.show();
+  };
+
+  const modalRef = useRef<ModalHandle>(null);
+  const showModalWithOptions = (options: ModalOptions) => {
+    modalRef.current?.setOptions(options);
+    modalRef.current?.show();
+  };
+  const hideModal = () => {
+    modalRef.current?.hide();
   };
   
   return (
@@ -38,22 +48,25 @@ export const App = () => {
       />
 
       <ToastContext.Provider value={ showToastWithOptions }>
-        <AppWrapper>
-          <Header
-            ref={ headerRef }
-            isInitialized={ !!isInitialized }
-            isAuthenticated={ isAuthenticated }
-            currentUserName={ currentUserName || '-' }
-          />
-          
-          <main>
-            <AppRouter />
-          </main>
-          
-          <Footer ref={ footerRef } />
+        <ModalContext.Provider value={ { showModalWithOptions, hideModal } }>
+          <AppWrapper>
+            <Header
+              ref={ headerRef }
+              isInitialized={ !!isInitialized }
+              isAuthenticated={ isAuthenticated }
+              currentUserName={ currentUserName || '-' }
+            />
+            
+            <main>
+              <AppRouter />
+            </main>
+            
+            <Footer ref={ footerRef } />
 
-          <Toast ref={ ref } /> 
-        </AppWrapper>
+            <Toast ref={ toastRef } /> 
+            <Modal ref={ modalRef } />
+          </AppWrapper>
+        </ModalContext.Provider>
       </ToastContext.Provider>
     </ThemeProvider>
   );
