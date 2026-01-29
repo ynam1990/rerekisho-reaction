@@ -1,8 +1,11 @@
-import type { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useAuthSelector } from '@/app/store/hooks';
 import { LoadingPage } from '@/pages/loading';
+
+// サイト全体を通して初回表示の一回のみフェードインする目的で、モジュールスコープに状態を保持します
+let hasFadeInAnimationRun = false;
 
 type Props = {
   requireAuth: boolean;
@@ -37,8 +40,12 @@ const ProtectedRoute = (props: Props) => {
     return <Navigate to="/resumes" replace />;
   }
 
+  // 一度のみアニメーションし、かつ再レンダリングを発火させないように状態をtrueにします
+  requestAnimationFrame(() => {
+    hasFadeInAnimationRun = true;
+  });
   // 認証確認後のフラッシュを防ぐためフェードインします
-  return <FadeInWrapper>{ children }</FadeInWrapper>;
+  return <FadeInWrapper $animate={ !hasFadeInAnimationRun } >{ children }</FadeInWrapper>;
 };
 
 export const requireAuth = (component: ReactNode) => (
@@ -53,7 +60,7 @@ export const withoutAuth = (component: ReactNode) => (
   </ProtectedRoute>
 );
 
-const FadeInWrapper = styled.div`
+const FadeInWrapper = styled.div<{ $animate: boolean }>`
   flex: 1;
   width: 100%;
   display: inherit;
@@ -61,13 +68,25 @@ const FadeInWrapper = styled.div`
   justify-content: inherit;
   align-items: inherit;
 
-  animation: fadeIn 0.6s ease-in-out;
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
+  ${ ({ $animate }) => {
+    if (!$animate) {
+      return css`
+        opacity: 1;
+        animation: none;
+      `;
+    } else {
+      return css`
+        opacity: 0;
+        animation: fadeIn 0.6s ease-in-out forwards;
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+      `;
     }
-    to {
-      opacity: 1;
-    }
-  }
+  } }
 `;

@@ -13,7 +13,7 @@ import { useElementRect } from '@/shared/hooks/useElementRect';
 import { initializeAuthThunk } from '@/features/auth';
 
 export const App = () => {
-  const { isAuthenticated, currentUserName } = useAuthSelector();
+  const { isInitialized, isAuthenticated, currentUserName } = useAuthSelector();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -41,6 +41,7 @@ export const App = () => {
         <AppWrapper>
           <Header
             ref={ headerRef }
+            isInitialized={ !!isInitialized }
             isAuthenticated={ isAuthenticated }
             currentUserName={ currentUserName || '-' }
           />
