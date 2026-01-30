@@ -25,7 +25,11 @@
     "packages/contracts/*"
   ],
   "overrides": {
-    "lodash": "4.17.23"
+    "lodash": "4.17.23",
+    "hono": "^4.11.7",
+    "@prisma/dev": {
+      "hono": "^4.11.7"
+    }
   },
   "devDependencies": {
     "@stoplight/prism-cli": "^5.14.2",
