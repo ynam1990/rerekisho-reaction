@@ -4,3 +4,4 @@ export * from './ui/ResumeControls';
 export * from './ui/ResumeEditor';
 export * from './model/resumeSlice';
 export * from './model/resumeThunks';
+export * from './hooks/useDeleteResume';
