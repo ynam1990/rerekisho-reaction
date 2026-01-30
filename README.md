@@ -1,4 +1,4 @@
-# RerekishoReaction
+# rerekisho-reaction
 履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。 
 
 公開Webサイト  

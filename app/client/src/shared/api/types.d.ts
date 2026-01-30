@@ -1,1 +1,1 @@
-export * from '@rerekisho_reaction/contracts_api';
+export * from '@rerekisho-reaction/contracts-api';
