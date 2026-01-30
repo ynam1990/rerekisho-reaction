@@ -5,10 +5,7 @@ import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molec
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
 import type { ResumeListItem } from "@/shared/api/types";
-import { useToast } from "@/shared/hooks/useToast";
-import { useAppDispatch } from "@/app/store/hooks";
-import { postResumeThunk, useDeleteResume } from "@/features/resume";
-import { hasMessage } from "@/shared/utils/check";
+import { useCreateResume, useDeleteResume } from "@/features/resume";
 
 type Props = {
   resumeList: ResumeListItem[];
@@ -17,26 +14,9 @@ type Props = {
 export const ResumeList = (props: Props) => {
   const { resumeList } = props;
 
-  const dispatch = useAppDispatch();
-  const showToastWithOptions = useToast();
   const navigate = useNavigate();
+  const { createResume } = useCreateResume();
   const { deleteResume } = useDeleteResume();
-
-  const onCreateNewResume = async () => {
-    try {
-      const { resumeId } = await dispatch(postResumeThunk()).unwrap();
-      showToastWithOptions({
-        icon: 'success',
-        content: '新しい履歴書の作成が完了しました',
-      });
-      navigate(`/resumes/${ resumeId }`);
-    } catch (error) {
-      showToastWithOptions({
-        icon: 'error',
-        content: (hasMessage(error) && error.message) || '新しい履歴書の作成に失敗しました',
-      });
-    }
-  };
 
   const buttonProps = (resume: ResumeListItem) : GroupedButtonProps[] => {
     return [
@@ -70,7 +50,9 @@ export const ResumeList = (props: Props) => {
         <Button
           styleType="solid"
           color="primary"
-          onClick={ onCreateNewResume }
+          onClick={ () => createResume(
+            (newResumeId: string) => navigate(`/resumes/${ newResumeId }`)
+          ) }
         >
           新規作成
         </Button>
