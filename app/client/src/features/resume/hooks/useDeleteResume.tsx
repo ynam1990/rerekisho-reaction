@@ -11,7 +11,7 @@ export const useDeleteResume = () => {
   const { showModalWithOptions, hideModal } = useModal();
   const showToastWithOptions = useToast();
 
-  const deleteResume = (resumeId: string, resumeName: string) => {
+  const deleteResume = (resumeId: string, resumeName: string, onAfterDelete?: () => void) => {
     const onExecDeleteButtonClick = async () => {
       hideModal();
 
@@ -21,6 +21,10 @@ export const useDeleteResume = () => {
           icon: 'success',
           content: '履歴書の削除が完了しました',
         });
+        
+        if (onAfterDelete) {
+          onAfterDelete();
+        }
       } catch (error) {
         showToastWithOptions({
           icon: 'error',
