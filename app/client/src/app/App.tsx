@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useAppDispatch, useAuthSelector } from '@/app/store/hooks';
+import { useAuthSelector } from '@/app/store/hooks';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/shared/styles/theme'
 import { GlobalStyle } from '@/shared/styles/GlobalStyle';
@@ -11,15 +11,15 @@ import { Modal, Toast, type ModalHandle, type ModalOptions, type ToastHandle, ty
 import { ToastContext } from './toast_context';
 import { ModalContext } from './modal_context';
 import { useElementRect } from '@/shared/hooks/useElementRect';
-import { initializeAuthThunk } from '@/features/auth';
+import { useGetMe } from '@/features/auth';
 
 export const App = () => {
   const { isInitialized, isAuthenticated, currentUserName } = useAuthSelector();
-  const dispatch = useAppDispatch();
 
+  const { initializeAuth } = useGetMe();
   useEffect(() => {
     // 初回ロード時のログインチェック
-    dispatch(initializeAuthThunk());
+    initializeAuth();
   }, []);
   
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
