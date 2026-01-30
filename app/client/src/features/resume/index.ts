@@ -6,4 +6,5 @@ export * from './model/resumeSlice';
 export * from './model/resumeThunks';
 export * from './hooks/useCreateResume';
 export * from './hooks/useDeleteResume';
+export * from './hooks/useGetResume';
 export * from './hooks/useGetResumes';
