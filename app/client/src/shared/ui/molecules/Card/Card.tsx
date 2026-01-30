@@ -10,6 +10,21 @@ type Props = {
   body: React.ReactNode;
 };
 
+export const Card = (props: Props) => {
+  const { title, body, ...rest } = props;
+
+  return (
+    <StyledCard { ...rest }>
+      <div>
+        { props.title }
+      </div>
+      <div>
+        { props.body }
+      </div>
+    </StyledCard>
+  );
+};
+
 const StyledCard = styled.div< Omit<Props, 'title' | 'body'> >`
   display: flex;
   flex-direction: column;
@@ -56,18 +71,3 @@ const StyledCard = styled.div< Omit<Props, 'title' | 'body'> >`
     `;
   } }
 `;
-
-export const Card = (props: Props) => {
-  const { title, body, ...rest } = props;
-
-  return (
-    <StyledCard { ...rest }>
-      <div>
-        { props.title }
-      </div>
-      <div>
-        { props.body }
-      </div>
-    </StyledCard>
-  );
-};

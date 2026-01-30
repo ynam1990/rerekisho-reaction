@@ -15,40 +15,6 @@ type Props = {
   color?: ColorKey;
 };
 
-const popoverAnchorName = (id: string) => `--popover-${ id }`;
-
-const PopoverWrapper = styled.div<{ $id: string }>`
-  display: flex;
-  width: fit-content;
-  height: fit-content;
-
-  position: relative;
-  
-  /* アンカーポジショニングのlint対応待ち */
-  /* stylelint-disable-next-line property-no-unknown */
-  anchor-name: ${ ({ $id }) => popoverAnchorName($id) };
-`;
-
-const IconWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ContentWrapper = styled.div<{ $id: string, $isOpen: boolean }>`
-  display: ${ ({ $isOpen }) => $isOpen ? 'flex' : 'none' };
-  padding: 0;
-  
-  inset: auto;
-  position: fixed;
-  overflow: visible;
-  /* アンカーポジショニングのlint対応待ち */
-  /* stylelint-disable-next-line property-no-unknown */
-  position-anchor: ${ ({ $id }) => popoverAnchorName($id) };
-  top: anchor(bottom);
-  right: anchor(right);
-`;
-
 export const Popover = (props: Props) => {
   const {
     id,
@@ -104,3 +70,37 @@ export const Popover = (props: Props) => {
     </PopoverWrapper>
   );
 };
+
+const popoverAnchorName = (id: string) => `--popover-${ id }`;
+
+const PopoverWrapper = styled.div<{ $id: string }>`
+  display: flex;
+  width: fit-content;
+  height: fit-content;
+
+  position: relative;
+  
+  /* アンカーポジショニングのlint対応待ち */
+  /* stylelint-disable-next-line property-no-unknown */
+  anchor-name: ${ ({ $id }) => popoverAnchorName($id) };
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ContentWrapper = styled.div<{ $id: string, $isOpen: boolean }>`
+  display: ${ ({ $isOpen }) => $isOpen ? 'flex' : 'none' };
+  padding: 0;
+  
+  inset: auto;
+  position: fixed;
+  overflow: visible;
+  /* アンカーポジショニングのlint対応待ち */
+  /* stylelint-disable-next-line property-no-unknown */
+  position-anchor: ${ ({ $id }) => popoverAnchorName($id) };
+  top: anchor(bottom);
+  right: anchor(right);
+`;
