@@ -11,6 +11,19 @@ type Props = {
   buttonPropsList: GroupedButtonProps[];
 };
 
+export const ButtonGroup = (props: Props) => (
+  <ButtonGroupWrapper
+    $size={ props.$size }
+    $isBreakWhenSP={ props.$isBreakWhenSP }
+    $flexDirection={ props.$flexDirection }
+  >
+    {
+      props.buttonPropsList.map((buttonProps, index: number) => {
+        return <Button key={ index } { ...buttonProps } />
+      })
+    }
+  </ButtonGroupWrapper>
+);
 
 const ButtonGroupWrapper = styled.div<Omit<Props, 'buttonPropsList'>>`
   display: inline-flex;
@@ -42,17 +55,3 @@ const ButtonGroupWrapper = styled.div<Omit<Props, 'buttonPropsList'>>`
     `;
   } }
 `
-
-export const ButtonGroup = (props: Props) => (
-  <ButtonGroupWrapper
-    $size={ props.$size }
-    $isBreakWhenSP={ props.$isBreakWhenSP }
-    $flexDirection={ props.$flexDirection }
-  >
-    {
-      props.buttonPropsList.map((buttonProps, index: number) => {
-        return <Button key={ index } { ...buttonProps } />
-      })
-    }
-  </ButtonGroupWrapper>
-);

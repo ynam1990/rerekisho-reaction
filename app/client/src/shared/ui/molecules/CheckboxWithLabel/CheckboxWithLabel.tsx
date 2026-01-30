@@ -8,6 +8,26 @@ type Props = ComponentPropsWithoutRef<typeof Checkbox> & {
   labelColor?: ColorKey;
 };
 
+export const CheckboxWithLabel = (props: Props) => {
+  const { label, labelColor, ...rest } = props;
+  const checkboxRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <CheckboxWithLabelWrapper>
+      <Checkbox ref={ checkboxRef } { ...rest } />
+      <LabelWrapper
+        $labelColor={ labelColor }
+        onClick={ (e) => {
+          e.stopPropagation();
+          checkboxRef.current?.click();
+        } }
+      >
+        { label }
+      </LabelWrapper>
+    </CheckboxWithLabelWrapper>
+  );
+};
+
 const CheckboxWithLabelWrapper = styled.div`
   display: inline-flex;
   justify-content: flex-start;
@@ -31,23 +51,3 @@ const LabelWrapper = styled.div<{ $labelColor?: ColorKey }>`
   color: ${ ({ theme, $labelColor }) => $labelColor ? theme.color[$labelColor] : 'inherit' };
   cursor: pointer;
 `;
-
-export const CheckboxWithLabel = (props: Props) => {
-  const { label, labelColor, ...rest } = props;
-  const checkboxRef = useRef<HTMLDivElement>(null);
-
-  return (
-    <CheckboxWithLabelWrapper>
-      <Checkbox ref={ checkboxRef } { ...rest } />
-      <LabelWrapper
-        $labelColor={ labelColor }
-        onClick={ (e) => {
-          e.stopPropagation();
-          checkboxRef.current?.click();
-        } }
-      >
-        { label }
-      </LabelWrapper>
-    </CheckboxWithLabelWrapper>
-  );
-};

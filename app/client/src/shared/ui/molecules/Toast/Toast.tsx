@@ -28,75 +28,6 @@ export type ToastHandle = {
   setOptions: (options: Props) => void;
 };
 
-const ToastWrapper = styled.div<{ $isShow: boolean }>`
-  display: flex;
-  padding: 0;
-  width: fit-content;
-  max-width: 240px;
-  height: fit-content;
-  position: fixed;
-  z-index: ${ ({ theme }) => theme.zIndex.toast };
-  top: 10%;
-  right: 0;
-  overflow: visible;
-  ${ boxShadow }
-  background-color: ${ ({ theme }) => pickWhite(theme) };
-
-  ${ ({ theme }) => {
-    return css`
-      column-gap: ${ theme.spacing.sm.pc };
-      padding: ${ theme.spacing.md.pc } ${ theme.spacing.md.pc };
-      
-      @media (max-width: ${ theme.breakpoints.sp}) {
-        column-gap: ${ theme.spacing.sm.sp };
-        padding: ${ theme.spacing.md.sp } ${ theme.spacing.md.sp };
-      }
-    `;
-  } }
-  
-  transition: all 600ms ease-in-out;
-  transform: translateX(20px);
-  ${ ({ $isShow }) => {
-    if ($isShow) {
-      return css`
-        opacity: 1;
-        visibility: visible;
-        transform: translateX(0px);
-      `;
-    } else {
-      return css`
-        opacity: 0;
-        visibility: hidden;
-        transition: none;
-      `;
-    }
-  } }
-`;
-
-const IconWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  &> img {
-    ${ ({ theme }) => {
-      return css`
-        width: 36px;
-        
-        @media (max-width: ${ theme.breakpoints.sp}) {
-          width: 24px;
-        }
-      `;
-    } }
-  }
-`;
-
-const ContentWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
 export const Toast = forwardRef<ToastHandle, Props>((props: Props, ref: React.Ref<ToastHandle>) => {
   const [content, setContent] = useState<React.ReactNode>(props.content);
   const [icon, setIcon] = useState<ToastIcons>(props.icon || 'none');
@@ -182,3 +113,72 @@ export const Toast = forwardRef<ToastHandle, Props>((props: Props, ref: React.Re
     </ToastWrapper>
   );
 });
+
+const ToastWrapper = styled.div<{ $isShow: boolean }>`
+  display: flex;
+  padding: 0;
+  width: fit-content;
+  max-width: 240px;
+  height: fit-content;
+  position: fixed;
+  z-index: ${ ({ theme }) => theme.zIndex.toast };
+  top: 10%;
+  right: 0;
+  overflow: visible;
+  ${ boxShadow }
+  background-color: ${ ({ theme }) => pickWhite(theme) };
+
+  ${ ({ theme }) => {
+    return css`
+      column-gap: ${ theme.spacing.sm.pc };
+      padding: ${ theme.spacing.md.pc } ${ theme.spacing.md.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        column-gap: ${ theme.spacing.sm.sp };
+        padding: ${ theme.spacing.md.sp } ${ theme.spacing.md.sp };
+      }
+    `;
+  } }
+  
+  transition: all 600ms ease-in-out;
+  transform: translateX(20px);
+  ${ ({ $isShow }) => {
+    if ($isShow) {
+      return css`
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(0px);
+      `;
+    } else {
+      return css`
+        opacity: 0;
+        visibility: hidden;
+        transition: none;
+      `;
+    }
+  } }
+`;
+
+const IconWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &> img {
+    ${ ({ theme }) => {
+      return css`
+        width: 36px;
+        
+        @media (max-width: ${ theme.breakpoints.sp}) {
+          width: 24px;
+        }
+      `;
+    } }
+  }
+`;
+
+const ContentWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;

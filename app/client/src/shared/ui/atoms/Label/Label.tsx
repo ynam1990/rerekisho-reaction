@@ -3,6 +3,10 @@ import styled, { css } from 'styled-components'
 
 type Props = ComponentPropsWithoutRef<'label'>;
 
+export const Label = forwardRef<HTMLLabelElement, Props>((props: Props, ref) => (
+  <StyledLabel ref={ ref } { ...props } />
+));
+
 const StyledLabel = styled.label`
   display: inline-flex;
   flex-direction: column;
@@ -29,7 +33,3 @@ const StyledLabel = styled.label`
     `;
   }}
 `;
-
-export const Label = forwardRef<HTMLLabelElement, Props>((props: Props, ref) => (
-  <StyledLabel ref={ ref } { ...props } />
-));

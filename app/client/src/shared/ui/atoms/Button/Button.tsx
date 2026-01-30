@@ -1,7 +1,7 @@
-import type { theme, WithTheme } from '@/shared/styles/theme';
+import type { theme } from '@/shared/styles/theme';
 import type { ColorKey } from '@/shared/styles/theme';
 import { pickMainSubColors, pickWhite } from '@/shared/utils/style';
-import styled, { css, keyframes, type Interpolation } from 'styled-components'
+import styled, { css } from 'styled-components'
 
 export const BUTTON_TYPES = [
   'solid',
@@ -18,7 +18,6 @@ type Props = {
   noWrap?: boolean;
   loading?: boolean;
 };
-type PropsWithTheme = WithTheme<Props>;
 const propsToStop = new Set([
   'styleType',
   'color',
@@ -26,32 +25,6 @@ const propsToStop = new Set([
   'noWrap',
   'loading',
 ]);
-
-const mediaQueryStyle = ({ theme, size = 'md' }: PropsWithTheme): Interpolation<Props> => {
-  const fontSize = theme.typography.fontSize[size];
-  const letterSpacingBody = theme.typography.letterSpacing.body;
-  const lineHeight = theme.typography.lineHeight;
-  const spacing = theme.spacing;
-  
-  return css`
-    font-size: ${ fontSize.pc };
-    letter-spacing: ${ letterSpacingBody.pc };
-    line-height: ${ lineHeight.tight.pc };
-    padding: ${ `${ spacing.md.pc } ${ spacing.lg.pc }` };
-    
-    @media (max-width: ${ theme.breakpoints.sp}) {
-      font-size: ${ fontSize.sp };
-      letter-spacing: ${ letterSpacingBody.sp };
-      line-height: ${ lineHeight.tight.sp };
-      padding: ${ `${ spacing.md.sp } ${ spacing.lg.sp }` };
-    }
-  `;
-};
-
-const spin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`;
 
 export const Button = styled.button.withConfig({
     shouldForwardProp: (prop) => !propsToStop.has(prop),
@@ -78,7 +51,26 @@ export const Button = styled.button.withConfig({
     opacity: ${ ({ theme }) => theme.opacity.disabled };
   }
 
-  ${ mediaQueryStyle }
+  ${ ({ theme, size = 'md' }) => {
+    const fontSize = theme.typography.fontSize[size];
+    const letterSpacingBody = theme.typography.letterSpacing.body;
+    const lineHeight = theme.typography.lineHeight;
+    const spacing = theme.spacing;
+    
+    return css`
+      font-size: ${ fontSize.pc };
+      letter-spacing: ${ letterSpacingBody.pc };
+      line-height: ${ lineHeight.tight.pc };
+      padding: ${ `${ spacing.md.pc } ${ spacing.lg.pc }` };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        font-size: ${ fontSize.sp };
+        letter-spacing: ${ letterSpacingBody.sp };
+        line-height: ${ lineHeight.tight.sp };
+        padding: ${ `${ spacing.md.sp } ${ spacing.lg.sp }` };
+      }
+    `;
+  } }
 
   ${({ loading }) => loading && css`
     cursor: not-allowed;
@@ -100,7 +92,12 @@ export const Button = styled.button.withConfig({
       border-radius: 9999px;
       border: 2px solid ${ ({ theme }) => pickWhite(theme) };
       border-right-color: transparent;
-      animation: ${ spin } 0.8s linear infinite;
+      animation: spin 0.8s linear infinite;
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
     }
   ` }
 

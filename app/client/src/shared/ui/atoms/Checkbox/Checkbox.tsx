@@ -12,6 +12,38 @@ type Props =  {
   onChange?: (e: React.MouseEvent<HTMLDivElement>, newValue: boolean) => void;
 };
 
+export const Checkbox = forwardRef<HTMLDivElement, Props>((
+  props: Props,
+  forwardedRef: React.ForwardedRef<HTMLDivElement>
+) => {
+  const [value, setValue] = useState(!!props.value);
+
+  return (
+    <CheckboxWrapper
+      ref={ forwardedRef }
+      $checked={ value }
+      $disabled={ !!props.disabled }
+      $color={ props.color ?? 'tertiary' }
+      onClick={ (e) => {
+        e.stopPropagation();
+        setValue(!value);
+
+        props.onChange?.(e, !value);
+      } }
+    >
+      { value && (
+        <input
+          type='hidden'
+          id={ props.id }
+          name={ props.name }
+          value={ value.toString() }
+          disabled={ props.disabled }
+        />
+      ) }
+    </CheckboxWrapper>
+  );
+});
+
 const CheckboxWrapper = styled.div<{
   $checked: boolean,
   $disabled: boolean,
@@ -50,35 +82,3 @@ const CheckboxWrapper = styled.div<{
     pointer-events: none;
   }
 `;
-
-export const Checkbox = forwardRef<HTMLDivElement, Props>((
-  props: Props,
-  fowardedRef: React.ForwardedRef<HTMLDivElement>
-) => {
-  const [value, setValue] = useState(!!props.value);
-
-  return (
-    <CheckboxWrapper
-      ref={ fowardedRef }
-      $checked={ value }
-      $disabled={ !!props.disabled }
-      $color={ props.color ?? 'tertiary' }
-      onClick={ (e) => {
-        e.stopPropagation();
-        setValue(!value);
-
-        props.onChange?.(e, !value);
-      } }
-    >
-      { value && (
-        <input
-          type='hidden'
-          id={ props.id }
-          name={ props.name }
-          value={ value.toString() }
-          disabled={ props.disabled }
-        />
-      ) }
-    </CheckboxWrapper>
-  );
-});
