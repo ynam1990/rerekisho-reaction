@@ -13,7 +13,7 @@ security:
   - cookieAuth: []
 
 paths:
-  /api/auth/register:
+  /api/auth/signup:
     post:
       summary: ユーザ新規登録
       tags:
@@ -24,9 +24,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AuthenticationData'
+              $ref: '#/components/schemas/AuthenticationDataWithAgreement'
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookie
+              schema:
+                type: string
+              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '409':
           description: ユーザID重複エラー
@@ -34,6 +40,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
+                  - ok
                 properties:
                   code:
                     type: integer
@@ -47,7 +57,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/login:
+  /api/auth/signin:
     post:
       summary: ユーザログイン
       tags:
@@ -61,6 +71,12 @@ paths:
               $ref: '#/components/schemas/AuthenticationData'
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookie
+              schema:
+                type: string
+              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '401':
           description: ログイン失敗
@@ -68,6 +84,10 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - code
+                  - message
+                  - ok
                 properties:
                   code:
                     type: integer
@@ -81,26 +101,63 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/logout:
+  /api/auth/signout:
     post:
       summary: ユーザログアウト
       tags:
         - ログイン後API
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookieの削除
+              schema:
+                type: string
+              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /api/auth/account:
+  /api/auth/me:
+    get:
+      summary: ログイン中のユーザ情報取得
+      tags:
+        - ログイン後API
+      responses:
+        '200':
+          description: ログイン中のユーザ情報
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - username
+                  - ok
+                properties:
+                  username:
+                    type: string
+                    example: "username123"
+                  ok:
+                    type: boolean
+                    example: true
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: ユーザアカウント削除
       tags:
         - ログイン後API
       responses:
         '200':
+          headers:
+            Set-Cookie:
+              description: ログインセッション用Cookieの削除
+              schema:
+                type: string
+              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
@@ -131,7 +188,7 @@ paths:
         - ログイン後API
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -179,7 +236,7 @@ paths:
               $ref: '#/components/schemas/ResumeObj'
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -197,7 +254,7 @@ paths:
           description: 削除対象の履歴書ID
       responses:
         '200':
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithResumeId'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -212,15 +269,33 @@ components:
   schemas:
     AuthenticationData:
       type: object
+      required:
+        - username
+        - password
       properties:
-        userId:
+        username:
           type: string
           example: "username123"
         password:
           type: string
           example: "password123"
+    AuthenticationDataWithAgreement:
+      allOf:
+        - $ref: '#/components/schemas/AuthenticationData'
+        - type: object
+          required:
+            - agreement
+          properties:
+            agreement:
+              type: boolean
+              example: true
     ResumeListItem:
       type: object
+      required:
+        - id
+        - name
+        - isPublished
+        - updatedAt
       properties:
         id:
           type: string
@@ -237,6 +312,14 @@ components:
           example: "2026-01-03T12:00:00Z"
     ResumeObj:
       type: object
+      required:
+        - id
+        - name
+        - isPublished
+        - isGenderVisible
+        - isContactVisible
+        - updatedAt
+        - values
       properties:
         id:
           type: string
@@ -259,6 +342,21 @@ components:
           example: "2026-01-04T12:00:00Z"
         values:
           type: object
+          required:
+            - displayDate
+            - name
+            - nameRuby
+            - familyName
+            - familyNameRuby
+            - birthdate
+            - gender
+            - photoImg
+            - address
+            - contactAddress
+            - educations
+            - experiences
+            - certifications
+            - customs
           properties:
             displayDate:
               type: string
@@ -286,6 +384,14 @@ components:
               example: ""
             address:
               type: object
+              required:
+                - postalCode
+                - line1
+                - line2
+                - line1Ruby
+                - line2Ruby
+                - tel
+                - email
               properties:
                 postalCode:
                   type: string
@@ -310,6 +416,14 @@ components:
                   example: "example@example.com"
             contactAddress:
               type: object
+              required:
+                - postalCode
+                - line1
+                - line2
+                - line1Ruby
+                - line2Ruby
+                - tel
+                - email
               properties:
                 postalCode:
                   type: string
@@ -334,6 +448,9 @@ components:
                   example: "example@example.com"
             educations:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -344,6 +461,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -362,6 +483,9 @@ components:
                       content: "学歴xx"
             experiences:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -372,6 +496,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -390,6 +518,9 @@ components:
                       content: "職歴xx"
             certifications:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -400,6 +531,10 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - year
+                      - month
+                      - content
                     properties:
                       year:
                         type: string
@@ -418,6 +553,9 @@ components:
                       content: "資格xx"
             customs:
               type: object
+              required:
+                - ids
+                - entities
               properties:
                 ids:
                   type: array
@@ -428,6 +566,9 @@ components:
                   type: object
                   additionalProperties:
                     type: object
+                    required:
+                      - label
+                      - content
                     properties:
                       label:
                         type: string
@@ -442,13 +583,39 @@ components:
                       content: "xxxxxxxxxxxx"
     SuccessResponse:
       type: object
+      required:
+        - message
+        - ok
       properties:
         message:
           type: string
         ok:
           type: boolean
+    SuccessResponseWithResumeId:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponse'
+        - type: object
+          required:
+            - resumeId
+          properties:
+            resumeId:
+              type: string
+    SuccessResponseWithResumeIdAndUpdatedAt:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponseWithResumeId'
+        - type: object
+          required:
+            - updatedAt
+          properties:
+            updatedAt:
+              type: string
+              format: date-time
     ErrorResponse:
       type: object
+      required:
+        - code
+        - message
+        - ok
       properties:
         code:
           type: integer
@@ -466,6 +633,27 @@ components:
           example:
             message: "正常に完了しました。"
             ok: true
+    SuccessWithResumeId:
+      description: 成功レスポンス（履歴書ID付き）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+          example:
+            message: "正常に完了しました。"
+            resumeId: "sample1"
+            ok: true
+    SuccessWithResumeIdAndUpdatedAt:
+      description: 成功レスポンス（履歴書IDと更新日時付き）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+          example:
+            message: "正常に完了しました。"
+            resumeId: "sample1"
+            ok: true
+            updatedAt: "2026-01-05T12:00:00Z"
     UnauthorizedError:
       description: 認証失敗
       content:

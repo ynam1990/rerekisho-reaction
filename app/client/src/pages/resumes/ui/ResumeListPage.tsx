@@ -1,5 +1,5 @@
-import { ResumeList } from "@/features/resume";
 import { ResumeListPageWrapper } from "./ResumeListPage.styles"
+import { ResumeList } from "@/features/resume";
 import { useResumeSelector } from "@/app/store/hooks";
 
 export const ResumeListPage = () => {

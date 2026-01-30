@@ -1,20 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { usePostSignIn } from "@/features/auth";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 
-const onSubmit = (formData: FormData) => {
-  console.log(formData)
-};
-
 export const SignInForm = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { postSignIn } = usePostSignIn();
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const username = String(formData.get('username') || '');
+    const password = String(formData.get('password') || '');
+
+    await postSignIn({ username, password }, () => {
+      navigate(location.state?.from?.pathname || '/resumes');
+    });
+  };
 
   return (
     <SignInFormWrapper>
       <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
 
-      <StyledSignInForm name="sign_in_form" action={ onSubmit }>
-
+      <StyledSignInForm
+        name="sign_in_form"
+        onSubmit={ onSubmit }
+      >
         <StyledLabel>
           ユーザ名
           <StyledInput

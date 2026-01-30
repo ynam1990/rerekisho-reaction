@@ -1,19 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { CheckboxWithLabel } from "@/shared/ui/molecules";
 import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
-
-const onSubmit = (formData: FormData) => {
-  console.log(formData)
-};
+import { usePostSignUp } from "@/features/auth";
 
 export const SignUpForm = () => {
+  const navigate = useNavigate();
+  const { postSignUp } = usePostSignUp();
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.currentTarget);
+    const username = String(formData.get('username') || '');
+    const password = String(formData.get('password') || '');
+    const passwordConfirmation = String(formData.get('password_confirmation') || '');
+    const agreement = formData.get('agreement') === 'true';
+
+    await postSignUp({ username, password, passwordConfirmation, agreement }, () => {
+      navigate('/resumes');
+    });
+  };
 
   return (
     <SignUpFormWrapper>
       <StyledHeading>新規登録</StyledHeading>
 
-      <StyledSignUpForm name="sign_in_form" action={ onSubmit }>
+      <StyledSignUpForm
+        name="sign_in_form"
+        onSubmit={ onSubmit }
+      >
 
         <StyledLabel>
           ユーザ名

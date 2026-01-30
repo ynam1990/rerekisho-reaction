@@ -12,7 +12,7 @@
     "dev:client": "npm run dev --workspace app/client",
     "dev:storybook": "npm run storybook --workspace app/client",
     "dev:server": "npm run dev --workspace app/server",
-    "dev:mockapi": "prism mock ./openapi/spec/openapi.yml -p 4010",
+    "dev:mockapi": "prism mock ./openapi/spec/openapi.yml -p 3003",
     "gen:contract": "openapi-typescript openapi/spec/openapi.yml -o packages/contracts/api/generated/openapi.d.ts",
     "build:contract": "tsc -p tsconfig.json",
     "gen:prisma_client": "npm run prisma:generate --workspace app/server",

@@ -8,11 +8,6 @@ const AUTH_FORM_ACTIONS = [
 ] as const;
 type AuthFormAction = typeof AUTH_FORM_ACTIONS[number];
 
-const formsByAction: Record<AuthFormAction, React.ReactNode> = {
-  signin: <SignInForm />,
-  signup: <SignUpForm />,
-};
-
 export const AuthPage = () => {
   const { action } = useParams();
 
@@ -23,7 +18,8 @@ export const AuthPage = () => {
   
   return (
     <AuthPageWrapper>
-      { formsByAction[action as AuthFormAction] }
+      { action === 'signin' && <SignInForm /> }
+      { action === 'signup' && <SignUpForm /> }
     </AuthPageWrapper>
   );
 };

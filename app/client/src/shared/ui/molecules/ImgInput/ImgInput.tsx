@@ -1,7 +1,6 @@
-import { useRef } from 'react';
 import styled from 'styled-components'
 import { pickWhite } from '@/shared/utils/style';
-import { Toast, type ToastHandle } from '@/shared/ui/molecules';
+import { useToast } from '@/shared/hooks/useToast';
 
 type Props = {
   name: string;
@@ -17,7 +16,7 @@ export const ImgInput = (props: Props) => {
     onChange,
   } = props;
 
-  const toastRef = useRef<ToastHandle | null>(null);
+  const showToastWithOptions = useToast();
 
   const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,11 +31,10 @@ export const ImgInput = (props: Props) => {
       // fileの選択状態を解除
       e.target.value = '';
 
-      toastRef?.current?.setOptions({
+      showToastWithOptions({
         content: 'ファイルサイズが500KBを超えています',
         icon: 'error',
       });
-      toastRef?.current?.show();
       return;
     }
     
@@ -68,8 +66,6 @@ export const ImgInput = (props: Props) => {
         onChange={ handleImgChange }
         { ...props.dataset }
       />
-
-      <Toast ref={ toastRef } />
     </ImgInputWrapper>
   );
 };

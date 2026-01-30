@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/auth/register": {
+    "/api/auth/signup": {
         parameters: {
             query?: never;
             header?: never;
@@ -23,7 +23,7 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["AuthenticationData"];
+                    "application/json": components["schemas"]["AuthenticationDataWithAgreement"];
                 };
             };
             responses: {
@@ -36,11 +36,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @example 409 */
-                            code?: number;
+                            code: number;
                             /** @example 指定されたユーザIDは既に使用されています。 */
-                            message?: string;
+                            message: string;
                             /** @example false */
-                            ok?: boolean;
+                            ok: boolean;
                         };
                     };
                 };
@@ -53,7 +53,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/login": {
+    "/api/auth/signin": {
         parameters: {
             query?: never;
             header?: never;
@@ -85,11 +85,11 @@ export interface paths {
                     content: {
                         "application/json": {
                             /** @example 401 */
-                            code?: number;
+                            code: number;
                             /** @example パスワードが一致しませんでした。 */
-                            message?: string;
+                            message: string;
                             /** @example false */
-                            ok?: boolean;
+                            ok: boolean;
                         };
                     };
                 };
@@ -102,7 +102,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/logout": {
+    "/api/auth/signout": {
         parameters: {
             query?: never;
             header?: never;
@@ -132,14 +132,41 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/auth/account": {
+    "/api/auth/me": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** ログイン中のユーザ情報取得 */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description ログイン中のユーザ情報 */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example username123 */
+                            username: string;
+                            /** @example true */
+                            ok: boolean;
+                        };
+                    };
+                };
+                401: components["responses"]["UnauthorizedError"];
+                500: components["responses"]["InternalServerError"];
+            };
+        };
         put?: never;
         post?: never;
         /** ユーザアカウント削除 */
@@ -203,7 +230,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeId"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -264,7 +291,7 @@ export interface paths {
                 };
             };
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -283,7 +310,7 @@ export interface paths {
             };
             requestBody?: never;
             responses: {
-                200: components["responses"]["Success"];
+                200: components["responses"]["SuccessWithResumeId"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -299,96 +326,100 @@ export interface components {
     schemas: {
         AuthenticationData: {
             /** @example username123 */
-            userId?: string;
+            username: string;
             /** @example password123 */
-            password?: string;
+            password: string;
+        };
+        AuthenticationDataWithAgreement: components["schemas"]["AuthenticationData"] & {
+            /** @example true */
+            agreement: boolean;
         };
         ResumeListItem: {
             /** @example sample1 */
-            id?: string;
+            id: string;
             /** @example 新規履歴書1 */
-            name?: string;
+            name: string;
             /** @example false */
-            isPublished?: boolean;
+            isPublished: boolean;
             /**
              * Format: date-time
              * @example 2026-01-03T12:00:00Z
              */
-            updatedAt?: string;
+            updatedAt: string;
         };
         ResumeObj: {
             /** @example sample */
-            id?: string;
+            id: string;
             /** @example 新規履歴書 */
-            name?: string;
+            name: string;
             /** @example false */
-            isPublished?: boolean;
+            isPublished: boolean;
             /** @example true */
-            isGenderVisible?: boolean;
+            isGenderVisible: boolean;
             /** @example true */
-            isContactVisible?: boolean;
+            isContactVisible: boolean;
             /**
              * Format: date-time
              * @example 2026-01-04T12:00:00Z
              */
-            updatedAt?: string;
-            values?: {
+            updatedAt: string;
+            values: {
                 /** @example 2026-01-01 */
-                displayDate?: string;
+                displayDate: string;
                 /** @example 花子 */
-                name?: string;
+                name: string;
                 /** @example はなこ */
-                nameRuby?: string;
+                nameRuby: string;
                 /** @example 山田 */
-                familyName?: string;
+                familyName: string;
                 /** @example やまだ */
-                familyNameRuby?: string;
+                familyNameRuby: string;
                 /** @example 2000-01-01 */
-                birthdate?: string;
+                birthdate: string;
                 /** @example 女 */
-                gender?: string;
+                gender: string;
                 /** @example  */
-                photoImg?: string;
-                address?: {
+                photoImg: string;
+                address: {
                     /** @example 0010001 */
-                    postalCode?: string;
+                    postalCode: string;
                     /** @example xx県xx区xxx-xx */
-                    line1?: string;
+                    line1: string;
                     /** @example マンション名xx号室 */
-                    line2?: string;
+                    line2: string;
                     /** @example xxけんxxくxxx-xx */
-                    line1Ruby?: string;
+                    line1Ruby: string;
                     /** @example マンションxxごうしつ */
-                    line2Ruby?: string;
+                    line2Ruby: string;
                     /** @example 001-0000-0000 */
-                    tel?: string;
+                    tel: string;
                     /** @example example@example.com */
-                    email?: string;
+                    email: string;
                 };
-                contactAddress?: {
+                contactAddress: {
                     /** @example 0010001 */
-                    postalCode?: string;
+                    postalCode: string;
                     /** @example xx県xx区xxx-xx */
-                    line1?: string;
+                    line1: string;
                     /** @example マンション名xx号室 */
-                    line2?: string;
+                    line2: string;
                     /** @example xxけんxxくxxx-xx */
-                    line1Ruby?: string;
+                    line1Ruby: string;
                     /** @example マンションxxごうしつ */
-                    line2Ruby?: string;
+                    line2Ruby: string;
                     /** @example 001-0000-0000 */
-                    tel?: string;
+                    tel: string;
                     /** @example example@example.com */
-                    email?: string;
+                    email: string;
                 };
-                educations?: {
+                educations: {
                     /**
                      * @example [
                      *       "edu_1",
                      *       "edu_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "edu_1": {
@@ -403,22 +434,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                experiences?: {
+                experiences: {
                     /**
                      * @example [
                      *       "exp_1",
                      *       "exp_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "exp_1": {
@@ -433,22 +464,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                certifications?: {
+                certifications: {
                     /**
                      * @example [
                      *       "cert_1",
                      *       "cert_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "cert_1": {
@@ -463,22 +494,22 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            year?: string;
-                            month?: string;
-                            content?: string;
+                            year: string;
+                            month: string;
+                            content: string;
                         };
                     };
                 };
-                customs?: {
+                customs: {
                     /**
                      * @example [
                      *       "cus_1",
                      *       "cus_2"
                      *     ]
                      */
-                    ids?: string[];
+                    ids: string[];
                     /**
                      * @example {
                      *       "cus_1": {
@@ -491,23 +522,30 @@ export interface components {
                      *       }
                      *     }
                      */
-                    entities?: {
+                    entities: {
                         [key: string]: {
-                            label?: string;
-                            content?: string;
+                            label: string;
+                            content: string;
                         };
                     };
                 };
             };
         };
         SuccessResponse: {
-            message?: string;
-            ok?: boolean;
+            message: string;
+            ok: boolean;
+        };
+        SuccessResponseWithResumeId: components["schemas"]["SuccessResponse"] & {
+            resumeId: string;
+        };
+        SuccessResponseWithResumeIdAndUpdatedAt: components["schemas"]["SuccessResponseWithResumeId"] & {
+            /** Format: date-time */
+            updatedAt: string;
         };
         ErrorResponse: {
-            code?: number;
-            message?: string;
-            ok?: boolean;
+            code: number;
+            message: string;
+            ok: boolean;
         };
     };
     responses: {
@@ -524,6 +562,39 @@ export interface components {
                  *     }
                  */
                 "application/json": components["schemas"]["SuccessResponse"];
+            };
+        };
+        /** @description 成功レスポンス（履歴書ID付き） */
+        SuccessWithResumeId: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "resumeId": "sample1",
+                 *       "ok": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponseWithResumeId"];
+            };
+        };
+        /** @description 成功レスポンス（履歴書IDと更新日時付き） */
+        SuccessWithResumeIdAndUpdatedAt: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "resumeId": "sample1",
+                 *       "ok": true,
+                 *       "updatedAt": "2026-01-05T12:00:00Z"
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponseWithResumeId"];
             };
         };
         /** @description 認証失敗 */

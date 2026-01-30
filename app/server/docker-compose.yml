@@ -4,7 +4,7 @@ services:
     container_name: rerekisho-reaction-mariadb-local
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3002:3002"
     environment:
       MARIADB_ROOT_PASSWORD: rootpass
       MARIADB_DATABASE: rerekisho_reaction_app

@@ -1,14 +1,12 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublishedImg, ResumeItemMenuContent, ResumeListRow, ResumeListTopRow, ResumeListWrapper, ResumeName, StyledHeading } from "./ResumeList.styles"
 import { Button, Text } from "@/shared/ui/atoms";
 import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molecules";
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
-import { type ResumeListItem } from "../model/resume_mock";
-
-const createNewResume = () => {
-  // 新規作成処理
-};
+import type { ResumeListItem } from "@/shared/api/types";
+import { useCreateResume, useDeleteResume, useGetResumes } from "@/features/resume";
 
 type Props = {
   resumeList: ResumeListItem[];
@@ -16,8 +14,15 @@ type Props = {
 
 export const ResumeList = (props: Props) => {
   const { resumeList } = props;
-  
+
   const navigate = useNavigate();
+  const { getResumes } = useGetResumes();
+  const { createResume } = useCreateResume();
+  const { deleteResume } = useDeleteResume();
+
+  useEffect(() => {
+    getResumes();
+  }, []);
 
   const buttonProps = (resume: ResumeListItem) : GroupedButtonProps[] => {
     return [
@@ -36,7 +41,7 @@ export const ResumeList = (props: Props) => {
         size: 'md',
         children: '削除',
         onClick: () => {
-          // 削除処理
+          deleteResume(resume.id, resume.name);
         },
       },
     ];
@@ -51,7 +56,9 @@ export const ResumeList = (props: Props) => {
         <Button
           styleType="solid"
           color="primary"
-          onClick={ createNewResume }
+          onClick={ () => createResume(
+            (newResumeId: string) => navigate(`/resumes/${ newResumeId }`)
+          ) }
         >
           新規作成
         </Button>

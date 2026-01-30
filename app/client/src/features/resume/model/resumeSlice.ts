@@ -1,5 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { type ResumeListItem, type ResumeObj } from './resume_mock';
+import type { ResumeListItem, ResumeObj } from '@/shared/api/types'
+import {
+  getResumesThunk,
+  getResumeThunk,
+  postResumeThunk,
+  putResumeThunk,
+  deleteResumeThunk,
+} from './resumeThunks';
 
 type ResumeState = {
   resume: ResumeObj;
@@ -49,7 +56,7 @@ const createInitialResumeObj = (): ResumeObj => {
             month: '',
             content: '',
           },
-        } as ResumeObj['values']['educations']['entities'],
+        },
       },
       experiences: {
         ids: ['exp_1'],
@@ -59,7 +66,7 @@ const createInitialResumeObj = (): ResumeObj => {
             month: '',
             content: '',
           },
-        } as ResumeObj['values']['experiences']['entities'],
+        },
       },
       certifications: {
         ids: ['cert_1'],
@@ -69,7 +76,7 @@ const createInitialResumeObj = (): ResumeObj => {
             month: '',
             content: '',
           },
-        } as ResumeObj['values']['certifications']['entities'],
+        },
       },
       customs: {
         ids: ['cus_1', 'cus_2'],
@@ -82,7 +89,7 @@ const createInitialResumeObj = (): ResumeObj => {
             label: '本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）',
             content: '',
           },
-        } as ResumeObj['values']['customs']['entities'],
+        },
       },
     },
   };
@@ -166,7 +173,37 @@ const resumeSlice = createSlice({
         state.resume.values[key].entities[newId] = structuredClone(EMPTY_YEAR_MONTH_DATA);
       }
     },
-  }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(getResumesThunk.fulfilled, (state, action) => {
+      state.resumeList = action.payload;
+    });
+    builder.addCase(getResumesThunk.rejected, (state) => {
+      state.resumeList = [];
+    });
+
+    builder.addCase(getResumeThunk.fulfilled, (state, action) => {
+      state.resume = action.payload;
+    });
+    builder.addCase(getResumeThunk.rejected, (state) => {
+      state.resume = createInitialResumeObj();
+    });
+
+    builder.addCase(postResumeThunk.fulfilled, (state) => {
+      // 履歴書作成後にそのresumeIdに遷移しますが、その際に前のresumeオブジェクトが表示されないよう、初期化します
+      state.resume = createInitialResumeObj();
+    });
+
+    builder.addCase(putResumeThunk.fulfilled, (state, action) => {
+      // 更新日時のみを更新します
+      state.resume.updatedAt = action.payload.updatedAt;
+    });
+
+    builder.addCase(deleteResumeThunk.fulfilled, (state, action) => {
+      // ローカルで表示に反映するため、履歴書一覧から該当の履歴書を除外します
+      state.resumeList = state.resumeList.filter(item => item.id !== action.payload.resumeId);
+    });
+  },
 });
 
 export const {

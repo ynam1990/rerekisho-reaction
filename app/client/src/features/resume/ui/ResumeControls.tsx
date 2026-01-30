@@ -1,5 +1,5 @@
 import { useState } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import { ResumeControlsWrapper, ResumeNameWrapper, PublishedImg, ResumeName, StyledHeading, ButtonIcon } from "./ResumeControls.styles";
 import { Text } from "@/shared/ui/atoms";
@@ -10,7 +10,8 @@ import zoomOutImg from '@/shared/assets/icons/icon_zoom_out.png';
 import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
-import type { ResumeObj } from "../model/resume_mock";
+import type { ResumeObj } from "@/shared/api/types";
+import { useDeleteResume, useUpdateResume } from "@/features/resume";
 
 type Props = {
   scale: number;
@@ -27,7 +28,10 @@ export const ResumeControls = (props: Props) => {
 
   const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
 
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+
+  const { updateResume } = useUpdateResume();
+  const { deleteResume } = useDeleteResume();
 
   return (
     <ResumeControlsWrapper
@@ -61,7 +65,7 @@ export const ResumeControls = (props: Props) => {
               setButtonsLoading(prev => ({ ...prev, save: true }));
               
               try {
-                // 保存処理
+                await updateResume(resume);
               } finally {
                 setButtonsLoading(prev => ({ ...prev, save: false }));
               }
@@ -95,7 +99,9 @@ export const ResumeControls = (props: Props) => {
               setButtonsLoading(prev => ({ ...prev, delete: true }));
               
               try {
-                // 削除処理
+                deleteResume(resume.id, resume.name, () => {
+                  navigate('/resumes');
+                });
               } finally {
                 setButtonsLoading(prev => ({ ...prev, delete: false }));
               }

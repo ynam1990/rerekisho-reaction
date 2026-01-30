@@ -10,8 +10,7 @@
     "outDir": "packages/contracts/api/dist",
     "rootDir": "packages/contracts/api/src",
     "verbatimModuleSyntax": true,
-    "isolatedModules": true,
-    "noUncheckedIndexedAccess": true
+    "isolatedModules": true
   },
   "include": [
     "packages/contracts/api/src/**/*.ts",

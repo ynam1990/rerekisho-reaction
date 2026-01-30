@@ -4,9 +4,12 @@ import { Button, Anchor, Heading, Text } from '@/shared/ui/atoms';
 import { Popover } from '@/shared/ui/molecules';
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
+import { useDeleteMe, usePostSignOut } from '@/features/auth';
+import { moveToUrl } from '@/shared/utils/url';
 
 type Props = {
   ref: React.Ref<HTMLDivElement>;
+  isInitialized: boolean;
   isAuthenticated: boolean;
   currentUserName?: string;
 };
@@ -78,6 +81,21 @@ const HeaderWrapper = styled.header`
   } };
 `
 
+const HeaderRightContent = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* フラッシュを避けるため、最初はopacityを0にしています */
+  opacity: 0;
+  animation: fadeIn 0.6s ease-in-out forwards;
+  @keyframes fadeIn {
+    to {
+      opacity: 1;
+    }
+  }
+`;
+
 const HamburgerMenuContent = styled.div`
   display: flex;
   flex-direction: column;
@@ -101,63 +119,76 @@ const HamburgerMenuContent = styled.div`
   } }
 `;
 
+export const Header = (props: Props) => {
+  const { postSignOut } = usePostSignOut();
+  const { deleteMe } = useDeleteMe();
 
-export const Header = (props: Props) => (
-  <HeaderWrapper ref={ props.ref }>
-    <LogoWrapperAnchor href='/'>
-      <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
-      <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
-    </LogoWrapperAnchor>
+  const onSignOutButtonClick = async () => {
+    await postSignOut(() => {
+      // トップページへ遷移してリロード
+      moveToUrl('/');
+    });
+  };
 
-    {
-      props.isAuthenticated ? (
-        <Popover
-          id='header_pop'
-          type='hamburger'
-          color='paperWhite'
-          content={(
-            <HamburgerMenuContent>
-              <Text>ユーザー名：{ props.currentUserName ?? '-' }</Text>
+  const onDeleteUserButtonClick = async () => {
+    await deleteMe(() => {
+      moveToUrl('/');
+    });
+  };
+  
+  return (
+    <HeaderWrapper ref={ props.ref }>
+      <LogoWrapperAnchor href='/'>
+        <LogoImg src={ logoImg } alt="ロゴ画像はAI生成です" />
+        <ColoredHeading size="xxxl">Rerekishon</ColoredHeading>
+      </LogoWrapperAnchor>
 
-              <Button
-                styleType='text'
-                color='tertiary'
-                noWrap={ true }
-                size='sm'
-                onClick={ () => {
-                  
-                }}
-              >
-                ユーザー登録の削除
-              </Button>
+      { props.isInitialized && <HeaderRightContent>
+        {
+          props.isAuthenticated ? (
+            <Popover
+              id='header_pop'
+              type='hamburger'
+              color='paperWhite'
+              content={(
+                <HamburgerMenuContent>
+                  <Text>ユーザー名：{ props.currentUserName || '-' }</Text>
 
-              <Button
-                styleType='solid'
-                color='tertiary'
-                noWrap={ true }
-                onClick={ () => {
-                  
-                }}
-              >
-                ログアウト
-              </Button>
+                  <Button
+                    styleType='text'
+                    color='tertiary'
+                    noWrap={ true }
+                    size='sm'
+                    onClick={ onDeleteUserButtonClick }
+                  >
+                    ユーザー登録の削除
+                  </Button>
 
-              
-            </HamburgerMenuContent>
-          )}
-        />
-      ) : (
-        <Button
-          styleType='outline'
-          color='primary'
-          noWrap={ true }
-          onClick={ () => {
-            window.location.href = '/auth/signin';
-          }}
-        >
-          ログイン
-        </Button>
-      )
-    }
-  </HeaderWrapper>
-);
+                  <Button
+                    styleType='solid'
+                    color='tertiary'
+                    noWrap={ true }
+                    onClick={ onSignOutButtonClick }
+                  >
+                    ログアウト
+                  </Button>
+                </HamburgerMenuContent>
+              )}
+            />
+          ) : (
+            <Button
+              styleType='outline'
+              color='primary'
+              noWrap={ true }
+              onClick={ () => {
+                moveToUrl('/auth/signin');
+              }}
+            >
+              ログイン
+            </Button>
+          )
+        } </HeaderRightContent>
+      }
+    </HeaderWrapper>
+  );
+};

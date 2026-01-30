@@ -4,3 +4,7 @@ export const urlWithCacheBuster = (path: string) : string => {
 
   return url.toString();
 };
+
+export const moveToUrl = (url: string) : void => {
+  window.location.href = url;
+};

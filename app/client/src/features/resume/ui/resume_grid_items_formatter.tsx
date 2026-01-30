@@ -1,4 +1,4 @@
-import type { ResumeObj } from '../model/resume_mock';
+import type { ResumeObj } from "@/shared/api/types";
 import { ResumeEmailContent, ResumePhotoImg, type GridItemConfig, type GridItemContentConfig } from "./Resume.styles"
 import { formatPostalCode } from '@/shared/utils/format';
 import dayjs from 'dayjs';

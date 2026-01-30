@@ -15,10 +15,12 @@ export const TOAST_ICONS = [
 ] as const;
 type ToastIcons = typeof TOAST_ICONS[number];
 
-type Props = {
+export type ToastOptions = {
   content?: React.ReactNode;
   icon?: ToastIcons;
 };
+
+type Props = ToastOptions;
 
 export type ToastHandle = {
   show: () => void;

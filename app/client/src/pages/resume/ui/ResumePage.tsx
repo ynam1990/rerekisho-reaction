@@ -1,12 +1,30 @@
 import { useEffect, useRef, useState } from "react";
+import { useParams } from "react-router-dom";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
-import { Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
-import { type ResumeObj } from "@/features/resume/model/resume_mock";
+import { useGetResume, Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
+import type { ResumeObj } from "@/shared/api/types";
 import { useResumeSelector } from "@/app/store/hooks";
+import { useToast } from "@/shared/hooks/useToast";
 
 export const ResumePage = () => {
   const { resume } = useResumeSelector();
+
+  // 履歴書データの取得
+  const { resumeId } = useParams<{ resumeId: string; }>();
+  const { getResume } = useGetResume();
+  const showToastWithOptions = useToast();
+  useEffect(() => {
+    if (!resumeId) {
+      showToastWithOptions({
+        icon: 'error',
+        content: '無効な履歴書IDです。',
+      });
+      return;
+    }
+  
+    getResume(resumeId);
+  }, [resumeId]);
 
   const [scale, setScale] = useState(1);
   const { ref, elHeight } = useElementRect<HTMLDivElement>();

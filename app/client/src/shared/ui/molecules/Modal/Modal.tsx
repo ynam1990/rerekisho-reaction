@@ -5,21 +5,20 @@ import { Heading } from "@/shared/ui/atoms/Heading";
 import { pickWhite } from "@/shared/utils/style";
 import { isUndefined } from "@/shared/utils/check";
 
-type Props = {
+export type ModalOptions = {
   title?: React.ReactNode;
   content?: React.ReactNode;
   footerContent?: React.ReactNode;
   onEnterPress?: () => void;
+  onEscPress?: () => void;
 };
+
+type Props = ModalOptions;
 
 export type ModalHandle = {
   show: () => void;
   hide: () => void;
-  setContent: (args: {
-    title?: React.ReactNode,
-    content?: React.ReactNode,
-    footerContent?: React.ReactNode,
-  }) => void;
+  setOptions: (options: ModalOptions) => void;
 };
 
 const ModalBackground = styled.div<{ $isShow: boolean }>`
@@ -118,6 +117,8 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
   const [title, setTitle] = useState<React.ReactNode>(props.title || null);
   const [content, setContent] = useState<React.ReactNode>(props.content || null);
   const [footerContent, setFooterContent] = useState<React.ReactNode>(props.footerContent || null);
+  const [onEnterPress, setOnEnterPress] = useState<ModalOptions['onEnterPress']>(() => props.onEnterPress);
+  const [onEscPress, setOnEscPress] = useState<ModalOptions['onEscPress']>(() => props.onEscPress);
 
   useImperativeHandle(ref, () => ({
     show: () => {
@@ -128,10 +129,11 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       }, 0);
     },
     hide: () => setIsShow(false),
-    setContent: ({ title, content, footerContent }) => {
+    setOptions: ({ title, content, footerContent, onEnterPress }) => {
       if (!isUndefined(title)) setTitle(title);
       if (!isUndefined(content)) setContent(content);
       if (!isUndefined(footerContent)) setFooterContent(footerContent);
+      setOnEnterPress(() => onEnterPress);
     },
   }));
   
@@ -143,6 +145,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       onClick={ (e) => {
         e.stopPropagation();
         setIsShow(false);
+        onEscPress?.();
       } }
       onKeyDown={ (e) => {
         // ターゲットが自分かどうか判定します
@@ -151,10 +154,11 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
         if (e.key === 'Escape') {
           e.stopPropagation();
           setIsShow(false);
+          onEscPress?.();
         }
         if (e.key === 'Enter') {
           e.stopPropagation();
-          props.onEnterPress?.();
+          onEnterPress?.();
           setIsShow(false);
         }
       } }
@@ -182,3 +186,20 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
     </ModalBackground>
   );
 });
+
+// footerContent用のスタイルを例外的にexportします
+export const ModalButtonsWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ${ ({ theme }) => {
+    return css`
+      column-gap: ${ theme.spacing.md.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        column-gap: ${ theme.spacing.md.sp };
+      } 
+    `;
+  } }
+`;
