@@ -1,17 +1,14 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch } from "@/app/store/hooks";
-import { signInThunk } from "@/features/auth";
-import { hasMessage } from "@/shared/utils/check";
-import { useToast } from "@/shared/hooks/useToast";
+import { usePostSignIn } from "@/features/auth";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
 
 export const SignInForm = () => {
-  const showToastWithOptions = useToast();
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
+
+  const { postSignIn } = usePostSignIn();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,28 +17,9 @@ export const SignInForm = () => {
     const username = String(formData.get('username') || '');
     const password = String(formData.get('password') || '');
 
-    if (username.length === 0 || password.length === 0) {
-      showToastWithOptions({
-        icon: 'error',
-        content: 'ユーザ名とパスワードを入力してください',
-      });
-      return; 
-    }
-
-    try {
-      await dispatch(signInThunk({ username, password })).unwrap();
-
-      showToastWithOptions({
-        icon: 'success',
-        content: 'ログインしました',
-      });
+    await postSignIn({ username, password }, () => {
       navigate(location.state?.from?.pathname || '/resumes');
-    } catch (error) {
-      showToastWithOptions({
-        icon: 'error',
-        content: (hasMessage(error) && error.message) || 'ログインに失敗しました。しばらく経ってから再度お試しください',
-      });
-    }
+    });
   };
 
   return (
