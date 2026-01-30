@@ -10,6 +10,7 @@ const meta: Meta<typeof Button> = {
     styleType:'solid',
     color:'primary',
     size: 'md',
+    loading: false,
   },
   argTypes: {
     styleType: {

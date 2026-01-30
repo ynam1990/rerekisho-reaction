@@ -18,9 +18,16 @@ const propsToStop = new Set([
   'outlineColor',
 ]);
 
+export const TextArea = forwardRef<HTMLTextAreaElement, Props>((props: Props, ref) => (
+  <StyledTextArea
+    ref={ ref }
+    { ...props }
+  />
+));
+
 const StyledTextArea = styled.textarea.withConfig({
-    shouldForwardProp: (prop) => !propsToStop.has(prop),
-  })<Props>`
+  shouldForwardProp: (prop) => !propsToStop.has(prop),
+})<Props>`
   width: 100%;
   height: 96px;
   resize: vertical;
@@ -73,10 +80,3 @@ const StyledTextArea = styled.textarea.withConfig({
     }
   } }
 `;
-
-export const TextArea = forwardRef<HTMLTextAreaElement, Props>((props: Props, ref) => (
-  <StyledTextArea
-    ref={ ref }
-    { ...props }
-  />
-));

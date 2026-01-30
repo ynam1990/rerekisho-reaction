@@ -17,6 +17,13 @@ const propsToStop = new Set([
   'outlineColor',
 ]);
 
+export const Input = forwardRef<HTMLInputElement, Props>((props: Props, ref) => (
+  <StyledInput
+    ref={ ref }
+    { ...props }
+  />
+));
+
 const StyledInput = styled.input.withConfig({
     shouldForwardProp: (prop) => !propsToStop.has(prop),
   })<Props>`
@@ -65,10 +72,3 @@ const StyledInput = styled.input.withConfig({
     }
   } }
 `;
-
-export const Input = forwardRef<HTMLInputElement, Props>((props: Props, ref) => (
-  <StyledInput
-    ref={ ref }
-    { ...props }
-  />
-));
