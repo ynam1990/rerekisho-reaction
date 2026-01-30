@@ -36,6 +36,9 @@ export const useDeleteMe = () => {
           onEnterPress: () => {
             if (onAfterDelete) onAfterDelete();
           },
+          onEscPress: () => {
+            if (onAfterDelete) onAfterDelete();
+          },
         });
       } catch (error) {
         showToastWithOptions({

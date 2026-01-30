@@ -10,6 +10,7 @@ export type ModalOptions = {
   content?: React.ReactNode;
   footerContent?: React.ReactNode;
   onEnterPress?: () => void;
+  onEscPress?: () => void;
 };
 
 type Props = ModalOptions;
@@ -117,6 +118,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
   const [content, setContent] = useState<React.ReactNode>(props.content || null);
   const [footerContent, setFooterContent] = useState<React.ReactNode>(props.footerContent || null);
   const [onEnterPress, setOnEnterPress] = useState<ModalOptions['onEnterPress']>(() => props.onEnterPress);
+  const [onEscPress, setOnEscPress] = useState<ModalOptions['onEscPress']>(() => props.onEscPress);
 
   useImperativeHandle(ref, () => ({
     show: () => {
@@ -143,6 +145,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       onClick={ (e) => {
         e.stopPropagation();
         setIsShow(false);
+        onEscPress?.();
       } }
       onKeyDown={ (e) => {
         // ターゲットが自分かどうか判定します
@@ -151,6 +154,7 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
         if (e.key === 'Escape') {
           e.stopPropagation();
           setIsShow(false);
+          onEscPress?.();
         }
         if (e.key === 'Enter') {
           e.stopPropagation();
