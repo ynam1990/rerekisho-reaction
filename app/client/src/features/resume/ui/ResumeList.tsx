@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { PublishedImg, ResumeItemMenuContent, ResumeListRow, ResumeListTopRow, ResumeListWrapper, ResumeName, StyledHeading } from "./ResumeList.styles"
 import { Button, Text } from "@/shared/ui/atoms";
@@ -5,7 +6,7 @@ import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molec
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
 import type { ResumeListItem } from "@/shared/api/types";
-import { useCreateResume, useDeleteResume } from "@/features/resume";
+import { useCreateResume, useDeleteResume, useGetResumes } from "@/features/resume";
 
 type Props = {
   resumeList: ResumeListItem[];
@@ -15,8 +16,13 @@ export const ResumeList = (props: Props) => {
   const { resumeList } = props;
 
   const navigate = useNavigate();
+  const { getResumes } = useGetResumes();
   const { createResume } = useCreateResume();
   const { deleteResume } = useDeleteResume();
+
+  useEffect(() => {
+    getResumes();
+  }, []);
 
   const buttonProps = (resume: ResumeListItem) : GroupedButtonProps[] => {
     return [
