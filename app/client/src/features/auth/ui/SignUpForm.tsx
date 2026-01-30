@@ -1,16 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useToast } from "@/shared/hooks/useToast";
-import { useAppDispatch } from "@/app/store/hooks";
-import { signUpThunk } from "@/features/auth";
-import { hasMessage } from "@/shared/utils/check";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { CheckboxWithLabel } from "@/shared/ui/molecules";
 import { SignUpFormWrapper, StyledInput, StyledLabel, StyledSignUpForm, FormFooterWrapper, StyledHeading } from "./SignUpForm.styles"
+import { usePostSignUp } from "@/features/auth";
 
 export const SignUpForm = () => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const showToastWithOptions = useToast();
+  const { postSignUp } = usePostSignUp();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,50 +17,9 @@ export const SignUpForm = () => {
     const passwordConfirmation = String(formData.get('password_confirmation') || '');
     const agreement = formData.get('agreement') === 'true';
 
-    if (username.length < 4) {
-      showToastWithOptions({
-        icon: 'error',
-        content: 'ユーザ名は4文字以上である必要があります',
-      });
-      return; 
-    }
-    if (password.length < 8) {
-      showToastWithOptions({
-        icon: 'error',
-        content: 'パスワードは8文字以上である必要があります',
-      });
-      return;
-    }
-    if (password !== passwordConfirmation) {
-      showToastWithOptions({
-        icon: 'error',
-        content: 'パスワードと確認用パスワードが一致しません',
-      });
-      return;
-    }
-    if (!agreement) {
-      showToastWithOptions({
-        icon: 'error',
-        content: '同意チェックが必要です',
-      });
-      return;
-    }
-
-    try {
-      await dispatch(signUpThunk({ username, password, agreement })).unwrap();
-
-      showToastWithOptions({
-        icon: 'success',
-        content: '登録が完了しました。新規作成ボタンから、履歴書をご作成いただけます',
-      });
+    await postSignUp({ username, password, passwordConfirmation, agreement }, () => {
       navigate('/resumes');
-
-    } catch (error) {
-      showToastWithOptions({
-        icon: 'error',
-        content: (hasMessage(error) && error.message) || '登録に失敗しました。しばらく経ってから再度お試しください',
-      });
-    }
+    });
   };
 
   return (
