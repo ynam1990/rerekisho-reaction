@@ -6,7 +6,7 @@ import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
 import { useAppDispatch } from '@/app/store/hooks';
 import { useToast } from '@/shared/hooks/useToast';
-import { deleteUserThunk, signOutThunk } from '@/features/auth';
+import { deleteUserThunk, usePostSignOut } from '@/features/auth';
 import { hasMessage } from '@/shared/utils/check';
 import { moveToUrl } from '@/shared/utils/url';
 import { useModal } from '@/shared/hooks/useModal';
@@ -128,23 +128,13 @@ export const Header = (props: Props) => {
   const showToastWithOptions = useToast();
   const { showModalWithOptions, hideModal } = useModal();
 
+  const { postSignOut } = usePostSignOut();
+
   const onSignOutButtonClick = async () => {
-    try {
-      await dispatch(signOutThunk()).unwrap();
-
-      showToastWithOptions({
-        icon: 'success',
-        content: 'ログアウトしました',
-      });
-
+    await postSignOut(() => {
       // トップページへ遷移してリロード
       moveToUrl('/');
-    } catch (error) {
-      showToastWithOptions({
-        icon: 'error',
-        content: (hasMessage(error) && error.message) || 'ログアウトに失敗しました。ページをリロードして再度お試しください',
-      });
-    }
+    });
   };
 
   const onDeleteUserButtonClick = async () => {
