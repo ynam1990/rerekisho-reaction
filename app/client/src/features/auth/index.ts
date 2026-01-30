@@ -2,6 +2,7 @@ export * from './ui/SignInForm';
 export * from './ui/SignUpForm';
 export * from './model/authSlice';
 export * from './model/authThunks';
+export * from './hooks/useDeleteMe';
 export * from './hooks/useGetMe';
 export * from './hooks/usePostSignIn';
 export * from './hooks/usePostSignOut';
