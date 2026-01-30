@@ -8,3 +8,4 @@ export * from './hooks/useCreateResume';
 export * from './hooks/useDeleteResume';
 export * from './hooks/useGetResume';
 export * from './hooks/useGetResumes';
+export * from './hooks/useUpdateResume';

@@ -11,7 +11,7 @@ import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
 import type { ResumeObj } from "@/shared/api/types";
-import { useDeleteResume } from "@/features/resume";
+import { useDeleteResume, useUpdateResume } from "@/features/resume";
 
 type Props = {
   scale: number;
@@ -29,6 +29,8 @@ export const ResumeControls = (props: Props) => {
   const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
 
   const navigate = useNavigate();
+
+  const { updateResume } = useUpdateResume();
   const { deleteResume } = useDeleteResume();
 
   return (
@@ -63,7 +65,7 @@ export const ResumeControls = (props: Props) => {
               setButtonsLoading(prev => ({ ...prev, save: true }));
               
               try {
-                // 保存処理
+                await updateResume(resume);
               } finally {
                 setButtonsLoading(prev => ({ ...prev, save: false }));
               }

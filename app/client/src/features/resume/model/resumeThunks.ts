@@ -1,5 +1,5 @@
 import { callAPI } from "@/shared/api/request";
-import type { ResumeListItem, ResumeObj, SuccessResponseWithResumeId } from "@/shared/api/types";
+import type { ResumeListItem, ResumeObj, SuccessResponseWithResumeId, SuccessResponseWithResumeIdAndUpdatedAt } from "@/shared/api/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { GetResumesPair, GetResumePair, PostResumePair, PutResumePair, DeleteResumePair } from "@/shared/api/types";
 
@@ -73,7 +73,7 @@ export const postResumeThunk = createAsyncThunk<
 );
 
 export const putResumeThunk = createAsyncThunk<
-  SuccessResponseWithResumeId,
+  SuccessResponseWithResumeIdAndUpdatedAt,
   { resumeId: string; resumeData: ResumeObj; }
 >(
   'resume.putResumeThunk',

@@ -4,7 +4,7 @@ import {
   getResumesThunk,
   getResumeThunk,
   postResumeThunk,
-  // putResumeThunk,
+  putResumeThunk,
   deleteResumeThunk,
 } from './resumeThunks';
 
@@ -194,9 +194,10 @@ const resumeSlice = createSlice({
       state.resume = createInitialResumeObj();
     });
 
-    // 更新完了時には、stateの更新はありません
-    // builder.addCase(putResumeThunk.fulfilled, (state, action) => {
-    // });
+    builder.addCase(putResumeThunk.fulfilled, (state, action) => {
+      // 更新日時のみを更新します
+      state.resume.updatedAt = action.payload.updatedAt;
+    });
 
     builder.addCase(deleteResumeThunk.fulfilled, (state, action) => {
       // ローカルで表示に反映するため、履歴書一覧から該当の履歴書を除外します
