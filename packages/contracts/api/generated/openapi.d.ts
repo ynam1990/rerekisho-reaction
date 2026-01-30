@@ -291,7 +291,7 @@ export interface paths {
                 };
             };
             responses: {
-                200: components["responses"]["SuccessWithResumeId"];
+                200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -538,6 +538,10 @@ export interface components {
         SuccessResponseWithResumeId: components["schemas"]["SuccessResponse"] & {
             resumeId: string;
         };
+        SuccessResponseWithResumeIdAndUpdatedAt: components["schemas"]["SuccessResponseWithResumeId"] & {
+            /** Format: date-time */
+            updatedAt: string;
+        };
         ErrorResponse: {
             code: number;
             message: string;
@@ -571,6 +575,23 @@ export interface components {
                  *       "message": "正常に完了しました。",
                  *       "resumeId": "sample1",
                  *       "ok": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponseWithResumeId"];
+            };
+        };
+        /** @description 成功レスポンス（履歴書IDと更新日時付き） */
+        SuccessWithResumeIdAndUpdatedAt: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "resumeId": "sample1",
+                 *       "ok": true,
+                 *       "updatedAt": "2026-01-05T12:00:00Z"
                  *     }
                  */
                 "application/json": components["schemas"]["SuccessResponseWithResumeId"];

@@ -236,7 +236,7 @@ paths:
               $ref: '#/components/schemas/ResumeObj'
       responses:
         '200':
-          $ref: '#/components/responses/SuccessWithResumeId'
+          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -600,6 +600,16 @@ components:
           properties:
             resumeId:
               type: string
+    SuccessResponseWithResumeIdAndUpdatedAt:
+      allOf:
+        - $ref: '#/components/schemas/SuccessResponseWithResumeId'
+        - type: object
+          required:
+            - updatedAt
+          properties:
+            updatedAt:
+              type: string
+              format: date-time
     ErrorResponse:
       type: object
       required:
@@ -633,6 +643,17 @@ components:
             message: "正常に完了しました。"
             resumeId: "sample1"
             ok: true
+    SuccessWithResumeIdAndUpdatedAt:
+      description: 成功レスポンス（履歴書IDと更新日時付き）
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+          example:
+            message: "正常に完了しました。"
+            resumeId: "sample1"
+            ok: true
+            updatedAt: "2026-01-05T12:00:00Z"
     UnauthorizedError:
       description: 認証失敗
       content:

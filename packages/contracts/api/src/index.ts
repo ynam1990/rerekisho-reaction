@@ -12,6 +12,7 @@ export type ResumeObj = Schemas["ResumeObj"];
 
 export type SuccessResponse = Schemas["SuccessResponse"];
 export type SuccessResponseWithResumeId = Schemas["SuccessResponseWithResumeId"];
+export type SuccessResponseWithResumeIdAndUpdatedAt = Schemas["SuccessResponseWithResumeIdAndUpdatedAt"];
 export type ErrorResponse = Schemas["ErrorResponse"];
 export type UnauthorizedErrorResponse = Components["responses"]["UnauthorizedError"];
 export type InternalServerErrorResponse = Components["responses"]["InternalServerError"];
