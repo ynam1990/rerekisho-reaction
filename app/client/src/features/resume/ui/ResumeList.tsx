@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { ModalButtonsWrapper, PublishedImg, ResumeItemMenuContent, ResumeListRow, ResumeListTopRow, ResumeListWrapper, ResumeName, StyledHeading } from "./ResumeList.styles"
+import { PublishedImg, ResumeItemMenuContent, ResumeListRow, ResumeListTopRow, ResumeListWrapper, ResumeName, StyledHeading } from "./ResumeList.styles"
 import { Button, Text } from "@/shared/ui/atoms";
-import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molecules";
+import { ButtonGroup, Popover, ModalButtonsWrapper, type GroupedButtonProps } from "@/shared/ui/molecules";
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
 import type { ResumeListItem } from "@/shared/api/types";

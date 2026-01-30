@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components'
 import logoImg from '@/shared/assets/logos/logo.png'
 import { Button, Anchor, Heading, Text } from '@/shared/ui/atoms';
-import { Popover } from '@/shared/ui/molecules';
+import { Popover, ModalButtonsWrapper } from '@/shared/ui/molecules';
 import { pickWhite } from '@/shared/utils/style';
 import { boxShadow, hideOnMin, postItStickLeft } from '@/shared/styles/mixins';
 import { useAppDispatch } from '@/app/store/hooks';
@@ -122,24 +122,6 @@ const HamburgerMenuContent = styled.div`
     `;
   } }
 `;
-
-const ModalButtonsWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  ${ ({ theme }) => {
-    return css`
-      column-gap: ${ theme.spacing.md.pc };
-      
-      @media (max-width: ${ theme.breakpoints.sp}) {
-        column-gap: ${ theme.spacing.md.sp };
-      } 
-    `;
-  } }
-`;
-
-
 
 export const Header = (props: Props) => {
   const dispatch = useAppDispatch();
