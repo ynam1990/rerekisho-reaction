@@ -10,7 +10,7 @@ export const Footer = (props: Props) => (
     <Text size='sm'>© { new Date().getFullYear() } Rerekishon</Text>
     <Text size='sm'>/</Text>
     <Text size='sm'>
-      <Anchor href='https://github.com/ynam1990/RerekishoReaction'>githubリポジトリ</Anchor>
+      <Anchor href='https://github.com/ynam1990/rerekisho-reaction'>githubリポジトリ</Anchor>
     </Text>
   </FooterWrapper>
 );
