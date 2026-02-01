@@ -215,6 +215,7 @@ APP_PORT= "3000"
 
 # prisma
 DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_local_db"
+SHADOW_DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_shadow_db"
 ※passpassはdocker-compose.ymlにて設定した任意のパスワード
 ```
 
