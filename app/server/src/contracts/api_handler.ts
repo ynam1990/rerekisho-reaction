@@ -7,27 +7,26 @@ type ResponsesOf<Op> = Op extends { responses: infer R }
   ? (R extends Record<number, any> ? R : never)
   : never;
 type JsonBodyResponseOf<R> = R extends { content: { "application/json": infer B } } ? B : never;
+type JsonBodyRequestOf<Op> = Op extends { requestBody: { content: { "application/json": infer B } } } ? B : never;
 
-export function createTypedHandler<
-  apiPath extends keyof Paths,
-  method extends keyof Paths[apiPath]
->(
-  handler: RequestHandler<
-    Paths[apiPath][method] extends { parameters: { path: infer P } }
-      ? P
-      : {},
-    // レスポンスはreply側で処理します
-    unknown,
-    Paths[apiPath][method] extends { requestBody: { content: { "application/json": infer B } } }
-      ? B
-      : never,
-    Paths[apiPath][method] extends { parameters: { query: infer Q } }
-      ? Q
-      : {}
-  >
-): typeof handler
-{
-  return handler;
+export function createTypedAPIHandler<
+  ApiPath extends keyof Paths,
+  Method extends MethodOf<Paths[ApiPath]>,
+  Op extends Paths[ApiPath][Method] = Paths[ApiPath][Method],
+  Params = Paths[ApiPath][Method] extends { parameters: { path: infer P } } ? P : {},
+  Query = Paths[ApiPath][Method] extends { parameters: { query: infer Q } } ? Q : {}
+>(_path: ApiPath, _method: Method) {
+  return (
+    handler: RequestHandler<
+      Params,
+      // レスポンスは複数種類あるためreply側で処理します
+      unknown,
+      JsonBodyRequestOf<Op>,
+      Query
+    >
+  ) : typeof handler => {
+    return handler;
+  };
 };
 
 export type ReplyFn<Resp extends Record<number, any>> = <Status extends keyof Resp>(
@@ -36,7 +35,7 @@ export type ReplyFn<Resp extends Record<number, any>> = <Status extends keyof Re
   body: JsonBodyResponseOf<Resp[Status]>
 ) => void;
 
-export function createReply<
+export function createTypedReply<
   ApiPath extends keyof Paths,
   Method extends MethodOf<Paths[ApiPath]>,
   Op extends Paths[ApiPath][Method] = Paths[ApiPath][Method],
