@@ -1,4 +1,5 @@
-import type { paths, components, operations } from "../generated/openapi";
+// server側での解決のため、拡張子を含めてimportします
+import type { paths, components, operations } from "../generated/openapi.d.ts";
 
 export type Paths = paths;
 export type Components = components;
