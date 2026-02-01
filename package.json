@@ -26,6 +26,7 @@
     "packages/contracts/*"
   ],
   "overrides": {
+    "fast-xml-parser": "5.3.4",
     "lodash": "4.17.23",
     "hono": "^4.11.7",
     "@prisma/dev": {
