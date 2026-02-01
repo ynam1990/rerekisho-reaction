@@ -71,6 +71,10 @@ v24.x系
 /RerekishoReaction/RecordName=ホストゾーンに作成するレコードのドメイン名
 /RerekishoReaction/DBUserName=データベースに接続する任意のユーザ名(例：prisma_user)
 /RerekishoReaction/DBPassword=データベースに設定する任意のパスワード(暗号化推奨)
+/RerekishoReaction/DATABASE_URL=prismaのDB接続情報の形式に則った文字列(例：mysql://prisma_user:passpass@127.0.0.1:3306/rerekisho_reaction_db)
+/RerekishoReaction/NODE_ENV="production"
+/RerekishoReaction/SESSION_SECRET=ランダムな任意のセッションシークレット(例：prod-xxxxxx)
+/RerekishoReaction/SESSION_NAME="connect.sid"
 /RerekishoReaction/DevEmail=Let's Encryptに登録する開発者のEmailアドレス
 ```
 
@@ -209,9 +213,14 @@ docker exec -it rerekisho-reaction-mariadb-local mariadb -u root -p
 
 環境変数を.envファイルとして設置します  
 ```
-# 実行環境（local、staging、production）
-CURRENT_ENV="local"
+# 実行環境（development、production）
+NODE_ENV="development"
 APP_PORT= "3000"
+
+# セッション
+SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SESSION_NAME="connect.sid"
+※SESSION_SECRETはランダムな文字列「openssl rand -base64 64」などで生成
 
 # prisma
 DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_local_db"

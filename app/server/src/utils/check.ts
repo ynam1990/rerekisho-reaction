@@ -1,6 +1,9 @@
-import { ENV_LOCAL } from "../constants/env.const.js";
+import { NODE_ENV, ENV_DEV, ENV_PROD } from "../constants/env.const.js";
 
-export function isLocal (): boolean {
-  return process.env.CURRENT_ENV === ENV_LOCAL;
+export function isDev (): boolean {
+  return NODE_ENV === ENV_DEV;
 };
 
+export function isProd (): boolean {
+  return NODE_ENV === ENV_PROD;
+};
