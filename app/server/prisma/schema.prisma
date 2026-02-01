@@ -6,3 +6,189 @@ generator client {
 datasource db {
   provider = "mysql"
 }
+
+model Session {
+  sessionId String   @id @map("session_id") @db.VarChar(128)
+  expires   BigInt
+  data      String?  @db.MediumText
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([expires], map: "sessions_expires_index")
+  @@map("sessions")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique @db.VarChar(255)
+  email        String?  @db.VarChar(255)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  lastLoginAt  DateTime @map("last_login_at")
+  lastActiveAt DateTime @map("last_active_at")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  resumes Resume[]
+
+  @@map("users")
+}
+
+model Resume {
+  // ResumeだけはIDを文字列で採番します
+  id String @id @default(cuid()) @db.VarChar(128)
+
+  // Foreign Keys
+  userId Int  @map("user_id")
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name             String   @db.VarChar(255)
+  isPublished      Boolean  @default(false) @map("is_published")
+  isGenderVisible  Boolean  @default(true) @map("is_gender_visible")
+  isContactVisible Boolean  @default(true) @map("is_contact_visible")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  values ResumeValues?
+
+  @@map("resumes")
+}
+
+model ResumeValues {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeId String @unique @map("resume_id") @db.VarChar(128)
+  resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  displayDate    DateTime  @map("display_date")
+  name           String    @db.VarChar(255)
+  nameRuby       String    @map("name_ruby") @db.VarChar(255)
+  familyName     String    @map("family_name") @db.VarChar(255)
+  familyNameRuby String    @map("family_name_ruby") @db.VarChar(255)
+  birthdate      DateTime?
+  gender         String    @db.VarChar(255)
+
+  // Relations
+  photoImg              ResumePhotoImg?
+  address               Address?
+  contactAddress        ContactAddress?
+  educationEntities     EducationEntity[]
+  experienceEntities    ExperienceEntity[]
+  certificationEntities CertificationEntity[]
+  customEntities        CustomEntity[]
+
+  @@map("resume_values")
+}
+
+model ResumePhotoImg {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @unique @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  mimeType String @map("mime_type") @db.VarChar(255)
+  imgData  Bytes  @map("img_data") @db.MediumBlob
+
+  @@map("resume_photo_imgs")
+}
+
+model Address {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @unique @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  postalCode String @map("postal_code") @db.VarChar(255)
+  line1      String @db.VarChar(255)
+  line2      String @db.VarChar(255)
+  line1Ruby  String @map("line1_ruby") @db.VarChar(255)
+  line2Ruby  String @map("line2_ruby") @db.VarChar(255)
+  tel        String @db.VarChar(255)
+  email      String @db.VarChar(255)
+
+  @@map("resume_addresses")
+}
+
+model ContactAddress {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @unique @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  postalCode String @map("postal_code") @db.VarChar(255)
+  line1      String @db.VarChar(255)
+  line2      String @db.VarChar(255)
+  line1Ruby  String @map("line1_ruby") @db.VarChar(255)
+  line2Ruby  String @map("line2_ruby") @db.VarChar(255)
+  tel        String @db.VarChar(255)
+  email      String @db.VarChar(255)
+
+  @@map("resume_contact_addresses")
+}
+
+model EducationEntity {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  year        String @db.VarChar(255)
+  month       String @db.VarChar(255)
+  content     String @db.Text
+  entityIndex Int    @map("entity_index")
+
+  @@unique([resumeValuesId, entityIndex], map: "resume_education_entity_id_entity_index_unique")
+  @@map("resume_education_entities")
+}
+
+model ExperienceEntity {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  year        String @db.VarChar(255)
+  month       String @db.VarChar(255)
+  content     String @db.Text
+  entityIndex Int    @map("entity_index")
+
+  @@unique([resumeValuesId, entityIndex], map: "resume_experience_entity_id_entity_index_unique")
+  @@map("resume_experience_entities")
+}
+
+model CertificationEntity {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  year        String @db.VarChar(255)
+  month       String @db.VarChar(255)
+  content     String @db.Text
+  entityIndex Int    @map("entity_index")
+
+  @@unique([resumeValuesId, entityIndex], map: "resume_certification_entity_id_entity_index_unique")
+  @@map("resume_certification_entities")
+}
+
+model CustomEntity {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  label       String @db.VarChar(255)
+  content     String @db.Text
+  entityIndex Int    @map("entity_index")
+
+  @@unique([resumeValuesId, entityIndex], map: "resume_custom_entity_id_entity_index_unique")
+  @@map("resume_custom_entities")
+}
