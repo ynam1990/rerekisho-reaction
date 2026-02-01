@@ -174,8 +174,9 @@ npm run gen:prisma_client
 ```
 実行ディレクトリ: ルート
 
-ローカルサーバ(下記のdockerが起動している状態が必要です)
+ローカルサーバ
 npm run dev:server
+npm run dev:db
 
 ローカルクライアント
 npm run dev:client
@@ -213,15 +214,16 @@ CURRENT_ENV="local"
 APP_PORT= "3000"
 
 # prisma
-DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3306/rerekisho_reaction_app"
+DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_local_db"
+SHADOW_DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_shadow_db"
 ※passpassはdocker-compose.ymlにて設定した任意のパスワード
 ```
 
-以下にてローカル環境が立ち上がります。
+### Prismaマイグレーションの適用
 ```
-npm i
-npm run prisma:generate
-npm run dev
+実行ディレクトリ: ルート
+
+npm run prisma:migrate
 ```
 
 ## client

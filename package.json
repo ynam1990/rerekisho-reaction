@@ -13,9 +13,10 @@
     "dev:storybook": "npm run storybook --workspace app/client",
     "dev:server": "npm run dev --workspace app/server",
     "dev:mockapi": "prism mock ./openapi/spec/openapi.yml -p 3003",
+    "dev:db": "npm run docker:start --workspace app/server",
+    "prisma:migrate": "npm run prisma:migrate --workspace app/server",
     "gen:contract": "openapi-typescript openapi/spec/openapi.yml -o packages/contracts/api/generated/openapi.d.ts",
     "build:contract": "tsc -p tsconfig.json",
-    "gen:prisma_client": "npm run prisma:generate --workspace app/server",
     "build:app": "npm run build --workspace app/client && npm run build --workspace app/server",
     "gen:revision": "app/codedeploy/gen_revision.sh",
     "upload:revision": "aws s3 cp revision.zip s3://rerekisho-reaction-code-deploy-s3-bucket/revision.zip"
@@ -25,6 +26,7 @@
     "packages/contracts/*"
   ],
   "overrides": {
+    "fast-xml-parser": "5.3.4",
     "lodash": "4.17.23",
     "hono": "^4.11.7",
     "@prisma/dev": {
