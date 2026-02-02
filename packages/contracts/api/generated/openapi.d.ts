@@ -28,6 +28,7 @@ export interface paths {
             };
             responses: {
                 200: components["responses"]["Success"];
+                400: components["responses"]["Error"];
                 /** @description ユーザID重複エラー */
                 409: {
                     headers: {
@@ -77,6 +78,7 @@ export interface paths {
             };
             responses: {
                 200: components["responses"]["Success"];
+                400: components["responses"]["Error"];
                 /** @description ログイン失敗 */
                 401: {
                     headers: {
@@ -122,6 +124,7 @@ export interface paths {
             requestBody?: never;
             responses: {
                 200: components["responses"]["Success"];
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -163,6 +166,7 @@ export interface paths {
                         };
                     };
                 };
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -180,6 +184,7 @@ export interface paths {
             requestBody?: never;
             responses: {
                 200: components["responses"]["Success"];
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -215,6 +220,7 @@ export interface paths {
                         "application/json": components["schemas"]["ResumeListItem"][];
                     };
                 };
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -231,6 +237,7 @@ export interface paths {
             requestBody?: never;
             responses: {
                 200: components["responses"]["SuccessWithResumeId"];
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -270,6 +277,7 @@ export interface paths {
                         "application/json": components["schemas"]["ResumeObj"];
                     };
                 };
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -292,6 +300,7 @@ export interface paths {
             };
             responses: {
                 200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -311,6 +320,7 @@ export interface paths {
             requestBody?: never;
             responses: {
                 200: components["responses"]["SuccessWithResumeId"];
+                400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
             };
@@ -607,6 +617,22 @@ export interface components {
                  * @example {
                  *       "code": 401,
                  *       "message": "要求された操作にはログインが必要です。",
+                 *       "ok": false
+                 *     }
+                 */
+                "application/json": components["schemas"]["ErrorResponse"];
+            };
+        };
+        /** @description 汎用的なエラーレスポンス */
+        Error: {
+            headers: {
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "code": 400,
+                 *       "message": "不正なリクエストです。",
                  *       "ok": false
                  *     }
                  */
