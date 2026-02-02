@@ -10,6 +10,10 @@ export const createLogRequestMiddleware = () => {
     if (isDev()) {
       let info = `[${ new Date().toISOString() }] ${ req.method } ${ req.url }`;
       console.log(info);
+      console.log('Headers:', req.headers);
+      console.log('Body:', req.body);
+      console.log('Params:', req.params);
+      console.log('Query:', req.query);
     }
 
     next();
