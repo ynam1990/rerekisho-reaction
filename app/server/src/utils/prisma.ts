@@ -1,3 +1,4 @@
+export { Prisma } from "../generated/prisma/client.js";
 import { PrismaClient } from "../generated/prisma/client.js";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { DATABASE_URL } from "../constants/env.const.js";
