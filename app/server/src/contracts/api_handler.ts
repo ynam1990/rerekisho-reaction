@@ -30,7 +30,6 @@ export function createTypedAPIHandler<
 };
 
 export type ReplyFn<Resp extends Record<number, any>> = <Status extends keyof Resp>(
-  res: Response,
   status: Status,
   body: JsonBodyResponseOf<Resp[Status]>
 ) => void;
@@ -40,8 +39,8 @@ export function createTypedReply<
   Method extends MethodOf<Paths[ApiPath]>,
   Op extends Paths[ApiPath][Method] = Paths[ApiPath][Method],
   Resp extends Record<number, any> = ResponsesOf<Op>
->(_path: ApiPath, _method: Method): ReplyFn<Resp> {
-  return (res, status, body) => {
+>(res: Response, _path: ApiPath, _method: Method): ReplyFn<Resp> {
+  return (status, body) => {
     res.status(status as number).json(body);
   };
 };
