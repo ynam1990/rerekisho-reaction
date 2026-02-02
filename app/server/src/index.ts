@@ -9,6 +9,11 @@ import { createLogRequestMiddleware } from './middlewares/logger.js';
 
 const app = express();
 
+// リクエストボディのパース設定
+app.use(express.json());
+// Formデータは受け取らない想定
+// app.use(express.urlencoded({ extended: true }));
+
 // Nginxのプロキシを信頼
 app.set('trust proxy', 1);
 
