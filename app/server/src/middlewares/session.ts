@@ -9,6 +9,7 @@ declare module "express-session" {
     userId?: number;
     username?: string;
     sessionVersion?: number;
+    lastActiveAt?: Date;
   }
 }
 
