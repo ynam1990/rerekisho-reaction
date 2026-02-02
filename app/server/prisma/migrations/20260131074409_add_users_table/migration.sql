@@ -4,6 +4,7 @@ CREATE TABLE `users` (
     `username` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NULL,
     `password_hash` VARCHAR(255) NOT NULL,
+    `session_version` INTEGER NOT NULL DEFAULT 0,
     `last_login_at` DATETIME(3) NOT NULL,
     `last_active_at` DATETIME(3) NOT NULL,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
