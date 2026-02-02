@@ -142,6 +142,7 @@ model EducationEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_education_entity_id_entity_index_unique")
   @@map("resume_education_entities")
@@ -158,6 +159,7 @@ model ExperienceEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_experience_entity_id_entity_index_unique")
   @@map("resume_experience_entities")
@@ -174,6 +176,7 @@ model CertificationEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_certification_entity_id_entity_index_unique")
   @@map("resume_certification_entities")
@@ -189,6 +192,7 @@ model CustomEntity {
   label       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_custom_entity_id_entity_index_unique")
   @@map("resume_custom_entities")
