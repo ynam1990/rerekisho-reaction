@@ -1,11 +1,20 @@
 import 'dotenv/config';
 import './utils/before_shutdown.js'
+import cron from 'node-cron';
+import { runDailyBatches } from './batches/daily.js';
 import express from 'express';
 import routes from './routes/index.js';
 import { publicDirectoryPath } from './utils/file_path.js';
 import { APP_PORT } from './constants/env.const.js';
 import { createSessionMiddleware } from './middlewares/session.js';
 import { createLogRequestMiddleware } from './middlewares/logger.js';
+
+// バッチ処理を予約
+cron.schedule('0 0 * * *', async () => {
+  await runDailyBatches();
+}, {
+  timezone: 'Asia/Tokyo',
+});
 
 const app = express();
 
