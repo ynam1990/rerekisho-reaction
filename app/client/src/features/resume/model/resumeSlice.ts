@@ -4,7 +4,6 @@ import {
   getResumesThunk,
   getResumeThunk,
   postResumeThunk,
-  putResumeThunk,
   deleteResumeThunk,
 } from './resumeThunks';
 
@@ -13,7 +12,7 @@ type ResumeState = {
   resumeList: ResumeListItem[];
 };
 
-const createInitialResumeObj = (): ResumeObj => {
+export const createInitialResumeObj = (): ResumeObj => {
   const initialResumeObj: ResumeObj = {
     id: '',
     name: '',
@@ -189,12 +188,11 @@ const resumeSlice = createSlice({
       state.resume = createInitialResumeObj();
     });
 
-    builder.addCase(postResumeThunk.fulfilled, (state) => {
+    builder.addCase(postResumeThunk.fulfilled, (state, action) => {
+      // [memo] 作成・更新APIを共通化したため、初期化をコメントアウトしています
       // 履歴書作成後にそのresumeIdに遷移しますが、その際に前のresumeオブジェクトが表示されないよう、初期化します
-      state.resume = createInitialResumeObj();
-    });
+      // state.resume = createInitialResumeObj();
 
-    builder.addCase(putResumeThunk.fulfilled, (state, action) => {
       // 更新日時のみを更新します
       state.resume.updatedAt = action.payload.updatedAt;
     });
