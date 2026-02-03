@@ -9,4 +9,9 @@ npm install
 cd ../
 
 ./scripts/after_install_generate_env.sh
+
+cd ./app
+npm run prisma migrate deploy
+cd ../
+
 systemctl enable rerekisho_reaction_app.service
