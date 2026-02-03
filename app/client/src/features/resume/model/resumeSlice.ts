@@ -105,6 +105,10 @@ const resumeSlice = createSlice({
   name: 'resume',
   initialState,
   reducers: {
+    resetResume: (state) => {
+      state.resume = createInitialResumeObj();
+      state.resumeList = [];
+    },
     updateResume: (state, action: { payload: Partial<ResumeObj> }) => {
       state.resume = {
         ...state.resume,
@@ -205,6 +209,7 @@ const resumeSlice = createSlice({
 });
 
 export const {
+  resetResume,
   updateResume,
   updateValues,
   updateEntities,

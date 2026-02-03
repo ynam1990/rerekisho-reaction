@@ -11,6 +11,7 @@ export const useCreateResume = () => {
     try {
       // 新規データを作成してPOSTします
       const newResumeData = createInitialResumeObj();
+      newResumeData.name = '新規履歴書';
 
       const { resumeId } = await dispatch(postResumeThunk({
         resumeData: newResumeData,
