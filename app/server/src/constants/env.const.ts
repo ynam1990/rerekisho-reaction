@@ -13,3 +13,7 @@ export const DB_NAME = databaseUrl.pathname.slice(1);
 
 export const SESSION_SECRET = String(process.env.SESSION_SECRET);
 export const SESSION_NAME = process.env.SESSION_NAME ?? 'connect.sid';
+
+export const MAX_RESUME_COUNT_PER_USER = 10;
+export const MAX_FILE_SIZE_BYTES = 500 * 1024; // 500KB
+export const ALLOWED_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
