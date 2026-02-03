@@ -1,5 +1,6 @@
 # rerekisho-reaction
-履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。 
+履歴書をブラウザ上で作成できる、Webアプリケーションのサンプルです。  
+Webアプリ開発を学習される方向けの参考用として公開しています。  
 
 公開Webサイト  
 https://rerekishon.ynam.click
