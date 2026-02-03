@@ -226,7 +226,10 @@ export interface paths {
             };
         };
         put?: never;
-        /** 履歴書データの新規作成 */
+        /**
+         * 履歴書データの新規作成・更新の共通エンドポイント
+         * @description idが存在しない場合は新規作成、存在する場合は更新を行います
+         */
         post: {
             parameters: {
                 query?: never;
@@ -234,9 +237,13 @@ export interface paths {
                 path?: never;
                 cookie?: never;
             };
-            requestBody?: never;
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ResumeObj"];
+                };
+            };
             responses: {
-                200: components["responses"]["SuccessWithResumeId"];
+                200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
                 400: components["responses"]["Error"];
                 401: components["responses"]["UnauthorizedError"];
                 500: components["responses"]["InternalServerError"];
@@ -282,29 +289,7 @@ export interface paths {
                 500: components["responses"]["InternalServerError"];
             };
         };
-        /** 履歴書IDを指定して、履歴書データを更新 */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description 更新対象の履歴書ID */
-                    resumeId: string;
-                };
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ResumeObj"];
-                };
-            };
-            responses: {
-                200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        put?: never;
         post?: never;
         /** 履歴書IDを指定して、履歴書データを削除 */
         delete: {
@@ -604,7 +589,7 @@ export interface components {
                  *       "updatedAt": "2026-01-05T12:00:00Z"
                  *     }
                  */
-                "application/json": components["schemas"]["SuccessResponseWithResumeId"];
+                "application/json": components["schemas"]["SuccessResponseWithResumeIdAndUpdatedAt"];
             };
         };
         /** @description 認証失敗 */

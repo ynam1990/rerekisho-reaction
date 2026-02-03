@@ -195,19 +195,26 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
-      summary: 履歴書データの新規作成
+      summary: 履歴書データの新規作成・更新の共通エンドポイント
+      description: idが存在しない場合は新規作成、存在する場合は更新を行います
       tags:
         - ログイン後API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeObj'
       responses:
         '200':
-          $ref: '#/components/responses/SuccessWithResumeId'
+          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
         '400':
           $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  
+
   /api/resumes/{resumeId}:
     get:
       summary: 履歴書IDに紐づく履歴書データの取得
@@ -227,32 +234,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResumeObj'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-    put:
-      summary: 履歴書IDを指定して、履歴書データを更新
-      tags:
-        - ログイン後API
-      parameters:
-        - name: resumeId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: 更新対象の履歴書ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResumeObj'
-      responses:
-        '200':
-          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -668,7 +649,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+            $ref: '#/components/schemas/SuccessResponseWithResumeIdAndUpdatedAt'
           example:
             message: "正常に完了しました。"
             resumeId: "sample1"
