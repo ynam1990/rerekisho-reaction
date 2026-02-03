@@ -62,7 +62,7 @@ model ResumeValues {
   resumeId String @unique @map("resume_id") @db.VarChar(128)
   resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
-  displayDate    DateTime  @map("display_date")
+  displayDate    DateTime?  @map("display_date")
   name           String    @db.VarChar(255)
   nameRuby       String    @map("name_ruby") @db.VarChar(255)
   familyName     String    @map("family_name") @db.VarChar(255)
