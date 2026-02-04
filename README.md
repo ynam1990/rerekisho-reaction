@@ -73,6 +73,8 @@ v24.x系
 /RerekishoReaction/DBUserName=データベースに接続する任意のユーザ名(例：prisma_user)
 /RerekishoReaction/DBPassword=データベースに設定する任意のパスワード(暗号化推奨)
 /RerekishoReaction/DATABASE_URL=prismaのDB接続情報の形式に則った文字列(例：mysql://prisma_user:passpass@localhost:3306/rerekisho_reaction_db)
+/RerekishoReaction/REDIS_HOST="127.0.0.1"
+/RerekishoReaction/REDIS_PORT="6379"
 /RerekishoReaction/NODE_ENV="production"
 /RerekishoReaction/SESSION_SECRET=ランダムな任意のセッションシークレット(例：prod-xxxxxx)
 /RerekishoReaction/SESSION_NAME="connect.sid"
@@ -230,6 +232,10 @@ SESSION_NAME="connect.sid"
 DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_local_db"
 SHADOW_DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_shadow_db"
 ※passpassはdocker-compose.ymlにて設定した任意のパスワード
+
+# redis
+REDIS_HOST="127.0.0.1"
+REDIS_PORT=3004
 ```
 
 ### Prismaマイグレーションの適用

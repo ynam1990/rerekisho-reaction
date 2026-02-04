@@ -142,6 +142,11 @@ Resources:
           systemctl enable crond
           systemctl start crond
 
+          # redis6をインストール
+          dnf install -y redis6
+          systemctl enable redis6
+          systemctl start redis6
+
           # AWS CodeDeployのインストール
           yum update
           yum install ruby -y
