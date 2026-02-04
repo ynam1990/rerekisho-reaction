@@ -1,17 +1,20 @@
 #!/bin/bash
+set -euo pipefail
+
+# CodeDeployのスクリプトはdeployment-archiveで実行されるため、まずappディレクトリに移動します
+cd /var/rerekisho_reaction_app/app
+
+../scripts/after_install_generate_env.sh
+
+set -a
+source ./.env
+set +a
+
+npm ci --omit=dev
+npx prisma migrate deploy
 
 systemctl enable nginx
-./scripts/after_install_check_cert.sh
+../scripts/after_install_check_cert.sh
 systemctl start nginx
-
-cd /var/rerekisho_reaction_app/app
-npm install
-cd ../
-
-./scripts/after_install_generate_env.sh
-
-cd ./app
-npm run prisma migrate deploy
-cd ../
 
 systemctl enable rerekisho_reaction_app.service
