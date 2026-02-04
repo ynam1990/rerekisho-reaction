@@ -72,7 +72,7 @@ v24.x系
 /RerekishoReaction/RecordName=ホストゾーンに作成するレコードのドメイン名
 /RerekishoReaction/DBUserName=データベースに接続する任意のユーザ名(例：prisma_user)
 /RerekishoReaction/DBPassword=データベースに設定する任意のパスワード(暗号化推奨)
-/RerekishoReaction/DATABASE_URL=prismaのDB接続情報の形式に則った文字列(例：mysql://prisma_user:passpass@127.0.0.1:3306/rerekisho_reaction_db)
+/RerekishoReaction/DATABASE_URL=prismaのDB接続情報の形式に則った文字列(例：mysql://prisma_user:passpass@localhost:3306/rerekisho_reaction_db)
 /RerekishoReaction/NODE_ENV="production"
 /RerekishoReaction/SESSION_SECRET=ランダムな任意のセッションシークレット(例：prod-xxxxxx)
 /RerekishoReaction/SESSION_NAME="connect.sid"
@@ -153,6 +153,9 @@ aws deploy create-deployment \
   }' \
   --description "RerekishoReaction deploy from s3 revision.zip"
 ```
+**after_install.shがメモリ不足で失敗する場合があります。その場合は以下のshでスワップ領域を追加するなどします。**  
+/app/codedeploy/scripts/_add_swapfile.sh  
+
 ### CodeDeployのAfterInstallの内容について
 ALBを利用していないため、Let's EncryptにてSSL証明書を取得しています。  
 CloudFormationでRoute53のAレコードを作成している都合上、DNSに浸透してからCodeDeployにてデプロイすることでLet's Encryptが通るようになります。  
