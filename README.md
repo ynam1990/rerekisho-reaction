@@ -24,6 +24,7 @@ Expressのバックエンドコード群です。
 
 /app/client
 Reactのフロントエンドコード群です。
+基本はFSD、shared/uiのみAtomicDesign風に分けています。
 
 /openapi
 バックエンド・フロントエンドでAPI仕様を共有するためのOpenAPI記述です。
@@ -37,7 +38,7 @@ Reactのフロントエンドコード群です。
   - AWS VPC、Route53、IAM、S3、EC2
   - AWS CloudFormation (インフラ構造の自動デプロイ)
   - AWS CodeDeploy (コードの自動デプロイ)
-- バックエンド Node.js + MariaDB
+- バックエンド Node.js + MariaDB + Redis
   - Express
   - Prisma (ORM)
   - Prism (モックサーバー)
