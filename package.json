@@ -2,7 +2,7 @@
   "name": "rerekisho-reaction",
   "private": true,
   "version": "1.0.0",
-  "description": "履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。",
+  "description": "履歴書をブラウザ上で作成できる、Webアプリケーションのサンプルです。Webアプリ開発を学習される方向けの参考用として公開しています。",
   "repository": "github:ynam1990/rerekisho-reaction",
   "license": "MIT",
   "author": "ynam1990",
