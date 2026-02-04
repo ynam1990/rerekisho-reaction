@@ -142,6 +142,11 @@ Resources:
           systemctl enable crond
           systemctl start crond
 
+          # redis6をインストール
+          dnf install -y redis6
+          systemctl enable redis6
+          systemctl start redis6
+
           # AWS CodeDeployのインストール
           yum update
           yum install ruby -y
@@ -206,9 +211,10 @@ Resources:
                 User=ec2-user
                 Group=ec2-user
                 WorkingDirectory=/var/rerekisho_reaction_app
+                EnvironmentFile=/var/rerekisho_reaction_app/.env
                 ExecStart=/var/rerekisho_reaction_app/server_start.sh
                 Restart=always
-                RestartSec=30
+                RestartSec=5
                 Environment=NODE_ENV=production
                 Environment=PORT=3000
                 StandardOutput=journal

@@ -1,5 +1,5 @@
 import path from "path";
-import { isLocal } from "./check.js";
+import { isDev } from "./check.js";
 import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -12,7 +12,7 @@ const __dirname = path.join(
 export function publicDirectoryPath (filename?: string) : string {
   return path.join(
     __dirname,
-    isLocal() ? '../../client/dist' : 'public',
+    isDev() ? '../../client/dist' : 'public',
     ...(filename ? [filename] : [])
   )
 };

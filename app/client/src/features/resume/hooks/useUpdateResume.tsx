@@ -1,6 +1,6 @@
 import type { ResumeObj } from "@/shared/api/types";
 import { useAppDispatch } from "@/app/store/hooks";
-import { putResumeThunk } from "@/features/resume";
+import { postResumeThunk } from "@/features/resume";
 import { useToast } from "@/shared/hooks/useToast";
 import { hasMessage } from "@/shared/utils/check";
 
@@ -10,8 +10,8 @@ export const useUpdateResume = () => {
   
   const updateResume = async (resume: ResumeObj, onAfterUpdate?: () => void) => {
     try {
-      await dispatch(putResumeThunk({
-        resumeId: resume.id,
+      // 履歴書データの新規作成と共通のAPIを利用します
+      await dispatch(postResumeThunk({
         resumeData: resume,
       })).unwrap();
 

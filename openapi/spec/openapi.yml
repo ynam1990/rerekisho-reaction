@@ -34,6 +34,8 @@ paths:
                 type: string
               example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/Error'
         '409':
           description: ユーザID重複エラー
           content:
@@ -78,6 +80,8 @@ paths:
                 type: string
               example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           description: ログイン失敗
           content:
@@ -115,6 +119,8 @@ paths:
                 type: string
               example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -142,6 +148,8 @@ paths:
                   ok:
                     type: boolean
                     example: true
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -159,6 +167,8 @@ paths:
                 type: string
               example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
           $ref: '#/components/responses/Success'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -178,22 +188,33 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/ResumeListItem'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
-      summary: 履歴書データの新規作成
+      summary: 履歴書データの新規作成・更新の共通エンドポイント
+      description: idが存在しない場合は新規作成、存在する場合は更新を行います
       tags:
         - ログイン後API
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeObj'
       responses:
         '200':
-          $ref: '#/components/responses/SuccessWithResumeId'
+          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  
+
   /api/resumes/{resumeId}:
     get:
       summary: 履歴書IDに紐づく履歴書データの取得
@@ -213,30 +234,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ResumeObj'
-        '401':
-          $ref: '#/components/responses/UnauthorizedError'
-        '500':
-          $ref: '#/components/responses/InternalServerError'
-    put:
-      summary: 履歴書IDを指定して、履歴書データを更新
-      tags:
-        - ログイン後API
-      parameters:
-        - name: resumeId
-          in: path
-          required: true
-          schema:
-            type: string
-          description: 更新対象の履歴書ID
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ResumeObj'
-      responses:
-        '200':
-          $ref: '#/components/responses/SuccessWithResumeIdAndUpdatedAt'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -255,6 +254,8 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/SuccessWithResumeId'
+        '400':
+          $ref: '#/components/responses/Error'
         '401':
           $ref: '#/components/responses/UnauthorizedError'
         '500':
@@ -648,7 +649,7 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SuccessResponseWithResumeId'
+            $ref: '#/components/schemas/SuccessResponseWithResumeIdAndUpdatedAt'
           example:
             message: "正常に完了しました。"
             resumeId: "sample1"
@@ -663,6 +664,16 @@ components:
           example:
             code: 401
             message: "要求された操作にはログインが必要です。"
+            ok: false
+    Error:
+      description: 汎用的なエラーレスポンス
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: 400
+            message: "不正なリクエストです。"
             ok: false
     InternalServerError:
       description: サーバー内部エラー

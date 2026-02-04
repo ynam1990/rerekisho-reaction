@@ -1,3 +1,4 @@
 #!/bin/bash
+set -euo pipefail
 
-systemctl start rerekisho_reaction_app.service
+systemctl restart rerekisho_reaction_app.service

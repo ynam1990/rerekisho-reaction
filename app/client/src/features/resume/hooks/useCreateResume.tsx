@@ -1,5 +1,5 @@
 import { useAppDispatch } from "@/app/store/hooks";
-import { postResumeThunk } from "@/features/resume";
+import { createInitialResumeObj, postResumeThunk } from "@/features/resume";
 import { useToast } from "@/shared/hooks/useToast";
 import { hasMessage } from "@/shared/utils/check";
 
@@ -9,7 +9,13 @@ export const useCreateResume = () => {
   
   const createResume = async (onAfterCreate: (newResumeId: string) => void) => {
     try {
-      const { resumeId } = await dispatch(postResumeThunk()).unwrap();
+      // 新規データを作成してPOSTします
+      const newResumeData = createInitialResumeObj();
+      newResumeData.name = '新規履歴書';
+
+      const { resumeId } = await dispatch(postResumeThunk({
+        resumeData: newResumeData,
+      })).unwrap();
       showToastWithOptions({
         icon: 'success',
         content: '新しい履歴書の作成が完了しました',

@@ -14,9 +14,12 @@ echo "[gen:revision] root: $ROOT_DIR"
 # 一時ディレクトリの作成
 rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR/app"
+mkdir -p "$TEMP_DIR/app/prisma"
 
 # サーバー側ファイルのコピー
 rsync -a "$SERVER_DIR/dist/" "$TEMP_DIR/app/"
+rsync -a "$SERVER_DIR/prisma/" "$TEMP_DIR/app/prisma/"
+rsync -a "$SERVER_DIR/prisma.config.ts" "$TEMP_DIR/app/"
 rsync -a "$SERVER_DIR/package.json" "$TEMP_DIR/app/"
 
 # package-lock.jsonを生成します

@@ -1,4 +1,5 @@
-import type { paths, components, operations } from "../generated/openapi";
+// server側での解決のため、拡張子を含めてimportします
+import type { paths, components, operations } from "../generated/openapi.d.ts";
 
 export type Paths = paths;
 export type Components = components;
@@ -46,16 +47,12 @@ export type GetResumesPair = [
   Paths["/api/resumes"]["get"]["responses"]["200"]["content"]["application/json"],
 ];
 export type PostResumePair = [
-  undefined,
+  Paths["/api/resumes"]["post"]["requestBody"]["content"]["application/json"],
   Paths["/api/resumes"]["post"]["responses"]["200"]["content"]["application/json"],
 ];
 export type GetResumePair = [
   undefined,
   Paths["/api/resumes/{resumeId}"]["get"]["responses"]["200"]["content"]["application/json"],
-];
-export type PutResumePair = [
-  Paths["/api/resumes/{resumeId}"]["put"]["requestBody"]["content"]["application/json"],
-  Paths["/api/resumes/{resumeId}"]["put"]["responses"]["200"]["content"]["application/json"],
 ];
 export type DeleteResumePair = [
   undefined,

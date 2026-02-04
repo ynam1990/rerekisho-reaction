@@ -11,21 +11,24 @@ model Session {
   sessionId String   @id @map("session_id") @db.VarChar(128)
   expires   BigInt
   data      String?  @db.MediumText
+  userId    Int?     @map("user_id") @default(dbgenerated())
   createdAt DateTime @default(now()) @map("created_at")
 
   @@index([expires], map: "sessions_expires_index")
+  @@index([userId], map: "sessions_user_id_index")
   @@map("sessions")
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  username     String   @unique @db.VarChar(255)
-  email        String?  @db.VarChar(255)
-  passwordHash String   @map("password_hash") @db.VarChar(255)
-  lastLoginAt  DateTime @map("last_login_at")
-  lastActiveAt DateTime @map("last_active_at")
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id             Int      @id @default(autoincrement())
+  username       String   @unique @db.VarChar(255)
+  email          String?  @db.VarChar(255)
+  passwordHash   String   @map("password_hash") @db.VarChar(255)
+  sessionVersion Int      @default(0) @map("session_version")
+  lastLoginAt    DateTime @map("last_login_at")
+  lastActiveAt   DateTime @map("last_active_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   // Relations
   resumes Resume[]
@@ -61,7 +64,7 @@ model ResumeValues {
   resumeId String @unique @map("resume_id") @db.VarChar(128)
   resume   Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
 
-  displayDate    DateTime  @map("display_date")
+  displayDate    DateTime?  @map("display_date")
   name           String    @db.VarChar(255)
   nameRuby       String    @map("name_ruby") @db.VarChar(255)
   familyName     String    @map("family_name") @db.VarChar(255)
@@ -141,6 +144,7 @@ model EducationEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_education_entity_id_entity_index_unique")
   @@map("resume_education_entities")
@@ -157,6 +161,7 @@ model ExperienceEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_experience_entity_id_entity_index_unique")
   @@map("resume_experience_entities")
@@ -173,6 +178,7 @@ model CertificationEntity {
   month       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_certification_entity_id_entity_index_unique")
   @@map("resume_certification_entities")
@@ -188,6 +194,7 @@ model CustomEntity {
   label       String @db.VarChar(255)
   content     String @db.Text
   entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
 
   @@unique([resumeValuesId, entityIndex], map: "resume_custom_entity_id_entity_index_unique")
   @@map("resume_custom_entities")

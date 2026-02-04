@@ -1,5 +1,6 @@
 # rerekisho-reaction
-履歴書をブラウザ上で作成するためのWebアプリケーションのサンプルです。 
+履歴書をブラウザ上で作成できる、Webアプリケーションのサンプルです。  
+Webアプリ開発を学習される方向けの参考用として公開しています。  
 
 公開Webサイト  
 https://rerekishon.ynam.click
@@ -23,6 +24,7 @@ Expressのバックエンドコード群です。
 
 /app/client
 Reactのフロントエンドコード群です。
+基本はFSD、shared/uiのみAtomicDesign風に分けています。
 
 /openapi
 バックエンド・フロントエンドでAPI仕様を共有するためのOpenAPI記述です。
@@ -36,7 +38,7 @@ Reactのフロントエンドコード群です。
   - AWS VPC、Route53、IAM、S3、EC2
   - AWS CloudFormation (インフラ構造の自動デプロイ)
   - AWS CodeDeploy (コードの自動デプロイ)
-- バックエンド Node.js + MariaDB
+- バックエンド Node.js + MariaDB + Redis
   - Express
   - Prisma (ORM)
   - Prism (モックサーバー)
@@ -71,6 +73,12 @@ v24.x系
 /RerekishoReaction/RecordName=ホストゾーンに作成するレコードのドメイン名
 /RerekishoReaction/DBUserName=データベースに接続する任意のユーザ名(例：prisma_user)
 /RerekishoReaction/DBPassword=データベースに設定する任意のパスワード(暗号化推奨)
+/RerekishoReaction/DATABASE_URL=prismaのDB接続情報の形式に則った文字列(例：mysql://prisma_user:passpass@localhost:3306/rerekisho_reaction_db)
+/RerekishoReaction/REDIS_HOST="127.0.0.1"
+/RerekishoReaction/REDIS_PORT="6379"
+/RerekishoReaction/NODE_ENV="production"
+/RerekishoReaction/SESSION_SECRET=ランダムな任意のセッションシークレット(例：prod-xxxxxx)
+/RerekishoReaction/SESSION_NAME="connect.sid"
 /RerekishoReaction/DevEmail=Let's Encryptに登録する開発者のEmailアドレス
 ```
 
@@ -148,6 +156,9 @@ aws deploy create-deployment \
   }' \
   --description "RerekishoReaction deploy from s3 revision.zip"
 ```
+**after_install.shがメモリ不足で失敗する場合があります。その場合は以下のshでスワップ領域を追加するなどします。**  
+/app/codedeploy/scripts/_add_swapfile.sh  
+
 ### CodeDeployのAfterInstallの内容について
 ALBを利用していないため、Let's EncryptにてSSL証明書を取得しています。  
 CloudFormationでRoute53のAレコードを作成している都合上、DNSに浸透してからCodeDeployにてデプロイすることでLet's Encryptが通るようになります。  
@@ -209,14 +220,23 @@ docker exec -it rerekisho-reaction-mariadb-local mariadb -u root -p
 
 環境変数を.envファイルとして設置します  
 ```
-# 実行環境（local、staging、production）
-CURRENT_ENV="local"
+# 実行環境（development、production）
+NODE_ENV="development"
 APP_PORT= "3000"
+
+# セッション
+SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SESSION_NAME="connect.sid"
+※SESSION_SECRETはランダムな文字列「openssl rand -base64 64」などで生成
 
 # prisma
 DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_local_db"
 SHADOW_DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_shadow_db"
 ※passpassはdocker-compose.ymlにて設定した任意のパスワード
+
+# redis
+REDIS_HOST="127.0.0.1"
+REDIS_PORT=3004
 ```
 
 ### Prismaマイグレーションの適用

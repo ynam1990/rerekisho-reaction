@@ -59,6 +59,17 @@ export const Header = (props: Props) => {
 
                   <Button
                     styleType='solid'
+                    color='primary'
+                    noWrap={ true }
+                    onClick={ () => {
+                      moveToUrl('/resumes');
+                    } }
+                  >
+                    履歴書一覧
+                  </Button>
+
+                  <Button
+                    styleType='solid'
                     color='tertiary'
                     noWrap={ true }
                     onClick={ onSignOutButtonClick }

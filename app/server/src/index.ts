@@ -1,28 +1,41 @@
 import 'dotenv/config';
-import express from 'express';
-import { publicDirectoryPath } from './utils/path.js';
-import { APP_PORT } from './constants/env.const.js';
 import './utils/before_shutdown.js'
+import cron from 'node-cron';
+import { runDailyBatches } from './batches/daily.js';
+import express from 'express';
+import routes from './routes/index.js';
+import { publicDirectoryPath } from './utils/file_path.js';
+import { APP_PORT } from './constants/env.const.js';
+import { createSessionMiddleware } from './middlewares/session.js';
+import { createLogRequestMiddleware } from './middlewares/logger.js';
 
-// 作業ディレクトリ確認
-console.log(`App has initiated in ${ process.cwd() }`);
+// バッチ処理を予約
+cron.schedule('0 0 * * *', async () => {
+  await runDailyBatches();
+}, {
+  timezone: 'Asia/Tokyo',
+});
 
 const app = express();
+
+// リクエストボディのパース設定
+app.use(express.json());
+// Formデータは受け取らない想定
+// app.use(express.urlencoded({ extended: true }));
 
 // Nginxのプロキシを信頼
 app.set('trust proxy', 1);
 
-app.use(express.static(
-  publicDirectoryPath()
-));
+// ミドルウェア設定
+app.use(createLogRequestMiddleware())
+app.use(createSessionMiddleware());
 
-app.use((req, res) => {
-  if (req.method !== 'GET') {
-    return res.status(404).json({
-      error: `No api found for ${ req.path }`
-    });
-  }
-  
+// API用のパス
+app.use('/api', routes);
+
+// 静的ファイル配信
+app.use(express.static(publicDirectoryPath()));
+app.use((_req, res) => {
   res.sendFile(
     publicDirectoryPath('index.html')
   );

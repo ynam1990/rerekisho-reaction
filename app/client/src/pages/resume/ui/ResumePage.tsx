@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
-import { useGetResume, Resume, ResumeControls, ResumeEditor, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
+import { useGetResume, Resume, ResumeControls, ResumeEditor, resetResume, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
 import type { ResumeObj } from "@/shared/api/types";
-import { useResumeSelector } from "@/app/store/hooks";
+import { useAppDispatch, useResumeSelector } from "@/app/store/hooks";
 import { useToast } from "@/shared/hooks/useToast";
 
 export const ResumePage = () => {
   const { resume } = useResumeSelector();
+  const dispatch = useAppDispatch();
 
   // 履歴書データの取得
   const { resumeId } = useParams<{ resumeId: string; }>();
@@ -24,6 +25,11 @@ export const ResumePage = () => {
     }
   
     getResume(resumeId);
+
+    return () => {
+      // クリーンアップ時に履歴書データをリセット
+      dispatch(resetResume());
+    };
   }, [resumeId]);
 
   const [scale, setScale] = useState(1);

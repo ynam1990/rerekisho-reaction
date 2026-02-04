@@ -40,11 +40,12 @@ export const Modal = forwardRef<ModalHandle, Props>((props: Props, ref: React.Re
       }, 0);
     },
     hide: () => setIsShow(false),
-    setOptions: ({ title, content, footerContent, onEnterPress }) => {
+    setOptions: ({ title, content, footerContent, onEnterPress, onEscPress }) => {
       if (!isUndefined(title)) setTitle(title);
       if (!isUndefined(content)) setContent(content);
       if (!isUndefined(footerContent)) setFooterContent(footerContent);
       setOnEnterPress(() => onEnterPress);
+      setOnEscPress(() => onEscPress);
     },
   }));
   

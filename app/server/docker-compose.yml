@@ -4,7 +4,7 @@ services:
     container_name: rerekisho-reaction-mariadb-local
     restart: unless-stopped
     ports:
-      - "3002:3306"
+      - "127.0.0.1:3002:3306"
     environment:
       MARIADB_ROOT_PASSWORD: rootpass
       MARIADB_DATABASE: rerekisho_reaction_local_db
@@ -18,5 +18,19 @@ services:
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
 
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+      --save ""
+      --appendonly no
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "127.0.0.1:3004:6379"
+    volumes:
+      - redis_data:/data
+
 volumes:
   mariadb_data:
+  redis_data:

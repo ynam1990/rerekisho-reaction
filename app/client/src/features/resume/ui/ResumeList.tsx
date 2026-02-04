@@ -71,7 +71,7 @@ export const ResumeList = (props: Props) => {
               onClick={ () => navigate(`/resumes/${ resume.id }`) }
             >
               <ResumeName>
-                <Text>{ `[${ dayjs(resume.updatedAt).format('YYYY年MM月DD日') }]` }</Text>
+                <Text>{ `[${ dayjs(resume.updatedAt).format('YYYY年MM月DD日') }更新]` }</Text>
                 <Text>{ resume.name }</Text>
                 { resume.isPublished && (
                   <PublishedImg

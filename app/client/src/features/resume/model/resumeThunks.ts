@@ -1,7 +1,7 @@
 import { callAPI } from "@/shared/api/request";
 import type { ResumeListItem, ResumeObj, SuccessResponseWithResumeId, SuccessResponseWithResumeIdAndUpdatedAt } from "@/shared/api/types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import type { GetResumesPair, GetResumePair, PostResumePair, PutResumePair, DeleteResumePair } from "@/shared/api/types";
+import type { GetResumesPair, GetResumePair, PostResumePair, DeleteResumePair } from "@/shared/api/types";
 
 export const getResumesThunk = createAsyncThunk<
   ResumeListItem[],
@@ -50,47 +50,24 @@ export const getResumeThunk = createAsyncThunk<
 );
 
 export const postResumeThunk = createAsyncThunk<
-  SuccessResponseWithResumeId,
-  void
+  SuccessResponseWithResumeIdAndUpdatedAt,
+  { resumeData: ResumeObj; }
 >(
   'resume.postResumeThunk',
-  async (_, thunkAPI) => {
+  async (payload, thunkAPI) => {
     const { promise } = callAPI<PostResumePair>(
-      '/resumes',
+      `/resumes`,
       {
         method: 'POST',
-      }
-    );
-
-    return await promise.then((response) => {
-      // 履歴書の作成成功
-      return response;
-    }).catch((error) => {
-      // 履歴書の作成失敗
-      return thunkAPI.rejectWithValue({ message: error.message });
-    });
-  }
-);
-
-export const putResumeThunk = createAsyncThunk<
-  SuccessResponseWithResumeIdAndUpdatedAt,
-  { resumeId: string; resumeData: ResumeObj; }
->(
-  'resume.putResumeThunk',
-  async (payload, thunkAPI) => {
-    const { promise } = callAPI<PutResumePair>(
-      `/resumes/${ payload.resumeId }`,
-      {
-        method: 'PUT',
         body: payload.resumeData,
       }
     );
 
     return await promise.then((response) => {
-      // 履歴書の更新成功
+      // 履歴書の作成・更新成功
       return response;
     }).catch((error) => {
-      // 履歴書の更新失敗
+      // 履歴書の作成・更新失敗
       return thunkAPI.rejectWithValue({ message: error.message });
     });
   }
