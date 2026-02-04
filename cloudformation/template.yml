@@ -206,9 +206,10 @@ Resources:
                 User=ec2-user
                 Group=ec2-user
                 WorkingDirectory=/var/rerekisho_reaction_app
+                EnvironmentFile=/var/rerekisho_reaction_app/.env
                 ExecStart=/var/rerekisho_reaction_app/server_start.sh
                 Restart=always
-                RestartSec=30
+                RestartSec=5
                 Environment=NODE_ENV=production
                 Environment=PORT=3000
                 StandardOutput=journal
