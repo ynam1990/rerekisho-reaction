@@ -2,6 +2,8 @@ import { ServiceError } from "../../errors/ServiceError.js";
 import { Prisma, prisma } from "../../utils/prisma.js";
 import type { User } from "../../utils/prisma.types.js";
 import argon2 from "argon2";
+import { assertNotLocked, recordTryCount } from "../../utils/rate_limit.js";
+import { MAX_SIGNUP_FROM_SAME_IP_COUNT, SIGNUP_BLOCK_MINUTES } from "../../constants/env.const.js";
 
 export type SignUpInput = {
   username: string;
@@ -13,8 +15,22 @@ export type SignUpResult = {
   user: User;
 };
 
-export const signUpService = async (input: SignUpInput): Promise<SignUpResult> => {
+export const signUpService = async (input: SignUpInput, ipAddress: string): Promise<SignUpResult> => {
   const { username, password, agreement } = input;
+
+  // 呼び出し上限チェックと記録
+  // アカウント大量作成を防ぐ目的のため、成功時のリセットは行いません(redis側で自動的にexpireされるのを待ちます)
+  await assertNotLocked(
+    'auth:signup',
+    ipAddress,
+    SIGNUP_BLOCK_MINUTES,
+  );
+  await recordTryCount(
+    'auth:signup',
+    ipAddress,
+    SIGNUP_BLOCK_MINUTES,
+    MAX_SIGNUP_FROM_SAME_IP_COUNT,
+  );
 
   if (!username || !password) {
     throw new ServiceError('BAD_REQUEST', 'ユーザ名とパスワードは必須です');

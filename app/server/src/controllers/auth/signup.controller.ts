@@ -8,7 +8,7 @@ export const signUpController = createTypedAPIHandler("/api/auth/signup", "post"
   const reply = createTypedReply(res, "/api/auth/signup", "post");
 
   try {
-    const { user } = await signUpService(req.body);
+    const { user } = await signUpService(req.body, req.ip ?? 'unknown');
 
     req.session.userId = user.id;
     req.session.username = user.username;
