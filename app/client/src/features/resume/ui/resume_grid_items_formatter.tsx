@@ -74,7 +74,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         if (!resume.values.birthdate) return '年    月    日生 (満    歳)';
 
         const birthDay = dayjs(resume.values.birthdate);
-        const age = dayjs().diff(birthDay, 'year');
+        const age = dayjs(resume.values.displayDate || new Date()).diff(birthDay, 'year');
         return `${ birthDay.format('YYYY年 MM月 DD日生') } (満${ age }歳)`;
       })(),
       key: 'birthdate',
@@ -94,7 +94,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   // 性別欄
   if (resume.isGenderVisible) appendList(0, [
     {
-      $cols: [18, 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: false }, $justifyContent: 'center',
+      $cols: [18, 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: false },
       content: '性別',
       innerContent: resume.values.gender,
       innerContentConfig: { $justifyContent: 'center' },
