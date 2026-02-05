@@ -19,7 +19,9 @@ cron.schedule('0 0 * * *', async () => {
 const app = express();
 
 // リクエストボディのパース設定
-app.use(express.json());
+app.use(express.json(
+  { limit: '1mb' },
+));
 // Formデータは受け取らない想定
 // app.use(express.urlencoded({ extended: true }));
 
