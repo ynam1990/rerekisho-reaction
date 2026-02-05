@@ -433,13 +433,21 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       content: string;
     };
 
-    // contentの長さから、内容行の高さを計算
-    const contentLength = item.content.length;
-    // 余裕を持って42文字で1行換算、最低2行
-    const contentRowHeight = Math.max(2, Math.ceil(contentLength / 42));
+    // contentを改行コードで分割
+    const contentLines = item.content.split(/\r\n|\r|\n/);
+    // 最低2行から行数カウントを始めます
+    let contentLineCount = Math.max(contentLines.length, 2);
+    // 各行の長さをチェックし、37文字を超える場合は行数を追加
+    // [memo] 半角文字の場合はより多くの文字が入りますが、簡易的に37文字で計算しています
+    contentLines.forEach(line => {
+      const lineLength = line.length;
+      if (lineLength > 37) {
+        contentLineCount += Math.floor(lineLength / 37);
+      }
+    });
 
     // 残りの行数が足りない場合は、描画を省略します
-    if (remainingGridRows() < 2 + contentRowHeight + 1) return;
+    if (remainingGridRows() < 2 + contentLineCount + 1) return;
 
     // 空白行
     appendList(1, []);
@@ -457,7 +465,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     
     // 内容行の追加
     lastAppended = {
-      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + contentRowHeight], $borders: { top: false, bottom: true, right: true, left: true },
+      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + contentLineCount], $borders: { top: false, bottom: true, right: true, left: true },
       content: null,
       innerContent: item.content,
       innerContentConfig: { $paddings: { left: 8, right: 8 } },
@@ -465,7 +473,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       propId: id,
       entityKey: 'content',
     };
-    appendList(contentRowHeight, [lastAppended]);
+    appendList(contentLineCount, [lastAppended]);
   });
 
   // 最後に追加されたカスタム欄の高さをページ末尾まで伸ばす
