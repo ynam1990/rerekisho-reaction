@@ -515,15 +515,6 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             <StyledHeading size="md">
               学歴
             </StyledHeading>
-
-            <Button
-              styleType="solid"
-              color="tertiary"
-              size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'educations', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
-            >
-              追加
-            </Button>
           </EditorRow>
 
           {
@@ -555,19 +546,21 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             })  
           }
 
-          <EditorRow $direction="row" $justifyContent="space-between">
-            <StyledHeading size="md">
-              職歴
-            </StyledHeading>
-
+          <EditorRow $direction="row" $justifyContent="flex-end">
             <Button
               styleType="solid"
               color="tertiary"
               size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'experiences', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
+              onClick={ () => dispatch(addToEntities({ key: 'educations', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
             >
               追加
             </Button>
+          </EditorRow>
+
+          <EditorRow $direction="row" $justifyContent="space-between">
+            <StyledHeading size="md">
+              職歴
+            </StyledHeading>
           </EditorRow>
 
           {
@@ -599,19 +592,21 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             })
           }
 
-          <EditorRow $direction="row" $justifyContent="space-between">
-            <StyledHeading size="md">
-              資格・免許
-            </StyledHeading>
-
+          <EditorRow $direction="row" $justifyContent="flex-end">
             <Button
               styleType="solid"
               color="tertiary"
               size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'certifications', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
+              onClick={ () => dispatch(addToEntities({ key: 'experiences', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
             >
               追加
             </Button>
+          </EditorRow>
+
+          <EditorRow $direction="row" $justifyContent="space-between">
+            <StyledHeading size="md">
+              資格・免許
+            </StyledHeading>
           </EditorRow>
 
           {
@@ -643,19 +638,21 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             })
           }
 
-          <EditorRow $direction="row" $justifyContent="space-between">
-            <StyledHeading size="md">
-              カスタム項目
-            </StyledHeading>
-
+          <EditorRow $direction="row" $justifyContent="flex-end">
             <Button
               styleType="solid"
               color="tertiary"
               size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'customs', data: { label: '', content: '' } })) }
+              onClick={ () => dispatch(addToEntities({ key: 'certifications', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
             >
-              項目を追加
+              追加
             </Button>
+          </EditorRow>
+
+          <EditorRow $direction="row" $justifyContent="space-between">
+            <StyledHeading size="md">
+              カスタム項目
+            </StyledHeading>
           </EditorRow>
 
           {
@@ -721,6 +718,17 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               );
             })
           }
+
+          <EditorRow $direction="row" $justifyContent="flex-end">
+            <Button
+              styleType="solid"
+              color="tertiary"
+              size="sm"
+              onClick={ () => dispatch(addToEntities({ key: 'customs', data: { label: '', content: '' } })) }
+            >
+              項目を追加
+            </Button>
+          </EditorRow>
 
         </ResumeEditorBody>
 
