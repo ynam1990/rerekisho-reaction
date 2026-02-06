@@ -1,7 +1,8 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { useAppDispatch } from "@/app/store/hooks";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useAppDispatch, useAppPrefsSelector } from "@/app/store/hooks";
+import { setAppPrefs } from "@/shared/model/appPrefsSlice";
 import { useModal } from "@/shared/hooks/useModal";
-import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner } from "./ResumeEditor.styles";
+import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorWidthAdjuster, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "@/shared/api/types";
 import { Button, Close, MonthInput, TextArea } from "@/shared/ui/atoms";
@@ -46,6 +47,12 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     },
   }));
 
+  // 編集パネルの幅調整用
+  const [isAdjusterDragging, setIsAdjusterDragging] = useState(false);
+  const resumeEditorWrapperRef = useRef<HTMLDivElement>(null);
+  const { editorPanelWidth } = useAppPrefsSelector();
+  const adjusterDragStartRef = useRef<{ startX: number, startWidth: number, prevWidth: number } | null>(null);
+
   // 削除確認
   const showConfirmModal = (onConfirm: () => void, title?: string, content?: string) => {
     showModalWithOptions({
@@ -80,9 +87,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     });
   };
 
-
   return (
-    <ResumeEditorWrapper $isOpen={ isOpen }>
+    <ResumeEditorWrapper
+      ref={ resumeEditorWrapperRef }
+      $isOpen={ isOpen }
+      $editorWidth={ editorPanelWidth }
+      $isDragging={ isAdjusterDragging }
+    >
       <ResumeEditorInnerWrapper>
         <ResumeEditorHeader>
           <Close onClick={ () => setIsOpen(false) } color="tertiary" />
@@ -712,6 +723,39 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
           }
 
         </ResumeEditorBody>
+
+        <ResumeEditorWidthAdjuster
+          draggable
+          onClick={ e => e.stopPropagation() }
+          onDragStart={ (e) => {
+            const currentWidth = resumeEditorWrapperRef.current?.getBoundingClientRect().width || 320;
+            adjusterDragStartRef.current = {
+              startX: Math.round(e.clientX),
+              startWidth: currentWidth,
+              prevWidth: currentWidth,
+            };
+            setIsAdjusterDragging(true);
+          }}
+          onDrag={ (e) => {
+            e.preventDefault();
+            if (!adjusterDragStartRef.current) return;
+
+            // 左右に動くごとに編集パネルの幅を調整します
+            const widthChange = Math.round(adjusterDragStartRef.current.startX - e.clientX);
+            const newWidth = adjusterDragStartRef.current.startWidth + widthChange;
+            if (newWidth !== 320) {
+              // Dragイベントの最後の一回が外れ値になることがあるため、一つ前の値を使います
+              dispatch(setAppPrefs(
+                { editorPanelWidth: adjusterDragStartRef.current.prevWidth }
+              ));
+              adjusterDragStartRef.current.prevWidth = Math.max(newWidth, 120);
+            }
+          }}
+          onDragEnd={ (e) => {
+            adjusterDragStartRef.current = null;
+            setIsAdjusterDragging(false);
+          }}
+        />
       </ResumeEditorInnerWrapper>
     </ResumeEditorWrapper>
   );
