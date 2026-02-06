@@ -20,8 +20,8 @@ export const SignUpForm = () => {
 
     await postSignUp({ username, password, passwordConfirmation, agreement }, async () => {
       // 認証状態を確認してから移動します
-      await initializeAuth((isAuthorized: boolean) => {
-        navigate(isAuthorized ? '/resumes' : '/auth/signin');
+      await initializeAuth((isAuthenticated: boolean) => {
+        navigate(isAuthenticated ? '/resumes' : '/auth/signin');
       });
     });
   };

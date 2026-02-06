@@ -2,17 +2,15 @@ import { prisma } from "../../utils/prisma.js";
 
 export type GetMeInput = {
   userId: number;
-  username: string;
   lastActiveAt: Date;
 };
 
 export type GetMeResult = {
-  username: string;
   lastActiveAt: Date;
 };
 
 export const getMeService = async (input: GetMeInput): Promise<GetMeResult> => {
-  const { userId, username, lastActiveAt } = input;
+  const { userId, lastActiveAt } = input;
 
   // セッションの最終アクティブ日時が10分以上前なら更新
   const currentDate = new Date();
@@ -30,7 +28,6 @@ export const getMeService = async (input: GetMeInput): Promise<GetMeResult> => {
   }
 
   return {
-    username,    
     lastActiveAt: lastActiveAtToReturn
   };
 };

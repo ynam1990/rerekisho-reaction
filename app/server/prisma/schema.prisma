@@ -22,6 +22,7 @@ model Session {
 model User {
   id             Int      @id @default(autoincrement())
   username       String   @unique @db.VarChar(255)
+  clientPrefsKey String   @unique @default(cuid()) @map("client_prefs_key") @db.VarChar(128)
   email          String?  @db.VarChar(255)
   passwordHash   String   @map("password_hash") @db.VarChar(255)
   sessionVersion Int      @default(0) @map("session_version")

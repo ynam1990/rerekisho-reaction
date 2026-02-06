@@ -140,11 +140,15 @@ paths:
                 type: object
                 required:
                   - username
+                  - clientPrefsKey
                   - ok
                 properties:
                   username:
                     type: string
                     example: "username123"
+                  clientPrefsKey:
+                    type: string
+                    example: "keyforuser123"
                   ok:
                     type: boolean
                     example: true

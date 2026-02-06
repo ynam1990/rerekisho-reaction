@@ -161,6 +161,8 @@ export interface paths {
                         "application/json": {
                             /** @example username123 */
                             username: string;
+                            /** @example keyforuser123 */
+                            clientPrefsKey: string;
                             /** @example true */
                             ok: boolean;
                         };
@@ -361,9 +363,6 @@ export interface components {
             /**
              * @description レイアウト設定オブジェクト（現在は一部のカラム幅のみ。将来的に追加可能）
              * @example {
-             *       "name": {
-             *         "columnWidth": 21
-             *       },
              *       "birthdate": {
              *         "columnWidth": 16
              *       },

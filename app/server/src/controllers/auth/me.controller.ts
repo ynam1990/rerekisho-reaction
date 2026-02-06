@@ -8,15 +8,14 @@ import { formatErrorResponse, formatSuccessResponse } from "../../utils/format.j
 export const getMeController = createTypedAPIHandler("/api/auth/me", "get")(async (req, res) => {
   const reply = createTypedReply(res, "/api/auth/me", "get");
 
-  let _username = "";
+  // このControllerに到達した時点で、認証されている想定
+  const username = req.session.username!;
+  const clientPrefsKey = req.session.clientPrefsKey!;
   try {
-    // このControllerに到達した時点で、認証されている想定
-    const { username, lastActiveAt } = await getMeService({
+    const { lastActiveAt } = await getMeService({
       userId: req.session.userId!,
-      username: req.session.username!,
       lastActiveAt: req.session.lastActiveAt!,
     });
-    _username = username;
   
     if (req.session.lastActiveAt !== lastActiveAt) {
       req.session.lastActiveAt = lastActiveAt;
@@ -28,7 +27,8 @@ export const getMeController = createTypedAPIHandler("/api/auth/me", "get")(asyn
   }
 
   return reply(200, {
-    username: _username,
+    username,
+    clientPrefsKey,
     ok: true,
   });
 });

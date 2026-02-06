@@ -12,6 +12,7 @@ export const signUpController = createTypedAPIHandler("/api/auth/signup", "post"
 
     req.session.userId = user.id;
     req.session.username = user.username;
+    req.session.clientPrefsKey = user.clientPrefsKey;
     req.session.sessionVersion = user.sessionVersion;
     req.session.lastActiveAt = user.lastActiveAt;
     await req.session.save();
