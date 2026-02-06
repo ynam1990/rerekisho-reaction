@@ -48,6 +48,7 @@ model Resume {
   isPublished      Boolean  @default(false) @map("is_published")
   isGenderVisible  Boolean  @default(true) @map("is_gender_visible")
   isContactVisible Boolean  @default(true) @map("is_contact_visible")
+  layouts          Json     @map("layouts")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
 

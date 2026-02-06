@@ -20,6 +20,7 @@ export const createInitialResumeObj = (): ResumeObj => {
     isGenderVisible: true,
     isContactVisible: true,
     updatedAt: '',
+    layouts: {},
     values: {
       displayDate: '',
       name: '',
@@ -114,6 +115,17 @@ const resumeSlice = createSlice({
         ...state.resume,
         ...action.payload,
       };
+    },
+    updateLayouts: (state, action: { payload: Partial<ResumeObj['layouts']> }) => {
+      const currentLayouts = Object.assign({}, state.resume.layouts);
+      Object.entries(action.payload).forEach(([key, layoutOption]) => {
+        if (layoutOption) {
+          currentLayouts[key] = layoutOption;
+        } else {
+          delete currentLayouts[key];
+        }
+      });
+      state.resume.layouts = currentLayouts;
     },
     updateValues(state, action: { payload: Partial<ResumeObj['values']> }) {
       state.resume.values = {
@@ -211,6 +223,7 @@ const resumeSlice = createSlice({
 export const {
   resetResume,
   updateResume,
+  updateLayouts,
   updateValues,
   updateEntities,
   addToEntities,

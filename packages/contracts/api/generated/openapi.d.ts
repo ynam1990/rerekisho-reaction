@@ -358,6 +358,28 @@ export interface components {
              * @example 2026-01-04T12:00:00Z
              */
             updatedAt: string;
+            /**
+             * @description レイアウト設定オブジェクト（現在は一部のカラム幅のみ。将来的に追加可能）
+             * @example {
+             *       "name": {
+             *         "columnWidth": 21
+             *       },
+             *       "birthdate": {
+             *         "columnWidth": 16
+             *       },
+             *       "address": {
+             *         "columnWidth": 22
+             *       },
+             *       "contactAddress": {
+             *         "columnWidth": 22
+             *       }
+             *     }
+             */
+            layouts: {
+                [key: string]: {
+                    columnWidth?: number;
+                };
+            };
             values: {
                 /** @example 2026-01-01 */
                 displayDate: string;

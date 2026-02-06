@@ -4,6 +4,15 @@ import { formatPostalCode } from '@/shared/utils/format';
 import dayjs from 'dayjs';
 import resumePhotoDefaultImg from '@/shared/assets/icons/icon_resume_photo.png';
 
+export type GridItemAdjustableOptions = {
+  adjustKey: string;
+  colAdjustable?: {
+    currentWidth: number;
+    minWidth: number;
+    maxWidth: number;
+  };
+};
+
 export type ResumeGridItem = GridItemConfig & {
   content: React.ReactNode;
   innerContent?: React.ReactNode;
@@ -11,6 +20,8 @@ export type ResumeGridItem = GridItemConfig & {
   key?: keyof ResumeObj['values'];
   propId?: string;
   entityKey?: string;
+  columnWidth?: number;
+  adjustableOptions?: GridItemAdjustableOptions;
 };
 
 export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], ResumeGridItem[]] => {
@@ -43,7 +54,14 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
     currentGridRowCount += usingRowHeight;
   };
 
+  // 変更可能なカラム幅の計算
+  const getColEndByLayoutKey = (adjustKey: string, startCol: number, defaultWidth: number) => {
+    const columnWidth = resume.layouts?.[adjustKey]?.columnWidth || defaultWidth;
+    return startCol + columnWidth;
+  };
+
   // 基本項目
+  const birthdateColEnd = getColEndByLayoutKey('birthdate', 2, (resume.isGenderVisible ? 16 : 21));
   appendList(7, [
     {
       $cols: [2, 14], $rows: [2, 4], $letterSpacing: 14, $paddings: { left: 0 }, $fontSize: 32,
@@ -69,7 +87,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       key: 'familyName',
     },
     {
-      $cols: [2, resume.isGenderVisible ? 18 : 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: true }, $paddings: { right: 12 }, $justifyContent: 'end', $fontSize: 16,
+      $cols: [2, resume.isGenderVisible ? birthdateColEnd : 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: true }, $paddings: { right: 12 }, $justifyContent: 'end', $fontSize: 16,
       content: (() => {
         if (!resume.values.birthdate) return '年    月    日生 (満    歳)';
 
@@ -78,6 +96,14 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         return `${ birthDay.format('YYYY年 MM月 DD日生') } (満${ age }歳)`;
       })(),
       key: 'birthdate',
+      adjustableOptions: resume.isGenderVisible ? {
+        adjustKey: 'birthdate',
+        colAdjustable: {
+          currentWidth: (birthdateColEnd - 2),
+          minWidth: 12,
+          maxWidth: 17,
+        },
+      } : undefined,
     },
     {
       $cols: [24, 31], $rows: [2, 8], $justifyContent: 'center', $alignItems: 'end',
@@ -94,7 +120,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   // 性別欄
   if (resume.isGenderVisible) appendList(0, [
     {
-      $cols: [18, 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: false },
+      $cols: [birthdateColEnd, 23], $rows: [8, 9], $borders: { top: true, bottom: false, right: true, left: false },
       content: '性別',
       innerContent: resume.values.gender,
       innerContentConfig: { $justifyContent: 'center' },
@@ -103,25 +129,36 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   ]);
   
   // 住所欄
+  const addressColEnd = getColEndByLayoutKey('address', 2, 22);
+  const addressAdjustableOptions = {
+    adjustKey: 'address',
+    colAdjustable: {
+      currentWidth: (addressColEnd - 2),
+      minWidth: 8,
+      maxWidth: 26,
+    },
+  };
   appendList(4, [
     {
-      $cols: [2, 24], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: true },
+      $cols: [2, addressColEnd], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: true },
       content: 'ふりがな',
       innerContent: `${ resume.values.address.line1Ruby } ${ resume.values.address.line2Ruby }`,
       innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
       key: 'address',
       propId: 'line1Ruby',
+      adjustableOptions: addressAdjustableOptions,
     },
     {
-      $cols: [2, 24], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: true },
+      $cols: [2, addressColEnd], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: true },
       content: '現住所',
       innerContent: `〒${ formatPostalCode(resume.values.address.postalCode) }\n${ resume.values.address.line1 }\n${ resume.values.address.line2 }`,
       innerContentConfig: { $paddings: { left: 12 + 13.5 } },
       key: 'address',
       propId: 'line1',
+      adjustableOptions: addressAdjustableOptions,
     },
     {
-      $cols: [24, 32], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: false }, $noWrap: true,
+      $cols: [addressColEnd, 32], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: false }, $noWrap: true,
       content: '電話',
       innerContent: resume.values.address.tel,
       innerContentConfig: { $justifyContent: 'center' },
@@ -129,7 +166,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       propId: 'tel',
     },
     {
-      $cols: [24, 32], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: false },
+      $cols: [addressColEnd, 32], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: false },
       content: (
         <ResumeEmailContent>
           <div>Eメール</div>
@@ -142,26 +179,37 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   ]);
 
   // 連絡先が表示される場合の追加項目
+  const contactAddressColEnd = getColEndByLayoutKey('contactAddress', 2, 22);
+  const contactAddressAdjustableOptions = {
+    adjustKey: 'contactAddress',
+    colAdjustable: {
+      currentWidth: (contactAddressColEnd - 2),
+      minWidth: 8,
+      maxWidth: 26,
+    },
+  };
   if (resume.isContactVisible) {
     appendList(4, [
       {
-        $cols: [2, 24], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: true },
+        $cols: [2, contactAddressColEnd], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: true },
         content: 'ふりがな',
         innerContent: `${ resume.values.contactAddress.line1Ruby } ${ resume.values.contactAddress.line2Ruby }`,
         innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
         key: 'contactAddress',
         propId: 'line1Ruby',
+        adjustableOptions: contactAddressAdjustableOptions,
       },
       {
-        $cols: [2, 24], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: true },
+        $cols: [2, contactAddressColEnd], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: true },
         content: '連絡先',
         innerContent: `〒${ formatPostalCode(resume.values.contactAddress.postalCode) }\n${ resume.values.contactAddress.line1 }\n${ resume.values.contactAddress.line2 }`,
         innerContentConfig: { $paddings: { left: 12 + 13.5 } },
         key: 'contactAddress',
         propId: 'line1',
+        adjustableOptions: contactAddressAdjustableOptions,
       },
       {
-        $cols: [24, 32], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: false }, $noWrap: true,
+        $cols: [contactAddressColEnd, 32], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: false }, $noWrap: true,
         content: '電話',
         innerContent: resume.values.contactAddress.tel,
         innerContentConfig: { $justifyContent: 'center' },
@@ -169,7 +217,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         propId: 'tel',
       },
       {
-        $cols: [24, 32], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: false },
+        $cols: [contactAddressColEnd, 32], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: false },
         content: (
           <ResumeEmailContent>
             <div>Eメール</div>
