@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { usePostSignIn } from "@/features/auth";
+import { useGetMe, usePostSignIn } from "@/features/auth";
 import { Button, Paragraph, Text } from "@/shared/ui/atoms";
 import { SignInFormWrapper, StyledInput, StyledLabel, StyledSignInForm, FormFooterWrapper, LogoImg } from "./SignInForm.styles"
 import logoImg from '@/shared/assets/logos/logo.png'
@@ -9,6 +9,7 @@ export const SignInForm = () => {
   const location = useLocation();
 
   const { postSignIn } = usePostSignIn();
+  const { initializeAuth } = useGetMe();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,8 +18,11 @@ export const SignInForm = () => {
     const username = String(formData.get('username') || '');
     const password = String(formData.get('password') || '');
 
-    await postSignIn({ username, password }, () => {
-      navigate(location.state?.from?.pathname || '/resumes');
+    await postSignIn({ username, password }, async () => {
+      // 認証状態を確認してから移動します
+      await initializeAuth((isAuthorized: boolean) => {
+        navigate(isAuthorized ? (location.state?.from?.pathname || '/resumes') : '/auth/signin');
+      });
     });
   };
 
