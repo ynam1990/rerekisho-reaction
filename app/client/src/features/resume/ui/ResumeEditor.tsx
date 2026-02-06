@@ -13,7 +13,7 @@ type Props = {
 };
 
 export type ResumeEditorHandle = {
-  open: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => void;
+  open: (key: keyof ResumeObj['values'] | 'resumeName', propId?: string, entityKey?: string) => void;
   close: () => void;
 };
 
@@ -27,7 +27,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
   const { showModalWithOptions, hideModal } = useModal();
 
   useImperativeHandle(ref, () => ({
-    open: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => {
+    open: (key: keyof ResumeObj['values'] | 'resumeName', propId?: string, entityKey?: string) => {
       setIsOpen(true);
 
       // 対象要素を探してフォーカスします
@@ -94,7 +94,8 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               履歴書名
               <StyledInput
                 name='name'
-                data-key='name'
+                // 履歴書名のみ、氏名欄と被らないように、特殊なkeyを使います
+                data-key='resumeName'
                 value={ resume.name }
                 onChange={ (e) => dispatch(updateResume({ name: e.target.value })) }
               />

@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
 import { useGetResume, Resume, ResumeControls, ResumeEditor, resetResume, type ResumeEditorHandle, type ResumeHandle } from "@/features/resume";
-import type { ResumeObj } from "@/shared/api/types";
 import { useAppDispatch, useResumeSelector } from "@/app/store/hooks";
 import { useToast } from "@/shared/hooks/useToast";
 
@@ -54,8 +53,11 @@ export const ResumePage = () => {
   };
 
   const resumeEditorRef = useRef<ResumeEditorHandle>(null);
-  const handleResumeClick = (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => {
-    resumeEditorRef.current?.open(key, propId, entityKey);
+  const handleResumeClick = (...args: Parameters<NonNullable<typeof resumeEditorRef.current>['open']>) => {
+    resumeEditorRef.current?.open(...args);
+  };
+  const handleResumeNameClick = () => {
+    resumeEditorRef.current?.open('resumeName');
   };
   const handleResumeBlankSpaceClick = () => {
     resumeEditorRef.current?.close();
@@ -73,6 +75,7 @@ export const ResumePage = () => {
             setScale={ setScale }
             fitScale={ fitScale }
             onConvertToPdf={ handleConvertToPdf }
+            onResumeNameClick={ handleResumeNameClick }
           />
           
           <Resume

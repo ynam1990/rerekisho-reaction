@@ -67,8 +67,9 @@ export const ResumeName = styled.div`
   } }
 `;
 
-export const StyledHeading = styled(Heading)`
+export const StyledHeading = styled(Heading)<{ $clickable?: boolean }>`
   font-weight: normal;
+  cursor: ${ props => (props.$clickable ? 'pointer' : 'default') };
 `;
 
 export const PublishedImg = styled.img`

@@ -19,6 +19,7 @@ type Props = {
   setScale: (scale: number) => void;
   fitScale: () => void;
   onConvertToPdf: () => Promise<void>;
+  onResumeNameClick: () => void;
 };
 
 export const ResumeControls = (props: Props) => {
@@ -40,7 +41,11 @@ export const ResumeControls = (props: Props) => {
     >
       <ResumeNameWrapper>
         <ResumeName>
-          <StyledHeading size="lg">
+          <StyledHeading
+            size="lg"
+            $clickable={ true }
+            onClick={ props.onResumeNameClick }
+          >
             { resume.name }
           </StyledHeading>
 
