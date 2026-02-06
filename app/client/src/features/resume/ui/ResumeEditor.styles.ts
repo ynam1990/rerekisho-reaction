@@ -11,12 +11,12 @@ export const ResumeEditorWrapper = styled.div<{
   position: relative;
   z-index: ${ ({ theme }) => theme.zIndex.resumeEditor };
   overflow-y: scroll;
-  overflow-x: hidden;
+  overflow-x: auto;
   height: calc(100vh - var(--header-height) - var(--footer-height));
   height: calc(100dvh - var(--header-height) - var(--footer-height));
   --editor-width: ${ ({ $editorWidth }) => `${ Math.max(($editorWidth || 320), 120) }px` };
   width: ${ ({ $isOpen }) => $isOpen ? 'var(--editor-width)' : '0px' };
-  max-width: 66%;
+  max-width: 100%;
   flex-shrink: 0;
   background-color: ${ ({ theme }) => pickWhite(theme) };
   transition: ${ ({ $isDragging }) => $isDragging ? 'none' : 'width 0.3s ease-in-out' };
@@ -30,8 +30,7 @@ export const ResumeEditorInnerWrapper = styled.div`
   align-items: flex-start;
   justify-content: flex-start;
   min-height: 100%;
-  width: var(--editor-width);
-  max-width: 100%;
+  width: calc(var(--editor-width) - var(--scrollbar-width));
 
   ${ ({ theme }) => {
     return css`
