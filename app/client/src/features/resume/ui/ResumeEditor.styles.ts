@@ -138,6 +138,13 @@ export const EditorRow = styled.div<{
   } }
 `;
 
+export const EditorRowInnerWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+`;
+
 export const EditorRowInner = styled.div<{
   $justifyContent?: 'flex-start' | 'center' | 'flex-end' | 'space-between';
 }>`
@@ -170,3 +177,33 @@ export const StyledInput = styled(Input)`
 export const StyledHeading = styled(Heading)`
   color: ${ ({ theme }) => theme.color.tertiary };
 `;
+
+export const DraggableDotsIcon = styled.div`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  &> img {
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  &:hover {
+    opacity: ${ ({ theme }) => theme.opacity.hover };
+  }
+  &:active {
+    opacity: ${ ({ theme }) => theme.opacity.active };
+  }
+
+  ${ ({ theme }) => {
+    return css`
+      height: ${ theme.typography.fontSize.lg.pc };
+      
+      @media (max-width: ${ theme.breakpoints.sp}) {
+        height: ${ theme.typography.fontSize.lg.sp };
+      }
+    `;
+  } }
+`;
+

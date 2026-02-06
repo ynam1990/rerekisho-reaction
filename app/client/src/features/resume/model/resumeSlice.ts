@@ -188,6 +188,18 @@ const resumeSlice = createSlice({
         state.resume.values[key].entities[newId] = structuredClone(EMPTY_YEAR_MONTH_DATA);
       }
     },
+    updateIdsOrder<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+      state: any,
+      action: {
+        payload: {
+          key: T;
+          ids: ResumeObj['values'][T]['ids'];
+        };
+      }
+    ) {
+      const { key, ids } = action.payload;
+      state.resume.values[key].ids = ids;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getResumesThunk.fulfilled, (state, action) => {
@@ -228,6 +240,7 @@ export const {
   updateEntities,
   addToEntities,
   removeFromEntities,
+  updateIdsOrder,
 } = resumeSlice.actions;
 export const resumeReducer = resumeSlice.reducer;
 
