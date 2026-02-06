@@ -19,12 +19,14 @@ export type ResumeHandle = {
 export const Resume = forwardRef<ResumeHandle, Props>((props, ref) => {
   const { scale, resume, onResumeClick } = props;
 
-  const paperRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)];
-
+  const resumeGridItemsListByPapers = formatResumeGridItems(resume);
+  const paperRefsList = useRef<(HTMLDivElement | null)[]>([]);
+  
   useImperativeHandle(ref, () => ({
     convertToPdf: async () => {
       await convertToPdf(
-        paperRefs.map(r => r.current!)
+        paperRefsList.current
+          .filter(r => r !== null)
           .filter((el): el is HTMLDivElement => el !== null),
         resume.name
       );
@@ -40,11 +42,11 @@ export const Resume = forwardRef<ResumeHandle, Props>((props, ref) => {
   return (
     <ResumeWrapper>
       {
-        formatResumeGridItems(resume).map((list, listIndex) => (
+        resumeGridItemsListByPapers.map((itemsList, listIndex) => (
           <ResumePaperScaler key={ listIndex } $scale={ scale }>
             <ResumePaperBackground>
-              <ResumePaper ref={ paperRefs[listIndex] }>
-                { list.map((item, index) => {
+              <ResumePaper ref={ (el) => { paperRefsList.current[listIndex] = el; } }>
+                { itemsList.map((item, index) => {
                   const {
                     content,
                     innerContent,

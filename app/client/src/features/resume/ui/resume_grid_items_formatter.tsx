@@ -24,32 +24,54 @@ export type ResumeGridItem = GridItemConfig & {
   adjustableOptions?: GridItemAdjustableOptions;
 };
 
-export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], ResumeGridItem[]] => {
-  const paper1GridItemsList: ResumeGridItem[] = [];
-  const paper2GridItemsList: ResumeGridItem[] = [];
+export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => {
+  const gridItemsList: ResumeGridItem[][] = [[]];
 
+  // 現在のページ
+  let currentPageCount = 1;
   // 残りのgridRowsの開始位置(最初の一個は余白用のため不使用)
   let currentGridRowCount = 1;
   // 一枚目かどうか
-  const isFirstPaper = () => currentGridRowCount < 46;
+  const isFirstPaper = () => currentPageCount === 1;
   // 現在のgridRowsの開始位置
-  const currentGridRowStart = () => isFirstPaper() ? currentGridRowCount + 1 : (currentGridRowCount - 46) + 1;
+  const currentGridRowStart = () => (currentGridRowCount % 46) + 1;
   // 残りのgridRowsの個数
   const remainingGridRows = () => 46 - (currentGridRowStart() - 1);
+  // 次に使用する予定の行数から、そのページの最後の行か判定
+  const checkIsLastRow = (usingRowHeight: number, nextUsingRowHeight: number) => {
+    // 自身が超える場合はfalse
+    if (usingRowHeight > (remainingGridRows() - 1)) return false;
+    // 自身は超えず、次が超える場合はtrue
+    if (usingRowHeight + nextUsingRowHeight > (remainingGridRows() - 1)) return true;
+    // どちらも超えない場合はfalse
+    return false;
+  };
   // 使用する配列を選択
-  const selectList = (usingRowHeight: number) : ResumeGridItem[] => {
-    return isFirstPaper() && usingRowHeight <= remainingGridRows() ? paper1GridItemsList : paper2GridItemsList;
+  const selectPage = (usingRowHeight: number, mutableItems: ResumeGridItem[]) : ResumeGridItem[] => {
+    // 最後の一個は余白使用のため不使用
+    if (usingRowHeight > (remainingGridRows() - 1)) {
+      forcePageBreak();
+
+      // 改ページした場合、各itemのrow位置を調整した上で、borderTopを閉じます
+      mutableItems.forEach(item => {
+        const itemRowCount = item.$rows[1] - item.$rows[0];
+        item.$rows = [currentGridRowStart(), currentGridRowStart() + itemRowCount];
+        if (!item.$borders) item.$borders = {};
+        item.$borders.top = true;
+      });
+    }
+    return gridItemsList[currentPageCount - 1];
   };
   // 強制改ページ
   const forcePageBreak = () => {
-    if (isFirstPaper()) {
-      // 2枚目の最初の行に移動
-      currentGridRowCount = 46 + 1;
-    }
+    // 次ページの最初の行に移動
+    gridItemsList.push([]);
+    currentPageCount += 1;
+    currentGridRowCount = (46 * (currentPageCount - 1)) + 1;
   }
   // 配列に追加し、開始位置を更新
   const appendList = (usingRowHeight: number, items: ResumeGridItem[]) => {
-    const targetList = selectList(usingRowHeight);
+    const targetList = selectPage(usingRowHeight, items);
     targetList.push(...items);
     currentGridRowCount += usingRowHeight;
   };
@@ -233,7 +255,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   // 空白行
   appendList(1, []);
 
-  // 学歴・職歴欄
+  // 学歴・職歴欄(データが短くても、空欄で埋めて1ページ目を使い切ります)
   appendList(2, [
     {
       $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: true }, $justifyContent: 'center',
@@ -257,7 +279,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
 
   const fillWithEmptyRows = (key: 'educations' | 'experiences') => {
     while (remainingGridRows() >= 2) {
-      const isLastRow = remainingGridRows() <= 3;
+      const isLastRow = checkIsLastRow(2, 2);
       const borderBottom = isLastRow ? true : 'thin';
 
       appendList(2, [
@@ -281,10 +303,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         },
       ]);
 
-      if (isLastRow) {
-        forcePageBreak();
-        break;
-      }
+      if (isLastRow) break;
     }
   };
 
@@ -328,16 +347,13 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         content: string;
       };
 
-      // 2ページ目の最初の行は上を閉じる
-      const borderTop = !isFirstPaper() && currentGridRowStart() <= 2 ? true : false;
-
-      // 最後の行になる場合は、欄を閉じる
-      const isLastRow = remainingGridRows() <= 3 || (!isFirstPaper() && key === 'experiences' && isLastItem);
+      // 最後の行になる場合は、欄を閉じる(1ページ目の場合は使い切るまで最後の行扱いしないようにします)
+      const isLastRow = checkIsLastRow(2, 2) || (!isFirstPaper() && key === 'experiences' && isLastItem);
       let borderBottom: (boolean | 'thin') = isLastRow ? true : 'thin';
   
       appendList(2, [
         {
-          $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: borderTop, bottom: borderBottom, right: true, left: true },
+          $cols: [2, 5], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: true },
           content: null,
           innerContent: item.year,
           innerContentConfig: { $justifyContent: 'center' },
@@ -346,7 +362,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
           entityKey: 'year',
         },
         {
-          $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: borderTop, bottom: borderBottom, right: true, left: false },
+          $cols: [5, 7], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
           content: null,
           innerContent: item.month,
           innerContentConfig: { $justifyContent: 'center' },
@@ -355,7 +371,7 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
           entityKey: 'month',
         },
         {
-          $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: borderTop, bottom: borderBottom, right: true, left: false },
+          $cols: [7, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: false, bottom: borderBottom, right: true, left: false },
           content: null,
           innerContent: item.content,
           innerContentConfig: { $paddings: { left: 8, right: 8 } },
@@ -365,12 +381,10 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
         },
       ]);
 
-      if (isLastRow) forcePageBreak();
-
       // 空白埋めチェック
       if (isLastItem) {
         // パターン1: 最後の学歴の時点で、残りの行数が1行分のみの場合（「職歴」の記載直後が改ページにならないように）
-        if (key === 'educations' && remainingGridRows() === 2) {
+        if (key === 'educations' && remainingGridRows() <= 3) {
           fillWithEmptyRows(key);
         }
 
@@ -434,7 +448,8 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   // 各行
   resume.values.certifications.ids.forEach((id, index, array) => {
     const isLastItem = index === array.length - 1;
-    const borderBottom = isLastItem ? true : 'thin';
+    const isLastRow = checkIsLastRow(2, 2);
+    const borderBottom = (isLastItem || isLastRow) ? true : 'thin';
 
     const item = resume.values.certifications.entities[id as keyof typeof resume.values.certifications.entities] as {
       year: string;
@@ -494,11 +509,15 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
       }
     });
 
-    // 残りの行数が足りない場合は、描画を省略します
-    if (remainingGridRows() < 2 + contentLineCount + 1) return;
-
-    // 空白行
-    appendList(1, []);
+    // 残りの行数が足りない場合は、改行して次のページに追加します
+    // (空白行 + 見出し行)が最後の行になるかどうかで判定
+    const isLastRow = checkIsLastRow(1 + 2, contentLineCount);
+    if (isLastRow) {
+      forcePageBreak();
+    } else if (currentGridRowStart() > 1) {
+      // 手前に何らかの欄がある場合のみ空白行を追加
+      appendList(1, []);
+    }
 
     // 見出し行の追加
     appendList(2, [
@@ -525,9 +544,10 @@ export const formatResumeGridItems = (resume: ResumeObj): [ResumeGridItem[], Res
   });
 
   // 最後に追加されたカスタム欄の高さをページ末尾まで伸ばす
-  if (lastAppended && remainingGridRows() > 1) {
+  // 2ページを超えている場合は通常の履歴書フォーマットに合わせる必要がないため、対象外とします
+  if (lastAppended && remainingGridRows() > 1 && currentPageCount === 2) {
     (lastAppended as ResumeGridItem).$rows[1] += (remainingGridRows() - 1);
   }
 
-  return [paper1GridItemsList, paper2GridItemsList];
+  return gridItemsList;
 };
