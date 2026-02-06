@@ -11,6 +11,7 @@ import { Modal, Toast, type ModalHandle, type ModalOptions, type ToastHandle, ty
 import { ToastContext } from './toast_context';
 import { ModalContext } from './modal_context';
 import { useElementRect } from '@/shared/hooks/useElementRect';
+import { useScrollbarRect } from '@/shared/hooks/useScrollbarRect';
 import { useGetMe } from '@/features/auth';
 
 export const App = () => {
@@ -24,6 +25,7 @@ export const App = () => {
   
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
   const { ref: headerRef, elHeight: headerHeight } = useElementRect<HTMLDivElement>();
+  const { scrollbarHeight, scrollbarWidth } = useScrollbarRect();
 
   const toastRef = useRef<ToastHandle | null>(null);
   const showToastWithOptions = (options: ToastOptions) => {
@@ -45,6 +47,8 @@ export const App = () => {
       <GlobalStyle
         headerHeight={ headerHeight }
         footerHeight={ footerHeight }
+        scrollbarHeight={ scrollbarHeight }
+        scrollbarWidth={ scrollbarWidth }
       />
 
       <ToastContext.Provider value={ showToastWithOptions }>

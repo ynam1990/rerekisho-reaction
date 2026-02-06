@@ -3,7 +3,9 @@ import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyle = createGlobalStyle<{
   headerHeight: number;
-  footerHeight: number
+  footerHeight: number;
+  scrollbarHeight: number;
+  scrollbarWidth: number;
 }>`
   /* 共通スタイル */
   body {
@@ -18,5 +20,7 @@ export const GlobalStyle = createGlobalStyle<{
   :root {
     --header-height: ${({ headerHeight }) => `${ headerHeight }px`};
     --footer-height: ${({ footerHeight }) => `${ footerHeight }px`};
+    --scrollbar-height: ${({ scrollbarHeight }) => `${ scrollbarHeight }px`};
+    --scrollbar-width: ${({ scrollbarWidth }) => `${ scrollbarWidth }px`};
   }
 `;
