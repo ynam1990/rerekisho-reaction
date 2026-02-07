@@ -1,6 +1,7 @@
+import { useRef } from 'react';
 import styled from 'styled-components'
-import { pickWhite } from '@/shared/utils/style';
 import { useToast } from '@/shared/hooks/useToast';
+import { Button } from '@/shared/ui/atoms';
 
 type Props = {
   name: string;
@@ -17,6 +18,8 @@ export const ImgInput = (props: Props) => {
   } = props;
 
   const showToastWithOptions = useToast();
+
+  const imgInputRef = useRef<HTMLInputElement>(null);
 
   const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -59,7 +62,19 @@ export const ImgInput = (props: Props) => {
         />
       ) }
 
+      <Button
+        size='sm'
+        color='tertiary'
+        type="button"
+        onClick={ () => {
+          imgInputRef.current?.click();
+        } }
+      >
+        画像ファイルを選択
+      </Button>
+
       <input
+        ref={ imgInputRef }
         name={ name }
         type="file"
         accept="image/*"
@@ -80,11 +95,16 @@ const ImgInputWrapper = styled.div`
   @media (max-width: ${ ({ theme }) => theme.breakpoints.sp}) {
     row-gap: ${ ({ theme }) => theme.spacing.xxs.sp };
   }
+
+  /* ファイルインプットはwidthが固定となる場合があり、スタイル崩れうるため非表示にしています */
+  &> input {
+    display: none;
+  }
 `;
 
 const PreviewImg = styled.img`
   width: 80px;
   height: 80px;
   object-fit: contain;
-  background-color: ${ ({ theme }) => pickWhite(theme) };
+  object-position: left;
 `;

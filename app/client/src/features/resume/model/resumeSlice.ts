@@ -20,6 +20,7 @@ export const createInitialResumeObj = (): ResumeObj => {
     isGenderVisible: true,
     isContactVisible: true,
     updatedAt: '',
+    layouts: {},
     values: {
       displayDate: '',
       name: '',
@@ -115,6 +116,17 @@ const resumeSlice = createSlice({
         ...action.payload,
       };
     },
+    updateLayouts: (state, action: { payload: Partial<ResumeObj['layouts']> }) => {
+      const currentLayouts = Object.assign({}, state.resume.layouts);
+      Object.entries(action.payload).forEach(([key, layoutOption]) => {
+        if (layoutOption) {
+          currentLayouts[key] = layoutOption;
+        } else {
+          delete currentLayouts[key];
+        }
+      });
+      state.resume.layouts = currentLayouts;
+    },
     updateValues(state, action: { payload: Partial<ResumeObj['values']> }) {
       state.resume.values = {
         ...state.resume.values,
@@ -176,6 +188,18 @@ const resumeSlice = createSlice({
         state.resume.values[key].entities[newId] = structuredClone(EMPTY_YEAR_MONTH_DATA);
       }
     },
+    updateIdsOrder<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+      state: any,
+      action: {
+        payload: {
+          key: T;
+          ids: ResumeObj['values'][T]['ids'];
+        };
+      }
+    ) {
+      const { key, ids } = action.payload;
+      state.resume.values[key].ids = ids;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getResumesThunk.fulfilled, (state, action) => {
@@ -211,10 +235,12 @@ const resumeSlice = createSlice({
 export const {
   resetResume,
   updateResume,
+  updateLayouts,
   updateValues,
   updateEntities,
   addToEntities,
   removeFromEntities,
+  updateIdsOrder,
 } = resumeSlice.actions;
 export const resumeReducer = resumeSlice.reducer;
 

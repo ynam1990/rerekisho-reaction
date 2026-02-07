@@ -3,11 +3,15 @@ import { callAPI } from "@/shared/api/request";
 import type { GetMePair, PostSignUpAPIPair, PostSignInAPIPair } from "@/shared/api/types";
 
 export const initializeAuthThunk = createAsyncThunk<
-  { isAuthenticated: boolean; currentUserName: string; },
+  {
+    isAuthenticated: boolean;
+    currentUserName: string;
+    clientPrefsKey: string;
+  },
   void
 >(
   'auth.initializeAuthThunk',
-  async () => {
+  async (_, thunkAPI) => {
     // ログインチェック
     const { promise } = callAPI<GetMePair>(
       '/auth/me',
@@ -22,13 +26,15 @@ export const initializeAuthThunk = createAsyncThunk<
       return {
         isAuthenticated: true,
         currentUserName: response.username || '',
+        clientPrefsKey: response.clientPrefsKey || '',
       };
     }).catch(() => {
       // 未ログインまたはセッション切れ
-      return {
+      return thunkAPI.rejectWithValue({
         isAuthenticated: false,
         currentUserName: '',
-      };
+        clientPrefsKey: '',
+      });
     });
 
     return result;

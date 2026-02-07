@@ -1,19 +1,21 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
-import { useAppDispatch } from "@/app/store/hooks";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { useAppDispatch, useAppPrefsSelector } from "@/app/store/hooks";
+import { setAppPrefs } from "@/shared/model/appPrefsSlice";
 import { useModal } from "@/shared/hooks/useModal";
-import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner } from "./ResumeEditor.styles";
+import { ResumeEditorInnerWrapper, ResumeEditorWrapper, ResumeEditorWidthAdjuster, ResumeEditorHeader, ResumeEditorBody, EditorRow, StyledLabel, StyledInput, StyledHeading, EditorRowInner, EditorRowInnerWrapper, DraggableDotsIcon } from "./ResumeEditor.styles";
 import dayjs from "dayjs";
 import type { ResumeObj } from "@/shared/api/types";
 import { Button, Close, MonthInput, TextArea } from "@/shared/ui/atoms";
-import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateResume, updateValues } from "@/features/resume";
+import { addToEntities, EMPTY_YEAR_MONTH_DATA, removeFromEntities, updateEntities, updateIdsOrder, updateResume, updateValues } from "@/features/resume";
 import { CheckboxWithLabel, ImgInput, ModalButtonsWrapper } from "@/shared/ui/molecules";
+import draggableDotsImg from '@/shared/assets/icons/icon_draggable_dots.png';
 
 type Props = {
   resume: ResumeObj;
 };
 
 export type ResumeEditorHandle = {
-  open: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => void;
+  open: (key: keyof ResumeObj['values'] | 'resumeName', propId?: string, entityKey?: string) => void;
   close: () => void;
 };
 
@@ -27,7 +29,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
   const { showModalWithOptions, hideModal } = useModal();
 
   useImperativeHandle(ref, () => ({
-    open: (key: keyof ResumeObj['values'], propId?: string, entityKey?: string) => {
+    open: (key: keyof ResumeObj['values'] | 'resumeName', propId?: string, entityKey?: string) => {
       setIsOpen(true);
 
       // 対象要素を探してフォーカスします
@@ -45,6 +47,23 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
       setIsOpen(false);
     },
   }));
+
+  // 編集パネルの幅調整用
+  const [isAdjusterDragging, setIsAdjusterDragging] = useState(false);
+  const resumeEditorWrapperRef = useRef<HTMLDivElement>(null);
+  const { editorPanelWidth } = useAppPrefsSelector();
+  const adjusterDragStartRef = useRef<{ startX: number, startWidth: number, prevWidth: number } | null>(null);
+
+  // 配列系項目のドラッグによる並べ替え用
+  const draggedEntityRef = useRef<{ sectionKey: string; entityId: string } | null>(null);
+  const swapIdsByEntityIds = (currentIds: string[], fromId: string, toId: string) => {
+    const newIds = [...currentIds];
+    const fromIndex = newIds.findIndex(id => id === fromId);
+    const toIndex = newIds.findIndex(id => id === toId);
+    // 入れ替え
+    [newIds[fromIndex], newIds[toIndex]] = [newIds[toIndex], newIds[fromIndex]];
+    return newIds;
+  };
 
   // 削除確認
   const showConfirmModal = (onConfirm: () => void, title?: string, content?: string) => {
@@ -80,9 +99,13 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     });
   };
 
-
   return (
-    <ResumeEditorWrapper $isOpen={ isOpen }>
+    <ResumeEditorWrapper
+      ref={ resumeEditorWrapperRef }
+      $isOpen={ isOpen }
+      $editorWidth={ editorPanelWidth }
+      $isDragging={ isAdjusterDragging }
+    >
       <ResumeEditorInnerWrapper>
         <ResumeEditorHeader>
           <Close onClick={ () => setIsOpen(false) } color="tertiary" />
@@ -94,7 +117,8 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               履歴書名
               <StyledInput
                 name='name'
-                data-key='name'
+                // 履歴書名のみ、氏名欄と被らないように、特殊なkeyを使います
+                data-key='resumeName'
                 value={ resume.name }
                 onChange={ (e) => dispatch(updateResume({ name: e.target.value })) }
               />
@@ -503,15 +527,6 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             <StyledHeading size="md">
               学歴
             </StyledHeading>
-
-            <Button
-              styleType="solid"
-              color="tertiary"
-              size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'educations', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
-            >
-              追加
-            </Button>
           </EditorRow>
 
           {
@@ -525,6 +540,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                 $year={ edu.year }
                 $month={ edu.month }
                 $content={ edu.content }
+                draggedEntityRef={ draggedEntityRef }
                 onChange={ (newEntity: { year: string; month: string; content: string }) => {
                   dispatch(updateEntities({
                     key: 'educations',
@@ -539,23 +555,29 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                   '学歴の項目削除',
                   `「${ edu.year || '-' }年 ${ edu.month || '-' }月 ${ edu.content || '' }」の項目を削除しますか？`
                 ) }
+                onSwap={ (fromId, toId) => {
+                  const newIds = swapIdsByEntityIds(resume.values.educations.ids, fromId, toId);
+                  dispatch(updateIdsOrder({ key: 'educations', ids: newIds }));
+                } }
               />;
             })  
           }
+
+          <EditorRow $direction="row" $justifyContent="flex-end">
+            <Button
+              styleType="solid"
+              color="tertiary"
+              size="sm"
+              onClick={ () => dispatch(addToEntities({ key: 'educations', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
+            >
+              追加
+            </Button>
+          </EditorRow>
 
           <EditorRow $direction="row" $justifyContent="space-between">
             <StyledHeading size="md">
               職歴
             </StyledHeading>
-
-            <Button
-              styleType="solid"
-              color="tertiary"
-              size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'experiences', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
-            >
-              追加
-            </Button>
           </EditorRow>
 
           {
@@ -569,6 +591,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                 $year={ exp.year }
                 $month={ exp.month }
                 $content={ exp.content }
+                draggedEntityRef={ draggedEntityRef }
                 onChange={ (newEntity: { year: string; month: string; content: string }) => {
                   dispatch(updateEntities({
                     key: 'experiences',
@@ -583,23 +606,29 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                   '職歴の項目削除',
                   `「${ exp.year || '-' }年 ${ exp.month || '-' }月 ${ exp.content || '' }」の項目を削除しますか？`
                 ) }
+                onSwap={ (fromId, toId) => {
+                  const newIds = swapIdsByEntityIds(resume.values.experiences.ids, fromId, toId);
+                  dispatch(updateIdsOrder({ key: 'experiences', ids: newIds }));
+                } }
               />;
             })
           }
+
+          <EditorRow $direction="row" $justifyContent="flex-end">
+            <Button
+              styleType="solid"
+              color="tertiary"
+              size="sm"
+              onClick={ () => dispatch(addToEntities({ key: 'experiences', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
+            >
+              追加
+            </Button>
+          </EditorRow>
 
           <EditorRow $direction="row" $justifyContent="space-between">
             <StyledHeading size="md">
               資格・免許
             </StyledHeading>
-
-            <Button
-              styleType="solid"
-              color="tertiary"
-              size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'certifications', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
-            >
-              追加
-            </Button>
           </EditorRow>
 
           {
@@ -613,6 +642,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                 $year={ cert.year }
                 $month={ cert.month }
                 $content={ cert.content }
+                draggedEntityRef={ draggedEntityRef }
                 onChange={ (newEntity: { year: string; month: string; content: string }) => {
                   dispatch(updateEntities({
                     key: 'certifications',
@@ -627,23 +657,29 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
                   '資格・免許の項目削除',
                   `「${ cert.year || '-' }年 ${ cert.month || '-' }月 ${ cert.content || '' }」の項目を削除しますか？`
                 ) }
+                onSwap={ (fromId, toId) => {
+                  const newIds = swapIdsByEntityIds(resume.values.certifications.ids, fromId, toId);
+                  dispatch(updateIdsOrder({ key: 'certifications', ids: newIds }));
+                } }
               />;
             })
           }
+
+          <EditorRow $direction="row" $justifyContent="flex-end">
+            <Button
+              styleType="solid"
+              color="tertiary"
+              size="sm"
+              onClick={ () => dispatch(addToEntities({ key: 'certifications', data: structuredClone(EMPTY_YEAR_MONTH_DATA) })) }
+            >
+              追加
+            </Button>
+          </EditorRow>
 
           <EditorRow $direction="row" $justifyContent="space-between">
             <StyledHeading size="md">
               カスタム項目
             </StyledHeading>
-
-            <Button
-              styleType="solid"
-              color="tertiary"
-              size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'customs', data: { label: '', content: '' } })) }
-            >
-              項目を追加
-            </Button>
           </EditorRow>
 
           {
@@ -710,7 +746,51 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             })
           }
 
+          <EditorRow $direction="row" $justifyContent="flex-end">
+            <Button
+              styleType="solid"
+              color="tertiary"
+              size="sm"
+              onClick={ () => dispatch(addToEntities({ key: 'customs', data: { label: '', content: '' } })) }
+            >
+              項目を追加
+            </Button>
+          </EditorRow>
+
         </ResumeEditorBody>
+
+        <ResumeEditorWidthAdjuster
+          draggable
+          onClick={ e => e.stopPropagation() }
+          onDragStart={ (e) => {
+            const currentWidth = resumeEditorWrapperRef.current?.getBoundingClientRect().width || 320;
+            adjusterDragStartRef.current = {
+              startX: Math.round(e.clientX),
+              startWidth: currentWidth,
+              prevWidth: currentWidth,
+            };
+            setIsAdjusterDragging(true);
+          }}
+          onDrag={ (e) => {
+            e.preventDefault();
+            if (!adjusterDragStartRef.current) return;
+
+            // 左右に動くごとに編集パネルの幅を調整します
+            const widthChange = Math.round(adjusterDragStartRef.current.startX - e.clientX);
+            const newWidth = adjusterDragStartRef.current.startWidth + widthChange;
+            if (newWidth !== 320) {
+              // Dragイベントの最後の一回が外れ値になることがあるため、一つ前の値を使います
+              dispatch(setAppPrefs(
+                { editorPanelWidth: adjusterDragStartRef.current.prevWidth }
+              ));
+              adjusterDragStartRef.current.prevWidth = Math.max(newWidth, 120);
+            }
+          }}
+          onDragEnd={ (e) => {
+            adjusterDragStartRef.current = null;
+            setIsAdjusterDragging(false);
+          }}
+        />
       </ResumeEditorInnerWrapper>
     </ResumeEditorWrapper>
   );
@@ -722,8 +802,10 @@ const YearMonthContentEditorRow = (props: {
   $year: string;
   $month: string;
   $content: string;
+  draggedEntityRef: React.RefObject<{ sectionKey: string; entityId: string } | null>;
   onChange: (newEntity: { year: string; month: string; content: string }) => void;
   onRemove: () => void;
+  onSwap: (fromId: string, toId: string) => void;
 }) => {
   const {
     $sectionKey,
@@ -731,38 +813,68 @@ const YearMonthContentEditorRow = (props: {
     $year,
     $month,
     $content,
+    draggedEntityRef,
     onChange,
     onRemove,
+    onSwap,
   } = props;
 
   return (
-    <EditorRow>
-      <EditorRowInner>
-        <MonthInput
-          name={ `${ $sectionKey }_${ $entityId }_select` }
-          value={ { year: $year, month: $month } }
-          dataYear={ {
-            'data-key': $sectionKey,
-            'data-prop-id': $entityId,
-            'data-entity-key': 'year',
-          } }
-          dataMonth={ {
-            'data-key': $sectionKey,
-            'data-prop-id': $entityId,
-            'data-entity-key': 'month',
-          } }
-          onChange={({ dateString, ...newValue }) => onChange({ ...newValue, content: $content })}
-        />
+    <EditorRow
+      onDragEnter={ (e) => {
+        e.preventDefault();
+        if (
+          !draggedEntityRef.current
+          || draggedEntityRef.current.sectionKey !== $sectionKey
+          || draggedEntityRef.current.entityId === $entityId
+        ) return;
 
-        <Button
-          styleType="text"
-          color="tertiary"
-          size="sm"
-          onClick={ () => {onRemove() } }
+        // ドラッグ中の要素との入れ替えを発火します
+        const fromId = draggedEntityRef.current.entityId;
+        const toId = $entityId;
+        onSwap(fromId, toId);
+      }}
+    >
+      <EditorRowInnerWrapper>
+        <EditorRowInner>
+          <MonthInput
+            name={ `${ $sectionKey }_${ $entityId }_select` }
+            value={ { year: $year, month: $month } }
+            dataYear={ {
+              'data-key': $sectionKey,
+              'data-prop-id': $entityId,
+              'data-entity-key': 'year',
+            } }
+            dataMonth={ {
+              'data-key': $sectionKey,
+              'data-prop-id': $entityId,
+              'data-entity-key': 'month',
+            } }
+            onChange={({ dateString, ...newValue }) => onChange({ ...newValue, content: $content })}
+          />
+
+          <Button
+            styleType="text"
+            color="tertiary"
+            size="sm"
+            onClick={ () => {onRemove() } }
+          >
+            削除
+          </Button>
+        </EditorRowInner>
+
+        <DraggableDotsIcon
+          draggable
+          onDragStart={ () => {
+            draggedEntityRef.current = { sectionKey: $sectionKey, entityId: $entityId };
+          }}
+          onDragEnd={ () => {
+            draggedEntityRef.current = null;
+          }}
         >
-          削除
-        </Button>
-      </EditorRowInner>
+          <img src={ draggableDotsImg } alt="アイコンはAI生成です" />
+        </DraggableDotsIcon>
+      </EditorRowInnerWrapper>
 
       <StyledInput
         name={ `${ $sectionKey }_${ $entityId }_content` }

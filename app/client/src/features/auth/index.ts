@@ -1,5 +1,6 @@
 export * from './ui/SignInForm';
 export * from './ui/SignUpForm';
+export * from './model/authListeners';
 export * from './model/authSlice';
 export * from './model/authThunks';
 export * from './hooks/useDeleteMe';

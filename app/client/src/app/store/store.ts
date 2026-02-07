@@ -1,14 +1,20 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { appReducer } from "@/shared/model/appSlice";
-import { authReducer } from "@/features/auth";
+import { appPrefsReducer } from "@/shared/model/appPrefsSlice";
+import { appPrefsListenerMiddleware } from "@/shared/model/appPrefsListeners";
+import { authReducer, authListenerMiddleware } from "@/features/auth";
 import { resumeReducer } from "@/features/resume";
 
 export const store = configureStore({
   reducer: {
-    app: appReducer,
+    appPrefs: appPrefsReducer,
     auth: authReducer,
     resume: resumeReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().prepend(
+      authListenerMiddleware.middleware,
+      appPrefsListenerMiddleware.middleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

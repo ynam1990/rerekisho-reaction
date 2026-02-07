@@ -43,7 +43,7 @@ export const ResumePaper = styled.div`
   height: 1123px;
   padding: 21px;
 
-  /* 744pxを16分割するGrid */
+  /* 横752pxを32分割するGrid(1セルにつき23.5pxの方眼) */
   display: grid;
   grid-template-columns: repeat(32, 1fr);
   grid-template-rows: repeat(46, 1fr);
@@ -82,7 +82,11 @@ export type GridItemConfig = {
   };
 };
 
+export const GRID_ITEM_CELL_WIDTH = 23.5 as const;
+export const GRID_ITEM_CELL_HEIGHT = GRID_ITEM_CELL_WIDTH;
 export const GridItem = styled.div<GridItemConfig>`
+  position: relative;
+
   ${ (props) => {
     return css`
       grid-column-start: ${ props.$cols[0] };
@@ -185,6 +189,16 @@ export const GridItem = styled.div<GridItemConfig>`
       ` }
     `;
   } }
+`;
+
+export const GridItemColAdjuster = styled.div`
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  cursor: ew-resize;
+  z-index: 1;
 `;
 
 export type GridItemContentConfig = {
