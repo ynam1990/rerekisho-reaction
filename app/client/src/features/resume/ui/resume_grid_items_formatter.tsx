@@ -1,6 +1,6 @@
 import type { ResumeObj } from "@/shared/api/types";
-import { ResumeEmailContent, ResumePhotoImg, type GridItemConfig, type GridItemContentConfig } from "./Resume.styles"
-import { formatPostalCode } from '@/shared/utils/format';
+import { GRID_ITEM_CELL_HEIGHT, GRID_ITEM_CELL_WIDTH, ResumeEmailContent, ResumePhotoImg, type GridItemConfig, type GridItemContentConfig } from "./Resume.styles"
+import { formatPostalCode, measureTextLineCount } from '@/shared/utils/format';
 import dayjs from 'dayjs';
 import resumePhotoDefaultImg from '@/shared/assets/icons/icon_resume_photo.png';
 
@@ -434,22 +434,19 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
       content: string;
     };
 
-    // contentを改行コードで分割
-    const contentLines = item.content.split(/\r\n|\r|\n/);
-    // 最低2行から行数カウントを始めます
-    let contentLineCount = Math.max(contentLines.length, 2);
-    // 各行の長さをチェックし、37文字を超える場合は行数を追加
-    // [memo] 半角文字の場合はより多くの文字が入りますが、簡易的に37文字で計算しています
-    contentLines.forEach(line => {
-      const lineLength = line.length;
-      if (lineLength > 37) {
-        contentLineCount += Math.floor(lineLength / 37);
-      }
-    });
+    // 内容行の行数を計算（必ず一行は表示します）
+    const CUSTOM_INNER_CONTENT_CLIENT_WIDTH = GRID_ITEM_CELL_WIDTH * 30 - 2 * 2 - 4 * 2 - 8 * 2;
+    const contentLineCount = measureTextLineCount(item.content, CUSTOM_INNER_CONTENT_CLIENT_WIDTH, {
+      fontSize: 16,
+      letterSpacing: 2,
+      lineHeight: 1,
+    }) || 1;
+    // セル何個分が必要か計算(上下余白分も考慮します)
+    const requiredGridRowsForContent = Math.ceil(((contentLineCount * (16 * 1)) + (8 * 2)) / GRID_ITEM_CELL_HEIGHT);
 
     // 残りの行数が足りない場合は、改行して次のページに追加します
     // (空白行 + 見出し行)が最後の行になるかどうかで判定
-    const isLastRow = checkIsLastRow(1 + 2, contentLineCount);
+    const isLastRow = checkIsLastRow(1 + 2, requiredGridRowsForContent);
     if (isLastRow) {
       forcePageBreak();
     } else if (currentGridRowStart() > 1) {
@@ -470,15 +467,15 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
     
     // 内容行の追加
     lastAppended = {
-      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + contentLineCount], $borders: { top: false, bottom: true, right: true, left: true },
+      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + requiredGridRowsForContent], $borders: { top: false, bottom: true, right: true, left: true }, $alignItems: 'start',
       content: null,
       innerContent: item.content,
-      innerContentConfig: { $paddings: { left: 8, right: 8 } },
+      innerContentConfig: { $paddings: { left: 8, right: 8, top: 8 } },
       key: 'customs',
       propId: id,
       entityKey: 'content',
     };
-    appendList(contentLineCount, [lastAppended]);
+    appendList(requiredGridRowsForContent, [lastAppended]);
   });
 
   // 最後に追加されたカスタム欄の高さをページ末尾まで伸ばす

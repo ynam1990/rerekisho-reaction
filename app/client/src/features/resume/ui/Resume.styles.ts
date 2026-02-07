@@ -82,6 +82,8 @@ export type GridItemConfig = {
   };
 };
 
+export const GRID_ITEM_CELL_WIDTH = 23.5 as const;
+export const GRID_ITEM_CELL_HEIGHT = GRID_ITEM_CELL_WIDTH;
 export const GridItem = styled.div<GridItemConfig>`
   position: relative;
 
