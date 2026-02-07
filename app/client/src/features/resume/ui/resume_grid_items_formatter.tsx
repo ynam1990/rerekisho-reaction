@@ -150,107 +150,66 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
     },
   ]);
   
-  // 住所欄
-  const addressColEnd = getColEndByLayoutKey('address', 2, 22);
-  const addressAdjustableOptions = {
-    adjustKey: 'address',
-    colAdjustable: {
-      currentWidth: (addressColEnd - 2),
-      minWidth: 8,
-      maxWidth: 26,
-    },
-  };
-  appendList(4, [
-    {
-      $cols: [2, addressColEnd], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: true },
-      content: 'ふりがな',
-      innerContent: `${ resume.values.address.line1Ruby } ${ resume.values.address.line2Ruby }`,
-      innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
-      key: 'address',
-      propId: 'line1Ruby',
-      adjustableOptions: addressAdjustableOptions,
-    },
-    {
-      $cols: [2, addressColEnd], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: true },
-      content: '現住所',
-      innerContent: `〒${ formatPostalCode(resume.values.address.postalCode) }\n${ resume.values.address.line1 }\n${ resume.values.address.line2 }`,
-      innerContentConfig: { $paddings: { left: 12 + 13.5 } },
-      key: 'address',
-      propId: 'line1',
-      adjustableOptions: addressAdjustableOptions,
-    },
-    {
-      $cols: [addressColEnd, 32], $rows: [9, 10], $borders: { top: true, bottom: 'thin', right: true, left: false }, $noWrap: true,
-      content: '電話',
-      innerContent: resume.values.address.tel,
-      innerContentConfig: { $justifyContent: 'center' },
-      key: 'address',
-      propId: 'tel',
-    },
-    {
-      $cols: [addressColEnd, 32], $rows: [10, 13], $borders: { top: false, bottom: true, right: true, left: false },
-      content: (
-        <ResumeEmailContent>
-          <div>Eメール</div>
-          <div>{ resume.values.address.email }</div>
-        </ResumeEmailContent>
-      ),
-      key: 'address',
-      propId: 'email',
-    },
-  ]);
-
-  // 連絡先が表示される場合の追加項目
-  const contactAddressColEnd = getColEndByLayoutKey('contactAddress', 2, 22);
-  const contactAddressAdjustableOptions = {
-    adjustKey: 'contactAddress',
-    colAdjustable: {
-      currentWidth: (contactAddressColEnd - 2),
-      minWidth: 8,
-      maxWidth: 26,
-    },
-  };
-  if (resume.isContactVisible) {
+  // 住所・連絡先欄
+  const appendAddressLikeItems = (sectionKey: 'address' | 'contactAddress', startRow: number) => {
+    const adjustedColEnd = getColEndByLayoutKey(sectionKey, 2, 22);
+    const addressAdjustableOptions = {
+      adjustKey: sectionKey,
+      colAdjustable: {
+        currentWidth: (adjustedColEnd - 2),
+        minWidth: 8,
+        maxWidth: 26,
+      },
+    };
+    const calcRows = (rowOffset: number, usingRowHeight: number) : [number, number] => {
+      const rows: [number, number] = [startRow + rowOffset, startRow + rowOffset + usingRowHeight];
+      return rows;
+    };
+    // 連絡先欄は住所欄の下に追加するため、開始行のボーダーを消します
+    const borderTop = sectionKey === 'address' ? true : false;
+    
     appendList(4, [
       {
-        $cols: [2, contactAddressColEnd], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: true },
+        $cols: [2, adjustedColEnd], $rows: calcRows(0, 1), $borders: { top: borderTop, bottom: 'thin', right: true, left: true },
         content: 'ふりがな',
-        innerContent: `${ resume.values.contactAddress.line1Ruby } ${ resume.values.contactAddress.line2Ruby }`,
+        innerContent: `${ resume.values[sectionKey].line1Ruby } ${ resume.values[sectionKey].line2Ruby }`,
         innerContentConfig: { $paddings: { left: 12 }, $fontSize: 12, $noWrap: true },
-        key: 'contactAddress',
+        key: sectionKey,
         propId: 'line1Ruby',
-        adjustableOptions: contactAddressAdjustableOptions,
+        adjustableOptions: addressAdjustableOptions,
       },
       {
-        $cols: [2, contactAddressColEnd], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: true },
-        content: '連絡先',
-        innerContent: `〒${ formatPostalCode(resume.values.contactAddress.postalCode) }\n${ resume.values.contactAddress.line1 }\n${ resume.values.contactAddress.line2 }`,
+        $cols: [2, adjustedColEnd], $rows: calcRows(1, 3), $borders: { top: false, bottom: true, right: true, left: true },
+        content: '現住所',
+        innerContent: `〒${ formatPostalCode(resume.values[sectionKey].postalCode) }\n${ resume.values[sectionKey].line1 }\n${ resume.values[sectionKey].line2 }`,
         innerContentConfig: { $paddings: { left: 12 + 13.5 } },
-        key: 'contactAddress',
+        key: sectionKey,
         propId: 'line1',
-        adjustableOptions: contactAddressAdjustableOptions,
+        adjustableOptions: addressAdjustableOptions,
       },
       {
-        $cols: [contactAddressColEnd, 32], $rows: [13, 14], $borders: { top: false, bottom: 'thin', right: true, left: false }, $noWrap: true,
+        $cols: [adjustedColEnd, 32], $rows: calcRows(0, 1), $borders: { top: borderTop, bottom: 'thin', right: true, left: false }, $noWrap: true,
         content: '電話',
-        innerContent: resume.values.contactAddress.tel,
+        innerContent: resume.values[sectionKey].tel,
         innerContentConfig: { $justifyContent: 'center' },
-        key: 'contactAddress',
+        key: sectionKey,
         propId: 'tel',
       },
       {
-        $cols: [contactAddressColEnd, 32], $rows: [14, 17], $borders: { top: false, bottom: true, right: true, left: false },
+        $cols: [adjustedColEnd, 32], $rows: calcRows(1, 3), $borders: { top: false, bottom: true, right: true, left: false },
         content: (
           <ResumeEmailContent>
             <div>Eメール</div>
-            <div>{ resume.values.contactAddress.email }</div>
+            <div>{ resume.values[sectionKey].email }</div>
           </ResumeEmailContent>
         ),
-        key: 'contactAddress',
+        key: sectionKey,
         propId: 'email',
       },
     ]);
-  }
+  };
+  appendAddressLikeItems('address', 9);
+  if (resume.isContactVisible) appendAddressLikeItems('contactAddress', 13);
 
   // 空白行
   appendList(1, []);
