@@ -434,25 +434,29 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
       content: string;
     };
 
-    // 内容行の行数を計算（必ず一行は表示します）
-    const CUSTOM_INNER_CONTENT_CLIENT_WIDTH = GRID_ITEM_CELL_WIDTH * 30 - 2 * 2 - 4 * 2 - 8 * 2;
-    const contentLineCount = measureTextLineCount(item.content, CUSTOM_INNER_CONTENT_CLIENT_WIDTH, {
-      fontSize: 16,
-      letterSpacing: 2,
-      lineHeight: 1,
-    }) || 1;
-    // セル何個分が必要か計算(上下余白分も考慮します)
-    const requiredGridRowsForContent = Math.ceil(((contentLineCount * (16 * 1)) + (8 * 2)) / GRID_ITEM_CELL_HEIGHT);
+    // 空白行を追加する必要があるかどうか※改行直後の一番上の行でない場合に追加
+    let isBlankRowRequired = currentGridRowStart() > 1;
 
-    // 残りの行数が足りない場合は、改行して次のページに追加します
-    // (空白行 + 見出し行)が最後の行になるかどうかで判定
-    const isLastRow = checkIsLastRow(1 + 2, requiredGridRowsForContent);
-    if (isLastRow) {
+    // 残りの内容行に使える行数を計算(空白行 + 見出し行 + 最小の内容として1行分 + 最後のページ余白行1行分)
+    const availableContentRows = remainingGridRows() - (isBlankRowRequired ? 1 : 0) - 2 - 1;
+    if (availableContentRows <= 0) {
+      // 行数が足りない場合は改ページ
       forcePageBreak();
-    } else if (currentGridRowStart() > 1) {
-      // 手前に何らかの欄がある場合のみ空白行を追加
-      appendList(1, []);
-    }
+      isBlankRowRequired = false;
+    };
+
+    // 内容行の行数を計算
+    const CUSTOM_INNER_CONTENT_CLIENT_WIDTH = GRID_ITEM_CELL_WIDTH * 30 - 2 * 2 - 4 * 2 - 8 * 2;
+    const { lineCount, rowCount, firstPartLineCount, firstPartRowCount, exceededIndex } = measureTextLineCount(
+      item.content,
+      CUSTOM_INNER_CONTENT_CLIENT_WIDTH,
+      { fontSize: 16, letterSpacing: 2, lineHeight: 1 },
+      (availableContentRows * GRID_ITEM_CELL_HEIGHT - (8 * 2) - (2 * 2) - 9.5),
+      GRID_ITEM_CELL_HEIGHT,
+    );
+
+    // 手前に何らかの欄がある場合のみ空白行を追加
+    if (isBlankRowRequired) appendList(1, []);
 
     // 見出し行の追加
     appendList(2, [
@@ -466,16 +470,42 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
     ]);
     
     // 内容行の追加
-    lastAppended = {
-      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + requiredGridRowsForContent], $borders: { top: false, bottom: true, right: true, left: true }, $alignItems: 'start',
-      content: null,
-      innerContent: item.content,
-      innerContentConfig: { $paddings: { left: 8, right: 8, top: 8 } },
-      key: 'customs',
-      propId: id,
-      entityKey: 'content',
-    };
-    appendList(requiredGridRowsForContent, [lastAppended]);
+    // 内容行の途中で改ページが必要な場合は、内容行を分割します
+    // [memo] 改行した上で1枚全て使い切り、2回以上の改行が必要になる場合には対応していません
+    let partedContentList = exceededIndex !== -1
+      ? [
+          {
+            content: item.content.slice(0, exceededIndex),
+            lineCount: firstPartLineCount,
+            rowCount: firstPartRowCount
+          },
+          {
+            content: item.content.slice(exceededIndex),
+            lineCount: (lineCount - firstPartLineCount),
+            rowCount: rowCount - firstPartRowCount
+          },
+        ]
+      : [{ content: item.content, lineCount, rowCount: rowCount }];
+
+    partedContentList.forEach((partedContent, partIndex) => {
+      // セル何個分が必要か計算(上下余白分も考慮します)（必ず一行は表示します）
+      const requiredGridRowsForContent = Math.min(
+        Math.ceil((((partedContent.lineCount || 1) * (16 * 1)) + (8 * 2)) / GRID_ITEM_CELL_HEIGHT),
+        44,
+      );
+
+      lastAppended = {
+        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + requiredGridRowsForContent],
+        $borders: { top: partIndex === 0 ? false : true, bottom: true, right: true, left: true }, $alignItems: 'start',
+        content: null,
+        innerContent: partedContent.content,
+        innerContentConfig: { $paddings: { left: 8, right: 8, top: 8, bottom: 8 } },
+        key: 'customs',
+        propId: id,
+        entityKey: 'content',
+      };
+      appendList(requiredGridRowsForContent, [lastAppended]);
+    });
   });
 
   // 最後に追加されたカスタム欄の高さをページ末尾まで伸ばす
