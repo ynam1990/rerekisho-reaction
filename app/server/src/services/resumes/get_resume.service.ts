@@ -48,6 +48,9 @@ export const getResumeService = async (input: GetResumeInput): Promise<GetResume
           customEntities: {
             orderBy: { entityIndex: 'asc' },
           },
+          cvTopicEntities: {
+            orderBy: { entityIndex: 'asc' },
+          },
         },
       },
     },
@@ -75,6 +78,7 @@ export const getResumeService = async (input: GetResumeInput): Promise<GetResume
     experienceEntities,
     certificationEntities,
     customEntities,
+    cvTopicEntities,
     displayDate,
     birthdate,
     ...restValues
@@ -141,6 +145,18 @@ export const getResumeService = async (input: GetResumeInput): Promise<GetResume
   customEntities.forEach((entity) => {
     valuesObj.customs!.ids.push(entity.entityId);
     valuesObj.customs!.entities[entity.entityId] = {
+      label: entity.label,
+      content: entity.content,
+    };
+  });
+
+  valuesObj.cvTopics = {
+    ids: [],
+    entities: {},
+  };
+  cvTopicEntities.forEach((entity) => {
+    valuesObj.cvTopics!.ids.push(entity.entityId);
+    valuesObj.cvTopics!.entities[entity.entityId] = {
       label: entity.label,
       content: entity.content,
     };

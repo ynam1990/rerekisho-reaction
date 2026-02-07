@@ -355,6 +355,8 @@ export interface components {
             isGenderVisible: boolean;
             /** @example true */
             isContactVisible: boolean;
+            /** @example false */
+            isCVVisible: boolean;
             /**
              * Format: date-time
              * @example 2026-01-04T12:00:00Z
@@ -534,6 +536,43 @@ export interface components {
                      *       },
                      *       "cus_2": {
                      *         "label": "本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）",
+                     *         "content": "xxxxxxxxxxxx"
+                     *       }
+                     *     }
+                     */
+                    entities: {
+                        [key: string]: {
+                            label: string;
+                            content: string;
+                        };
+                    };
+                };
+                cvTopics: {
+                    /**
+                     * @example [
+                     *       "top_1",
+                     *       "top_2",
+                     *       "top_3",
+                     *       "top_4"
+                     *     ]
+                     */
+                    ids: string[];
+                    /**
+                     * @example {
+                     *       "top_1": {
+                     *         "label": "志望動機",
+                     *         "content": "xxxxxxxxxxxx"
+                     *       },
+                     *       "top_2": {
+                     *         "label": "職務経歴",
+                     *         "content": "xxxxxxxxxxxx"
+                     *       },
+                     *       "top_3": {
+                     *         "label": "活かせる能力",
+                     *         "content": "xxxxxxxxxxxx"
+                     *       },
+                     *       "top_4": {
+                     *         "label": "自己PR",
                      *         "content": "xxxxxxxxxxxx"
                      *       }
                      *     }

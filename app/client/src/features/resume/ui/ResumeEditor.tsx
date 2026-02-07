@@ -746,12 +746,92 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
             })
           }
 
+          <EditorRow>
+            <StyledHeading size="md">
+              職務経歴書項目
+            </StyledHeading>
+
+            <CheckboxWithLabel
+              label="職務経歴書を表示する"
+              name="is_cv_visible"
+              data-key='isCVVisible'
+              value={ resume.isCVVisible }
+              color="tertiary"
+              labelColor="tertiary"
+              onChange={ (_e, newValue) => dispatch(updateResume({ isCVVisible: newValue })) }
+            />
+          </EditorRow>
+
+          {
+            resume.values.cvTopics.ids.map((cusId) => {
+              const custom = resume.values.cvTopics.entities[cusId as keyof typeof resume.values.cvTopics.entities];
+              return (
+                <EditorRow key={ cusId }>
+                  <StyledLabel>
+                    項目名
+                    <StyledInput
+                      name={ `cv_topics_${ cusId }_label` }
+                      data-key='cvTopics'
+                      data-prop-id={ cusId }
+                      data-entity-key='label'
+                      value={ custom.label }
+                      onChange={ (e) => dispatch(updateEntities({
+                        key: 'cvTopics',
+                        id: cusId,
+                        data: {
+                          ...custom,
+                          label: e.target.value,
+                        },
+                      })) }
+                    />
+                  </StyledLabel>
+
+                  <StyledLabel>
+                    内容
+                    <TextArea
+                      name={ `cv_topics_${ cusId }_content` }
+                      data-key='cvTopics'
+                      data-prop-id={ cusId }
+                      data-entity-key='content'
+                      value={ custom.content }
+                      onChange={ (e) => dispatch(updateEntities({
+                        key: 'cvTopics',
+                        id: cusId,
+                        data: {
+                          ...custom,
+                          content: e.target.value,
+                        },
+                      })) }
+                    />
+                  </StyledLabel>
+
+                  <EditorRowInner $justifyContent="flex-end">
+                    <Button
+                      styleType="text"
+                      color="tertiary"
+                      size="sm"
+                      onClick={ () => showConfirmModal(
+                        () => {
+                          dispatch(removeFromEntities({ key: 'cvTopics', id: cusId }));
+                        },
+                        '職務経歴書項目の削除',
+                        `「${ custom.label || '-' }」の項目を削除しますか？`
+                      ) }
+                    >
+                      項目を削除
+                    </Button>
+                  </EditorRowInner>
+                </EditorRow>
+              );
+            })
+          }
+
           <EditorRow $direction="row" $justifyContent="flex-end">
             <Button
               styleType="solid"
               color="tertiary"
               size="sm"
-              onClick={ () => dispatch(addToEntities({ key: 'customs', data: { label: '', content: '' } })) }
+              onClick={ () => dispatch(addToEntities({ key: 'cvTopics', data: { label: '', content: '' } })) }
             >
               項目を追加
             </Button>

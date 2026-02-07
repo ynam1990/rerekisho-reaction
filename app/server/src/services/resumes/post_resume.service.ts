@@ -95,6 +95,7 @@ const formatResumeDataForDB = (isCreate: boolean, resume: ResumeObj) => {
     experiences,
     certifications,
     customs,
+    cvTopics,
     ...restValues
   } = values;
   // 画像はバイナリに戻して保存します
@@ -188,6 +189,19 @@ const formatResumeDataForDB = (isCreate: boolean, resume: ResumeObj) => {
           ...deleteManyQuery,
           create: customs.ids.map((entityId, index) => {
             const entity = customs.entities[entityId];
+
+            return {
+              entityId,
+              label: entity?.label || '',
+              content: entity?.content || '',
+              entityIndex: index,
+            };
+          }),
+        },
+        cvTopicEntities: {
+          ...deleteManyQuery,
+          create: cvTopics.ids.map((entityId, index) => {
+            const entity = cvTopics.entities[entityId];
 
             return {
               entityId,
