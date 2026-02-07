@@ -27,7 +27,7 @@ const authSlice = createSlice({
       state.currentUserName = action.payload.currentUserName;
       state.clientPrefsKey = action.payload.clientPrefsKey;
     });
-    builder.addCase(initializeAuthThunk.rejected, (state, action) => {
+    builder.addCase(initializeAuthThunk.rejected, (state, _action) => {
       state.isInitialized = true;
       state.isAuthenticated = false;
       state.currentUserName = '';

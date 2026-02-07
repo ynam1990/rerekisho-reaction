@@ -786,7 +786,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
               adjusterDragStartRef.current.prevWidth = Math.max(newWidth, 120);
             }
           }}
-          onDragEnd={ (e) => {
+          onDragEnd={ () => {
             adjusterDragStartRef.current = null;
             setIsAdjusterDragging(false);
           }}
