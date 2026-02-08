@@ -323,6 +323,7 @@ components:
         - isPublished
         - isGenderVisible
         - isContactVisible
+        - isCVVisible
         - updatedAt
         - layouts
         - values
@@ -342,6 +343,9 @@ components:
         isContactVisible:
           type: boolean
           example: true
+        isCVVisible:
+          type: boolean
+          example: false
         updatedAt:
           type: string
           format: date-time
@@ -380,6 +384,7 @@ components:
             - experiences
             - certifications
             - customs
+            - cvTopics
           properties:
             displayDate:
               type: string
@@ -603,6 +608,42 @@ components:
                       content: "xxxxxxxxxxxx"
                     cus_2:
                       label: "本人希望記入欄（特に給料・職種・勤務時間・勤務地・その他についての希望などがあれば記入）"
+                      content: "xxxxxxxxxxxx"
+            cvTopics:
+              type: object
+              required:
+                - ids
+                - entities
+              properties:
+                ids:
+                  type: array
+                  items:
+                    type: string
+                  example: ["top_1", "top_2", "top_3", "top_4"]
+                entities:
+                  type: object
+                  additionalProperties:
+                    type: object
+                    required:
+                      - label
+                      - content
+                    properties:
+                      label:
+                        type: string
+                      content:
+                        type: string
+                  example:
+                    top_1:
+                      label: "志望動機"
+                      content: "xxxxxxxxxxxx"
+                    top_2:
+                      label: "職務経歴"
+                      content: "xxxxxxxxxxxx"
+                    top_3:
+                      label: "活かせる能力"
+                      content: "xxxxxxxxxxxx"
+                    top_4:
+                      label: "自己PR"
                       content: "xxxxxxxxxxxx"
     SuccessResponse:
       type: object

@@ -69,10 +69,10 @@ export type GridItemConfig = {
   $justifyContent?: 'start' | 'center' | 'end';
   $alignItems?: 'start' | 'center' | 'end';
   $borders?: {
-    top?: boolean | 'thin' | 'double';
-    bottom?: boolean | 'thin' | 'double';
-    left?: boolean | 'thin' | 'double';
-    right?: boolean | 'thin' | 'double';
+    top?: boolean | 'thin' | 'double' | 'none';
+    bottom?: boolean | 'thin' | 'double' | 'none';
+    left?: boolean | 'thin' | 'double' | 'none';
+    right?: boolean | 'thin' | 'double' | 'none';
   };
   $paddings?: {
     top?: number;
@@ -115,7 +115,7 @@ export const GridItem = styled.div<GridItemConfig>`
       border: none;
       border-width: 2px;
       border-color: ${ props.theme.color.inkBlack };
-      border-top-style: ${ props.$borders?.top ? 'solid' : 'none' };
+      border-top-style: ${ props.$borders?.top && props.$borders?.top !== 'none' ? 'solid' : 'none' };
       border-top-width: ${ props.$borders?.top === 'thin' ? '1px' : '2px' };
       ${ props.$borders?.top === 'double' && css`
         border-top-width: 1px;
@@ -133,7 +133,7 @@ export const GridItem = styled.div<GridItemConfig>`
           background-color: ${ props.theme.color.inkBlack };
         }
       ` }
-      border-bottom-style: ${ props.$borders?.bottom ? 'solid' : 'none' };
+      border-bottom-style: ${ props.$borders?.bottom && props.$borders?.bottom !== 'none' ? 'solid' : 'none' };
       border-bottom-width: ${ props.$borders?.bottom === 'thin' ? '1px' : '2px' };
       ${ props.$borders?.bottom === 'double' && css`
         border-bottom-width: 1px;
@@ -151,7 +151,7 @@ export const GridItem = styled.div<GridItemConfig>`
           background-color: ${ props.theme.color.inkBlack };
         }
       ` }
-      border-left-style: ${ props.$borders?.left ? 'solid' : 'none' };
+      border-left-style: ${ props.$borders?.left && props.$borders?.left !== 'none' ? 'solid' : 'none' };
       border-left-width: ${ props.$borders?.left === 'thin' ? '1px' : '2px' };
       ${ props.$borders?.left === 'double' && css`
         border-left-width: 1px;
@@ -169,7 +169,7 @@ export const GridItem = styled.div<GridItemConfig>`
           background-color: ${ props.theme.color.inkBlack };
         }
       ` }
-      border-right-style: ${ props.$borders?.right ? 'solid' : 'none' };
+      border-right-style: ${ props.$borders?.right && props.$borders?.right !== 'none' ? 'solid' : 'none' };
       border-right-width: ${ props.$borders?.right === 'thin' ? '1px' : '2px' };
       ${ props.$borders?.right === 'double' && css`
         border-right-width: 1px;

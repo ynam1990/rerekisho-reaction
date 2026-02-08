@@ -57,7 +57,8 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
         const itemRowCount = item.$rows[1] - item.$rows[0];
         item.$rows = [currentGridRowStart(), currentGridRowStart() + itemRowCount];
         if (!item.$borders) item.$borders = {};
-        item.$borders.top = true;
+        // 'none'を明示的に指定している場合は変更しません
+        if (item.$borders.top !== 'none') item.$borders.top = true;
       });
     }
     return gridItemsList[currentPageCount - 1];
@@ -427,55 +428,97 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
   });
 
   // カスタム欄
-  let lastAppended: (ResumeGridItem | null) = null;
-  resume.values.customs.ids.forEach((id) => {
-    const item = resume.values.customs.entities[id as keyof typeof resume.values.customs.entities] as {
-      label: string;
-      content: string;
+  const appendCustomLikeItem = (
+    item: { label: string; content: string },
+    sectionKey: 'customs' | 'cvTopics',
+    propId?: string,
+    styleType?: 'default' | 'plain',
+  ) => {
+    // 空白行を追加する必要があるかどうか※改行直後の一番上の行でない場合に追加
+    let isBlankRowRequired = currentGridRowStart() > 1;
+
+    // 残りの内容行に使える行数を計算(空白行 + 見出し行 + 最小の内容として1行分 + 最後のページ余白行1行分)
+    const availableContentRows = remainingGridRows() - (isBlankRowRequired ? 1 : 0) - 2 - 1;
+    if (availableContentRows <= 0) {
+      // 行数が足りない場合は改ページ
+      forcePageBreak();
+      isBlankRowRequired = false;
     };
 
-    // 内容行の行数を計算（必ず一行は表示します）
-    const CUSTOM_INNER_CONTENT_CLIENT_WIDTH = GRID_ITEM_CELL_WIDTH * 30 - 2 * 2 - 4 * 2 - 8 * 2;
-    const contentLineCount = measureTextLineCount(item.content, CUSTOM_INNER_CONTENT_CLIENT_WIDTH, {
-      fontSize: 16,
-      letterSpacing: 2,
-      lineHeight: 1,
-    }) || 1;
-    // セル何個分が必要か計算(上下余白分も考慮します)
-    const requiredGridRowsForContent = Math.ceil(((contentLineCount * (16 * 1)) + (8 * 2)) / GRID_ITEM_CELL_HEIGHT);
+    // 内容行の行数を計算
+    const CUSTOM_INNER_CONTENT_CLIENT_WIDTH = GRID_ITEM_CELL_WIDTH * 30 - (styleType === 'default' ? (2 * 2 + 4 * 2 + 8 * 2) : 20);
+    const { lineCount, rowCount, firstPartLineCount, firstPartRowCount, exceededIndex } = measureTextLineCount(
+      item.content,
+      CUSTOM_INNER_CONTENT_CLIENT_WIDTH,
+      { fontSize: 16, letterSpacing: 2, lineHeight: 1 },
+      (availableContentRows * GRID_ITEM_CELL_HEIGHT - (8 * 2) - (2 * 2) - 9.5),
+      GRID_ITEM_CELL_HEIGHT,
+    );
 
-    // 残りの行数が足りない場合は、改行して次のページに追加します
-    // (空白行 + 見出し行)が最後の行になるかどうかで判定
-    const isLastRow = checkIsLastRow(1 + 2, requiredGridRowsForContent);
-    if (isLastRow) {
-      forcePageBreak();
-    } else if (currentGridRowStart() > 1) {
-      // 手前に何らかの欄がある場合のみ空白行を追加
-      appendList(1, []);
-    }
+    // 手前に何らかの欄がある場合のみ空白行を追加
+    if (isBlankRowRequired) appendList(1, []);
 
     // 見出し行の追加
     appendList(2, [
       {
-        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $borders: { top: true, bottom: 'double', right: true, left: true },
+        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2],
+        $borders: styleType === 'default' ? { top: true, bottom: 'double', right: true, left: true } : undefined,
+        $fontSize: styleType === 'plain' ? 20 : undefined,
+        $paddings: styleType === 'plain' ? { left: 0 } : undefined,
         content: item.label,
-        key: 'customs',
-        propId: id,
+        key: sectionKey,
+        propId,
         entityKey: 'label',
       },
     ]);
     
     // 内容行の追加
-    lastAppended = {
-      $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + requiredGridRowsForContent], $borders: { top: false, bottom: true, right: true, left: true }, $alignItems: 'start',
-      content: null,
-      innerContent: item.content,
-      innerContentConfig: { $paddings: { left: 8, right: 8, top: 8 } },
-      key: 'customs',
-      propId: id,
-      entityKey: 'content',
-    };
-    appendList(requiredGridRowsForContent, [lastAppended]);
+    // 内容行の途中で改ページが必要な場合は、内容行を分割します
+    // [memo] 改行した上で1枚全て使い切り、2回以上の改行が必要になる場合には対応していません
+    let partedContentList = exceededIndex !== -1
+      ? [
+          {
+            content: item.content.slice(0, exceededIndex),
+            lineCount: firstPartLineCount,
+            rowCount: firstPartRowCount
+          },
+          {
+            content: item.content.slice(exceededIndex),
+            lineCount: (lineCount - firstPartLineCount),
+            rowCount: rowCount - firstPartRowCount
+          },
+        ]
+      : [{ content: item.content, lineCount, rowCount: rowCount }];
+
+    partedContentList.forEach((partedContent, partIndex) => {
+      // セル何個分が必要か計算(上下余白分も考慮します)（必ず一行は表示します）
+      const requiredGridRowsForContent = Math.min(
+        Math.ceil((((partedContent.lineCount || 1) * (16 * 1)) + (8 * 2)) / GRID_ITEM_CELL_HEIGHT),
+        44,
+      );
+
+      lastAppended = {
+        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + requiredGridRowsForContent],
+        $borders: styleType === 'default' ? { top: partIndex === 0 ? false : true, bottom: true, right: true, left: true } : { top: 'none' },
+        $paddings: styleType === 'plain' ? { left: 0, right: 0 } : undefined,
+        $alignItems: 'start',
+        content: null,
+        innerContent: partedContent.content,
+        innerContentConfig: {
+          $paddings: styleType === 'default' ? { left: 8, right: 8, top: 8, bottom: 8 } : { left: 20, right: 0, top: 8, bottom: 8 },
+        },
+        key: sectionKey,
+        propId,
+        entityKey: 'content',
+      };
+      appendList(requiredGridRowsForContent, [lastAppended]);
+    });
+  };
+
+  let lastAppended: (ResumeGridItem | null) = null;
+  resume.values.customs.ids.forEach((id) => {
+    const item = resume.values.customs.entities[id];
+    appendCustomLikeItem(item, 'customs', id, 'default');
   });
 
   // 最後に追加されたカスタム欄の高さをページ末尾まで伸ばす
@@ -483,6 +526,45 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
   if (lastAppended && remainingGridRows() > 1 && currentPageCount === 2) {
     (lastAppended as ResumeGridItem).$rows[1] += (remainingGridRows() - 1);
   }
+
+  // 職務経歴書の表示
+  if (resume.isCVVisible) {
+    // 改ページ
+    forcePageBreak();
+
+    // 職務経歴書タイトル行・空行・提出日付・氏名
+    appendList(2, [
+      {
+        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 2], $fontSize: 32, $letterSpacing: 14, $justifyContent: 'center',
+        content: '職務経歴書',
+      },
+    ]);
+    appendList(1, []);
+    appendList(1, [
+      {
+        $cols: [24, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 1], $fontSize: 16, $paddings: { right: 0 }, $justifyContent: 'end',
+        content: resume.values.displayDate ? `${ dayjs(resume.values.displayDate).format('YYYY年 MM月 DD日') }` : '年    月    日',
+        key: 'displayDate',
+      }
+    ]);
+    appendList(1, [
+      {
+        $cols: [2, 32], $rows: [currentGridRowStart(), currentGridRowStart() + 1], $fontSize: 22, $paddings: { right: 0 }, $justifyContent: 'end',
+        content: `${ resume.values.familyName } ${ resume.values.name }`,
+        key: 'familyName',
+      },
+    ]);
+
+    // 空行
+    appendList(1, []);
+
+    // 各トピック欄
+    resume.values.cvTopics.ids.forEach((id) => {
+      const item = resume.values.cvTopics.entities[id];
+      appendCustomLikeItem(item, 'cvTopics', id, 'plain');
+    });
+  }
+
 
   return gridItemsList;
 };

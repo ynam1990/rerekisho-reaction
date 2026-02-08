@@ -49,6 +49,7 @@ model Resume {
   isPublished      Boolean  @default(false) @map("is_published")
   isGenderVisible  Boolean  @default(true) @map("is_gender_visible")
   isContactVisible Boolean  @default(true) @map("is_contact_visible")
+  isCVVisible      Boolean  @default(false) @map("is_cv_visible")
   layouts          Json     @map("layouts")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
@@ -82,6 +83,7 @@ model ResumeValues {
   experienceEntities    ExperienceEntity[]
   certificationEntities CertificationEntity[]
   customEntities        CustomEntity[]
+  cvTopicEntities       CVTopicEntity[]
 
   @@map("resume_values")
 }
@@ -200,4 +202,20 @@ model CustomEntity {
 
   @@unique([resumeValuesId, entityIndex], map: "resume_custom_entity_id_entity_index_unique")
   @@map("resume_custom_entities")
+}
+
+model CVTopicEntity {
+  id Int @id @default(autoincrement())
+
+  // Foreign Keys
+  resumeValuesId Int          @map("resume_values_id")
+  resumeValues   ResumeValues @relation(fields: [resumeValuesId], references: [id], onDelete: Cascade)
+
+  label       String @db.VarChar(255)
+  content     String @db.Text
+  entityIndex Int    @map("entity_index")
+  entityId    String @map("entity_id") @db.VarChar(255)
+
+  @@unique([resumeValuesId, entityIndex], map: "resume_cv_topic_entity_id_entity_index_unique")
+  @@map("resume_cv_topic_entities")
 }

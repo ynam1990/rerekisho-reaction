@@ -19,6 +19,7 @@ export const createInitialResumeObj = (): ResumeObj => {
     isPublished: false,
     isGenderVisible: true,
     isContactVisible: true,
+    isCVVisible: false,
     updatedAt: '',
     layouts: {},
     values: {
@@ -91,6 +92,27 @@ export const createInitialResumeObj = (): ResumeObj => {
           },
         },
       },
+      cvTopics: {
+        ids: ['top_1', 'top_2', 'top_3', 'top_4'],
+        entities: {
+          top_1: {
+            label: '志望動機',
+            content: '',
+          },
+          top_2: {
+            label: '職務経歴',
+            content: '',
+          },
+          top_3: {
+            label: '活かせる能力',
+            content: '',
+          },
+          top_4: {
+            label: '自己PR',
+            content: '',
+          },
+        },
+      },
     },
   };
 
@@ -133,7 +155,7 @@ const resumeSlice = createSlice({
         ...action.payload,
       };
     },
-    updateEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+    updateEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs' | 'cvTopics'>(
       state: any,
       action: {
         payload: {
@@ -147,7 +169,7 @@ const resumeSlice = createSlice({
       
       state.resume.values[key].entities[id] = data;
     },
-    addToEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+    addToEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs' | 'cvTopics'>(
       state: any,
       action: {
         payload: {
@@ -168,7 +190,7 @@ const resumeSlice = createSlice({
       state.resume.values[key].ids.push(id);
       state.resume.values[key].entities[id] = data;
     },
-    removeFromEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+    removeFromEntities<T extends 'educations' | 'experiences' | 'certifications' | 'customs' | 'cvTopics'>(
       state: any,
       action: {
         payload: {
@@ -188,7 +210,7 @@ const resumeSlice = createSlice({
         state.resume.values[key].entities[newId] = structuredClone(EMPTY_YEAR_MONTH_DATA);
       }
     },
-    updateIdsOrder<T extends 'educations' | 'experiences' | 'certifications' | 'customs'>(
+    updateIdsOrder<T extends 'educations' | 'experiences' | 'certifications' | 'customs' | 'cvTopics'>(
       state: any,
       action: {
         payload: {
