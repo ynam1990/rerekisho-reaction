@@ -99,7 +99,7 @@ const formatResumeDataForDB = (isCreate: boolean, resume: ResumeObj) => {
     ...restValues
   } = values;
   // 画像はバイナリに戻して保存します
-  let photoData = null;
+  let photoImgQuery;
   if (photoImg) {
     const { mimeType, bytes } = dataURLToBytes(photoImg);
 
@@ -112,10 +112,19 @@ const formatResumeDataForDB = (isCreate: boolean, resume: ResumeObj) => {
       throw new ServiceError('BAD_REQUEST', '画像形式はjpeg、png、gif、webpのいずれかである必要があります');
     }
 
-    photoData = {
+    const photoData = {
       mimeType,
       imgData: bytes,
     };
+
+    photoImgQuery = isCreate
+      ? { create: photoData }
+      : {
+        upsert: {
+          create: photoData,
+          update: photoData,
+        },
+      };
   }
 
   // DB更新用のデータを組み立てます
@@ -128,14 +137,7 @@ const formatResumeDataForDB = (isCreate: boolean, resume: ResumeObj) => {
         displayDate: displayDate ? new Date(displayDate) : null,
         birthdate: birthdate ? new Date(birthdate) : null,
         ...restValues,
-        photoImg: photoData
-          ? {
-            upsert: {
-              create: photoData,
-              update: photoData,
-            },
-          }
-          : {},
+        photoImg: photoImgQuery,
         address: {
           [opKey]: address,
         },

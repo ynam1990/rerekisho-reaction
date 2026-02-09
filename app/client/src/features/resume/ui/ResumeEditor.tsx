@@ -103,7 +103,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     <ResumeEditorWrapper
       ref={ resumeEditorWrapperRef }
       $isOpen={ isOpen }
-      $editorWidth={ editorPanelWidth }
+      $editorWidth={ Math.min(editorPanelWidth, window.innerWidth) }
       $isDragging={ isAdjusterDragging }
     >
       <ResumeEditorInnerWrapper>
@@ -112,6 +112,12 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
         </ResumeEditorHeader>
 
         <ResumeEditorBody>
+          <EditorRow>
+            <StyledLabel>
+              { `最終更新日時: ${ resume.updatedAt && dayjs(resume.updatedAt).format('YYYY年MM月DD日 hh時mm分') }` }
+            </StyledLabel>
+          </EditorRow>
+
           <EditorRow>
             <StyledLabel>
               履歴書名

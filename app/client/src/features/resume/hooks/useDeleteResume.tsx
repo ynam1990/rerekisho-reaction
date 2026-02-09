@@ -11,19 +11,19 @@ export const useDeleteResume = () => {
   const { showModalWithOptions, hideModal } = useModal();
   const showToastWithOptions = useToast();
 
-  const deleteResume = (resumeId: string, resumeName: string, onAfterDelete?: () => void) => {
+  const deleteResume = async (resumeId: string, resumeName: string, onAfterDelete?: (deletedResumeId: string) => void) => {
     const onExecDeleteButtonClick = async () => {
       hideModal();
 
       try {
-        await dispatch(deleteResumeThunk({ resumeId })).unwrap();
+        const { resumeId: deletedResumeId } = await dispatch(deleteResumeThunk({ resumeId })).unwrap();
         showToastWithOptions({
           icon: 'success',
           content: '履歴書の削除が完了しました',
         });
         
         if (onAfterDelete) {
-          onAfterDelete();
+          onAfterDelete(deletedResumeId);
         }
       } catch (error) {
         showToastWithOptions({

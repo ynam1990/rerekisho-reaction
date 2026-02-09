@@ -1,5 +1,6 @@
 import { useAppDispatch } from "@/app/store/hooks";
 import { getResumeThunk } from "@/features/resume";
+import type { ResumeObj } from "@/shared/api/types";
 import { useToast } from "@/shared/hooks/useToast";
 import { hasMessage } from "@/shared/utils/check";
 
@@ -7,9 +8,11 @@ export const useGetResume = () => {
   const dispatch = useAppDispatch();
   const showToastWithOptions = useToast();
   
-  const getResume = async (resumeId: string) => {
+  const getResume = async (resumeId: string, onAfterGet?: (resume: ResumeObj) => void) => {
     try {
-      await dispatch(getResumeThunk({ resumeId })).unwrap();
+      const resume = await dispatch(getResumeThunk({ resumeId })).unwrap();
+      
+      if (onAfterGet) onAfterGet(resume);
     } catch (error) {
       showToastWithOptions({
         icon: 'error',

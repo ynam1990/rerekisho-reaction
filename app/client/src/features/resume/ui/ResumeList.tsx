@@ -6,7 +6,7 @@ import { ButtonGroup, Popover, type GroupedButtonProps } from "@/shared/ui/molec
 import publishedImg from '@/shared/assets/icons/icon_published.png'
 import dayjs from "dayjs";
 import type { ResumeListItem } from "@/shared/api/types";
-import { useCreateResume, useDeleteResume, useGetResumes } from "@/features/resume";
+import { useCreateResume, useDeleteResume, useCloneResume, useGetResumes } from "@/features/resume";
 
 type Props = {
   resumeList: ResumeListItem[];
@@ -19,6 +19,7 @@ export const ResumeList = (props: Props) => {
   const { getResumes } = useGetResumes();
   const { createResume } = useCreateResume();
   const { deleteResume } = useDeleteResume();
+  const { cloneResume } = useCloneResume();
 
   useEffect(() => {
     getResumes();
@@ -33,6 +34,17 @@ export const ResumeList = (props: Props) => {
         children: '編集',
         onClick: () => {
           navigate(`/resumes/${ resume.id }`);
+        },
+      },
+      {
+        styleType: 'solid',
+        color: 'secondary',
+        size: 'md',
+        children: '複製',
+        onClick: async () => {
+          await cloneResume(resume.id, (newResumeId) => {
+            navigate(`/resumes/${ newResumeId }`);
+          });
         },
       },
       {

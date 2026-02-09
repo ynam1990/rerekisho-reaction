@@ -5,6 +5,7 @@ import { theme } from '@/shared/styles/theme';
 export type GroupedButtonProps = typeof Button.defaultProps;
 
 type Props = {
+  className?: string;
   $size?: keyof typeof theme.spacing;
   $isBreakWhenSP?: boolean;
   $flexDirection?: 'row' | 'column';
@@ -13,6 +14,7 @@ type Props = {
 
 export const ButtonGroup = (props: Props) => (
   <ButtonGroupWrapper
+    className={ props.className }
     $size={ props.$size }
     $isBreakWhenSP={ props.$isBreakWhenSP }
     $flexDirection={ props.$flexDirection }
