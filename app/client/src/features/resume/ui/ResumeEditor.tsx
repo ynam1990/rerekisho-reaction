@@ -103,7 +103,7 @@ export const ResumeEditor = forwardRef<ResumeEditorHandle, Props>((props, ref) =
     <ResumeEditorWrapper
       ref={ resumeEditorWrapperRef }
       $isOpen={ isOpen }
-      $editorWidth={ editorPanelWidth }
+      $editorWidth={ Math.min(editorPanelWidth, window.innerWidth) }
       $isDragging={ isAdjusterDragging }
     >
       <ResumeEditorInnerWrapper>

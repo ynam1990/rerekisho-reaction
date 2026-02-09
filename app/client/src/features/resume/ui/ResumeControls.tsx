@@ -26,7 +26,7 @@ export const ResumeControls = (props: Props) => {
   const { scale, resume, setScale, fitScale, onConvertToPdf } = props;
 
   // もしSP表示の場合、最初から左上表示にします
-  const [isWarped, setIsWarped] = useState(`${ window.innerWidth }px` <= theme.breakpoints.sp);
+  const [isWarped, setIsWarped] = useState<boolean>(window.innerWidth <= Number(theme.breakpoints.sp.replace('px', '')));
   const [isButtonsHiddenWhenSP, setIsButtonsHiddenWhenSP] = useState(true);
 
   const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
