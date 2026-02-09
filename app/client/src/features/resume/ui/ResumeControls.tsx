@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
-import { ResumeControlsWrapper, ResumeNameWrapper, PublishedImg, ResumeName, StyledHeading, ButtonIcon } from "./ResumeControls.styles";
-import { Text } from "@/shared/ui/atoms";
-import { ButtonGroup } from "@/shared/ui/molecules";
+import { ResumeControlsWrapper, ResumeNameWrapper, PublishedImg, ResumeName, StyledHeading, ButtonIcon, ResumeUpdatedAtText, ResumeNameInnerWrapper, StyledButtonGroup } from "./ResumeControls.styles";
 import publishedImg from '@/shared/assets/icons/icon_published.png';
 import zoomInImg from '@/shared/assets/icons/icon_zoom_in.png';
 import zoomOutImg from '@/shared/assets/icons/icon_zoom_out.png';
 import zoomFitImg from '@/shared/assets/icons/icon_zoom_fit.png';
 import zoomResetImg from '@/shared/assets/icons/icon_zoom_reset.png';
 import controlsMoveImg from '@/shared/assets/icons/icon_controls_move.png';
+import triangleImg from '@/shared/assets/icons/icon_triangle.png';
 import type { ResumeObj } from "@/shared/api/types";
 import { useDeleteResume, useUpdateResume } from "@/features/resume";
+import { theme } from "@/shared/styles/theme";
 
 type Props = {
   scale: number;
@@ -25,7 +25,9 @@ type Props = {
 export const ResumeControls = (props: Props) => {
   const { scale, resume, setScale, fitScale, onConvertToPdf } = props;
 
-  const [isWarped, setIsWarped] = useState(false);
+  // もしSP表示の場合、最初から左上表示にします
+  const [isWarped, setIsWarped] = useState(`${ window.innerWidth }px` <= theme.breakpoints.sp);
+  const [isButtonsHiddenWhenSP, setIsButtonsHiddenWhenSP] = useState(true);
 
   const [buttonsLoading, setButtonsLoading] = useState<{ [key: string]: boolean }>({});
 
@@ -40,23 +42,35 @@ export const ResumeControls = (props: Props) => {
       onClick={ (e) => e.stopPropagation() }
     >
       <ResumeNameWrapper>
-        <ResumeName>
-          <StyledHeading
-            size="lg"
-            $clickable={ true }
-            onClick={ props.onResumeNameClick }
-          >
-            { resume.name }
-          </StyledHeading>
+        <ResumeNameInnerWrapper>
+          <ResumeName>
+            <StyledHeading
+              size="lg"
+              $clickable={ true }
+              onClick={ props.onResumeNameClick }
+            >
+              { resume.name }
+            </StyledHeading>
 
-          { resume.isPublished && <PublishedImg src={ publishedImg } alt="アイコンはAI生成です" /> }
-        </ResumeName>
-        <Text size="sm">
-          { `最終更新: ${ resume.updatedAt && dayjs(resume.updatedAt).format('YYYY年MM月DD日 hh時mm分') }` }
-        </Text>
+            { resume.isPublished && <PublishedImg src={ publishedImg } alt="アイコンはAI生成です" /> }
+          </ResumeName>
+          <ResumeUpdatedAtText size="sm">
+            { `最終更新: ${ resume.updatedAt && dayjs(resume.updatedAt).format('YYYY年MM月DD日 hh時mm分') }` }
+          </ResumeUpdatedAtText>
+        </ResumeNameInnerWrapper>
+
+        <ButtonIcon
+          $size="md"
+          $direction={ isButtonsHiddenWhenSP ? 'down' : 'right' }
+          $hideWhenPC={ true }
+          onClick={ () => { setIsButtonsHiddenWhenSP(!isButtonsHiddenWhenSP); }}
+        >
+          <img src={ triangleImg } alt="アイコンはAI生成です" />
+        </ButtonIcon>
       </ResumeNameWrapper>
 
-      <ButtonGroup
+      <StyledButtonGroup
+        $hideWhenSP={ isButtonsHiddenWhenSP }
         $size="md"
         buttonPropsList={ [
           {
@@ -115,7 +129,8 @@ export const ResumeControls = (props: Props) => {
         ] }
       />
 
-      <ButtonGroup
+      <StyledButtonGroup
+        $hideWhenSP={ isButtonsHiddenWhenSP }
         $size="sm"
         buttonPropsList={ [
           {
