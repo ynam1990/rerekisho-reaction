@@ -36,13 +36,10 @@ export const ResumeEditorInnerWrapper = styled.div`
     return css`
       background-color: ${ theme.color.backgroundGray };
       z-index: ${ theme.zIndex.resumeEditor };
-
       padding: ${ theme.spacing.lg.pc } ${ theme.spacing.lg.pc };
-      row-gap: ${ theme.spacing.lg.pc };
       
       @media (max-width: ${ theme.breakpoints.sp}) {
         padding: ${ theme.spacing.lg.sp } ${ theme.spacing.lg.sp };
-        row-gap: ${ theme.spacing.lg.sp };
       } 
     `;
   } }
