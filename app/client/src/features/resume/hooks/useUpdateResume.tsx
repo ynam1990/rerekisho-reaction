@@ -8,10 +8,10 @@ export const useUpdateResume = () => {
   const dispatch = useAppDispatch();
   const showToastWithOptions = useToast();
   
-  const updateResume = async (resume: ResumeObj, onAfterUpdate?: () => void) => {
+  const updateResume = async (resume: ResumeObj, onAfterUpdate?: (updatedResumeId: string) => void) => {
     try {
       // 履歴書データの新規作成と共通のAPIを利用します
-      await dispatch(postResumeThunk({
+      const { resumeId: updatedResumeId } = await dispatch(postResumeThunk({
         resumeData: resume,
       })).unwrap();
 
@@ -20,7 +20,7 @@ export const useUpdateResume = () => {
         content: '履歴書の保存が完了しました',
       });
 
-      if (onAfterUpdate) onAfterUpdate();
+      if (onAfterUpdate) onAfterUpdate(updatedResumeId);
     } catch (error) {
       showToastWithOptions({
         icon: 'error',
