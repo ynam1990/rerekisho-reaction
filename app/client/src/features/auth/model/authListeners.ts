@@ -1,6 +1,6 @@
 import { createListenerMiddleware, isAnyOf } from '@reduxjs/toolkit';
 import { initializeAuthThunk } from './authThunks';
-import { loadPrefsFromLocalStorage } from '@/shared/utils/local_strage_io';
+import { loadPrefsFromLocalStorage } from '@/shared/utils/local_storage_io';
 import { hydrateAppPrefs, resetAppPrefs } from '@/shared/model/appPrefsSlice';
 
 export const authListenerMiddleware = createListenerMiddleware();
