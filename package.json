@@ -9,6 +9,7 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky",
     "dev:client": "npm run dev --workspace app/client",
     "dev:storybook": "npm run storybook --workspace app/client",
     "dev:server": "npm run dev --workspace app/server",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@stoplight/prism-cli": "^5.14.2",
     "ajv-formats": "^3.0.1",
+    "husky": "^9.1.7",
     "msw": "^2.12.10",
     "openapi-backend": "^5.15.0",
     "openapi-typescript": "^7.10.1",
