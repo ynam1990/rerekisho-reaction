@@ -36,7 +36,7 @@ const downloadBlob = (blob: Blob, fileName: string): void => {
   const a = document.createElement("a");
   a.href = url;
   // ファイル名に利用できない文字をアンダースコアに置換
-  a.download = fileName.replace(/[\\\/:\*\?"<>\|]/g, "_");
+  a.download = fileName.replace(/[\\/:*?"<>|]/g, "_");
   a.click();
   URL.revokeObjectURL(url);
 };

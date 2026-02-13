@@ -13,7 +13,7 @@ describe('Checkbox', () => {
 
     // 検証：hidden inputが存在する
     expect(input).toBeInTheDocument();
-    //　検証：hidden inputのvalue属性が'true'
+    // 検証：hidden inputのvalue属性が'true'
     expect(input).toHaveAttribute('value', 'true');
   });
 
@@ -39,7 +39,7 @@ describe('Checkbox', () => {
 
     // 検証：hidden inputが存在する
     expect(input).toBeInTheDocument();
-    //　検証：hidden inputのvalue属性が'true'
+    // 検証：hidden inputのvalue属性が'true'
     expect(input).toHaveAttribute('value', 'true');
   });
 
