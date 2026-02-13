@@ -35,7 +35,11 @@
   },
   "devDependencies": {
     "@stoplight/prism-cli": "^5.14.2",
+    "ajv-formats": "^3.0.1",
+    "msw": "^2.12.10",
+    "openapi-backend": "^5.15.0",
     "openapi-typescript": "^7.10.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "yaml": "^2.8.2"
   }
 }
