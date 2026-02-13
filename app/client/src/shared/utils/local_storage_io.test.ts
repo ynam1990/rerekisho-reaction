@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { savePrefsToLocalStorage, loadPrefsFromLocalStorage } from './local_storage_io';
 
 // 外部参照の関数をモックします
