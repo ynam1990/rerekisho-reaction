@@ -28,13 +28,7 @@ paths:
               $ref: '#/components/schemas/AuthenticationDataWithAgreement'
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookie
-              schema:
-                type: string
-              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '409':
@@ -75,13 +69,7 @@ paths:
               $ref: '#/components/schemas/AuthenticationData'
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookie
-              schema:
-                type: string
-              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -115,13 +103,7 @@ paths:
         - ログイン後API
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookieの削除
-              schema:
-                type: string
-              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithClearedSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -169,13 +151,7 @@ paths:
         - ログイン後API
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookieの削除
-              schema:
-                type: string
-              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithClearedSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -699,6 +675,36 @@ components:
   responses:
     Success:
       description: 成功レスポンス
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+          example:
+            message: "正常に完了しました。"
+            ok: true
+    SuccessWithSetCookie:
+      description: 成功レスポンス（ログインセッションCookie付き）
+      headers:
+        Set-Cookie:
+          description: ログインセッション用Cookie
+          schema:
+            type: string
+          example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+          example:
+            message: "正常に完了しました。"
+            ok: true
+    SuccessWithClearedSetCookie:
+      description: 成功レスポンス（ログインセッションCookie削除付き）
+      headers:
+        Set-Cookie:
+          description: ログインセッション用Cookieの削除
+          schema:
+            type: string
+          example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
       content:
         application/json:
           schema:
