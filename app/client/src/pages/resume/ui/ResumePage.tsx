@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useElementRect } from "@/shared/hooks/useElementRect";
 import { ResumePageContentScrollWrapper, ResumePageContentWrapper, ResumePageWrapper } from "./ResumePage.styles"
@@ -29,23 +29,22 @@ export const ResumePage = () => {
       // クリーンアップ時に履歴書データをリセット
       dispatch(resetResume());
     };
-  }, [resumeId]);
+  }, [resumeId, getResume, dispatch, showToastWithOptions]);
 
   const [scale, setScale] = useState(1);
   const { ref, elHeight } = useElementRect<HTMLDivElement>();
   
-  const calcFitScale = () => {
+  const fitScale = useCallback(() => {
     // A4 96dpiサイズ1123pxをparentHeightに合わせます（余白を差し引く）
     const scrollbarXHeight = ref.current ? Math.max(0, (ref.current.offsetWidth - ref.current.clientWidth)) : 0;
-    const fitScale = Math.max(1, (elHeight - 48 * 2 - scrollbarXHeight)) / 1123;
-    return fitScale;
-  };
+    const fittedScale = Math.max(1, (elHeight - 48 * 2 - scrollbarXHeight)) / 1123;
 
-  const fitScale = () => setScale(calcFitScale());
+    setScale(fittedScale);
+  }, [elHeight, ref]);
 
   useEffect(() => {
     fitScale();
-  }, [elHeight]);
+  }, [fitScale]);
 
   const resumeRef = useRef<ResumeHandle>(null);
   const handleConvertToPdf = () => {
