@@ -65,7 +65,7 @@ export function callAPI<T extends APIPair<any, any>> (
     timeoutController.abort();
   });
 
-  const requestPromise = new Promise<T[1]>(async (resolve, reject) => {
+  const createRequestPromise: () => Promise<T[1]> = async () => {
     try {
       const res = await fetch(
         `${BASE_URL}${path}`,
@@ -99,15 +99,14 @@ export function callAPI<T extends APIPair<any, any>> (
         );
       }
 
-      resolve(responseBody as T[1]);
-    } catch (error) {
+      return responseBody as T[1];
+    } finally {
       clearTimeout(timeoutId);
-      reject(error);
     }
-  });
+  };
 
   return {
-    promise: requestPromise,
+    promise: createRequestPromise(),
     abort: () => {
       timeoutController.abort();
     },
