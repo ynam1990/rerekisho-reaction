@@ -239,6 +239,27 @@ REDIS_HOST="127.0.0.1"
 REDIS_PORT=3004
 ```
 
+.env.testも設置します
+```
+# 実行環境（development、production）
+NODE_ENV="development"
+APP_PORT= "3001"
+
+# セッション
+SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SESSION_NAME="connect.sid"
+
+# prisma(テスト用)
+DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_test_db"
+
+# redis(テスト用)
+REDIS_HOST="127.0.0.1"
+REDIS_PORT=3005
+
+# JestのESMモジュールサポートを有効にするためのオプション(v29まで)
+NODE_OPTIONS=--experimental-vm-modules
+```
+
 ### Prismaマイグレーションの適用
 ```
 実行ディレクトリ: ルート
