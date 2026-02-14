@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useAuthSelector } from '@/app/store/hooks';
 import { ThemeProvider } from 'styled-components';
 import { theme } from '@/shared/styles/theme'
@@ -21,26 +21,26 @@ export const App = () => {
   useEffect(() => {
     // 初回ロード時のログインチェック
     initializeAuth();
-  }, []);
+  }, [initializeAuth]);
   
   const { ref: footerRef, elHeight: footerHeight } = useElementRect<HTMLDivElement>();
   const { ref: headerRef, elHeight: headerHeight } = useElementRect<HTMLDivElement>();
   const { scrollbarHeight, scrollbarWidth } = useScrollbarRect();
 
   const toastRef = useRef<ToastHandle | null>(null);
-  const showToastWithOptions = (options: ToastOptions) => {
+  const showToastWithOptions = useCallback((options: ToastOptions) => {
     toastRef.current?.setOptions(options);
     toastRef.current?.show();
-  };
+  }, []);
 
   const modalRef = useRef<ModalHandle>(null);
-  const showModalWithOptions = (options: ModalOptions) => {
+  const showModalWithOptions = useCallback((options: ModalOptions) => {
     modalRef.current?.setOptions(options);
     modalRef.current?.show();
-  };
-  const hideModal = () => {
+  }, []);
+  const hideModal = useCallback(() => {
     modalRef.current?.hide();
-  };
+  }, []);
   
   return (
     <ThemeProvider theme={ theme }>
