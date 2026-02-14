@@ -11,11 +11,19 @@ export const createLogRequestMiddleware = () => {
       let info = `[${ new Date().toISOString() }] ${ req.method } ${ req.url }`;
       console.log(info);
       console.log('Headers:', req.headers);
-      console.log('Body:', req.body);
+      console.log('Body:', maskPasswordIfExists(req.body));
       console.log('Params:', req.params);
       console.log('Query:', req.query);
     }
 
     next();
   };
+};
+
+const maskPasswordIfExists = (body: any) => {
+  if (body && typeof body === 'object' && 'password' in body) {
+    return { ...body, password: '****' };
+  }
+  
+  return body;
 };
