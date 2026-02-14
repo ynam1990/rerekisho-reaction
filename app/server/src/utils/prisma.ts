@@ -4,7 +4,6 @@ import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { DATABASE_URL } from "../constants/env.const.js";
 
 declare global {
-  // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
 }
 

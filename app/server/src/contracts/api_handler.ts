@@ -13,8 +13,8 @@ export function createTypedAPIHandler<
   ApiPath extends keyof Paths,
   Method extends MethodOf<Paths[ApiPath]>,
   Op extends Paths[ApiPath][Method] = Paths[ApiPath][Method],
-  Params = Paths[ApiPath][Method] extends { parameters: { path: infer P } } ? P : {},
-  Query = Paths[ApiPath][Method] extends { parameters: { query: infer Q } } ? Q : {}
+  Params = Paths[ApiPath][Method] extends { parameters: { path: infer P } } ? P : object,
+  Query = Paths[ApiPath][Method] extends { parameters: { query: infer Q } } ? Q : object
 >(_path: ApiPath, _method: Method) {
   return (
     handler: RequestHandler<

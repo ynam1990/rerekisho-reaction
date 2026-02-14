@@ -8,7 +8,7 @@ export const createLogRequestMiddleware = () => {
     next: NextFunction
   ): void => {
     if (isDev()) {
-      let info = `[${ new Date().toISOString() }] ${ req.method } ${ req.url }`;
+      const info = `[${ new Date().toISOString() }] ${ req.method } ${ req.url }`;
       console.log(info);
       console.log('Headers:', req.headers);
       console.log('Body:', maskPasswordIfExists(req.body));
