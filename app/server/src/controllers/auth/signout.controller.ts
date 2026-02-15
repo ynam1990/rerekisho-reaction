@@ -2,7 +2,7 @@ import { createTypedAPIHandler, createTypedReply } from "../../contracts/api_han
 import { signOutService } from "../../services/auth/index.js";
 import { formatErrorResponse, formatSuccessResponse } from "../../utils/format.js";
 import { logError } from "../../errors/log.js";
-import { destroySessionAsync } from "../../utils/destroy_session.js";
+import { destroySessionAsync } from "../../utils/async_session.js";
 
 export const signOutController = createTypedAPIHandler("/api/auth/signout", "post")(async (req, res) => {
   const reply = createTypedReply(res, "/api/auth/signout", "post");
