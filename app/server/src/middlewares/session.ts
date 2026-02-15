@@ -16,7 +16,29 @@ declare module "express-session" {
 
 const COOKIE_MAX_AGE = 1000 * 60 * 60 * 24 * 7; // 7日間
 const EXPIRATION_CHECK_INTERVAL = 15 * 60 * 1000; // 15分毎
+
 const MySQLStore = MySQLSessionFactory(session);
+type MySQLStoreWithClose = session.Store & { close: () => Promise<void> };
+export const sessionStore: MySQLStoreWithClose = new MySQLStore(
+  {
+    checkExpirationInterval: EXPIRATION_CHECK_INTERVAL,
+    expiration: COOKIE_MAX_AGE,
+    createDatabaseTable: false,
+    schema: {
+      tableName: 'sessions',
+      columnNames: {
+        session_id: 'session_id',
+        expires: 'expires',
+        data: 'data'
+      },
+    },
+    host: DB_HOST,
+    port: DB_PORT,
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: DB_NAME,
+  },
+);
 
 export const createSessionMiddleware = () : RequestHandler => {
   const sessionMiddleware: RequestHandler = session({
@@ -28,29 +50,9 @@ export const createSessionMiddleware = () : RequestHandler => {
       httpOnly: true,
       secure: isProd(),
       sameSite: 'lax',
-      // 7日間有効
-      maxAge: COOKIE_MAX_AGE
+      maxAge: COOKIE_MAX_AGE,
     },
-    store: new MySQLStore(
-      {
-        checkExpirationInterval: EXPIRATION_CHECK_INTERVAL,
-        expiration: COOKIE_MAX_AGE,
-        createDatabaseTable: false,
-        schema: {
-          tableName: 'sessions',
-          columnNames: {
-            session_id: 'session_id',
-            expires: 'expires',
-            data: 'data'
-          },
-        },
-        host: DB_HOST,
-        port: DB_PORT,
-        user: DB_USER,
-        password: DB_PASSWORD,
-        database: DB_NAME,
-      },
-    )
+    store: sessionStore,
   });
 
   return sessionMiddleware;
