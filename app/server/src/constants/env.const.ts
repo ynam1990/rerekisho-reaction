@@ -2,6 +2,7 @@ export const ENV_DEV = 'development';
 export const ENV_PROD = 'production';
 export const NODE_ENV = String(process.env.NODE_ENV ?? 'development');
 export const APP_PORT = Number(process.env.APP_PORT ?? '3000');
+export const OUTPUT_REQUEST_LOGS = process.env.OUTPUT_REQUEST_LOGS === 'true';
 
 export const DATABASE_URL = String(process.env.DATABASE_URL);
 const databaseUrl = new URL(DATABASE_URL);

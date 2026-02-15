@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import { isDev } from '../utils/check.js';
+import { OUTPUT_REQUEST_LOGS } from '../constants/env.const.js';
 
 export const createLogRequestMiddleware = () => {
   return (
@@ -7,7 +7,7 @@ export const createLogRequestMiddleware = () => {
     _res: Response,
     next: NextFunction
   ): void => {
-    if (isDev()) {
+    if (OUTPUT_REQUEST_LOGS) {
       const info = `[${ new Date().toISOString() }] ${ req.method } ${ req.url }`;
       console.log(info);
       console.log('Headers:', req.headers);

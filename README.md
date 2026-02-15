@@ -223,6 +223,7 @@ docker exec -it rerekisho-reaction-mariadb-local mariadb -u root -p
 # 実行環境（development、production）
 NODE_ENV="development"
 APP_PORT= "3000"
+OUTPUT_REQUEST_LOGS="false"
 
 # セッション
 SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -244,6 +245,7 @@ REDIS_PORT=3004
 # 実行環境（development、production）
 NODE_ENV="development"
 APP_PORT= "3001"
+OUTPUT_REQUEST_LOGS="false"
 
 # セッション
 SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
