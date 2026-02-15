@@ -47,6 +47,9 @@ Reactのフロントエンドコード群です。
   - Redux (ストア管理)
   - Styled-Components (CSS in JS)
   - Storybook (JSXコンポーネントのプレビュー)
+- テスト 主流の2つ
+  - Jest（バックエンドに導入）
+  - Vitest（フロントエンドに導入）
 
 # 環境構築
 
@@ -133,7 +136,8 @@ npm run gen:revision
 # revision.zipをS3にアップロード
 npm run upload:revision  
 ```
-**「npm run gen:revision」はshファイルに実行権限を付けていないと失敗します**
+**「npm run gen:revision」はshファイルに実行権限を付けていないと失敗します**  
+windowsの場合：「npm run gen:revision」はshスクリプトを利用しているため、WSL上で実行するなどします  
 ```
 実行権限の付与
 chmod +x app/codedeploy/gen_revision.sh
