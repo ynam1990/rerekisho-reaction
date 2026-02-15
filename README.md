@@ -47,6 +47,9 @@ Reactのフロントエンドコード群です。
   - Redux (ストア管理)
   - Styled-Components (CSS in JS)
   - Storybook (JSXコンポーネントのプレビュー)
+- テスト 主流の2つ
+  - Jest（バックエンドに導入）
+  - Vitest（フロントエンドに導入）
 
 # 環境構築
 
@@ -133,7 +136,8 @@ npm run gen:revision
 # revision.zipをS3にアップロード
 npm run upload:revision  
 ```
-**「npm run gen:revision」はshファイルに実行権限を付けていないと失敗します**
+**「npm run gen:revision」はshファイルに実行権限を付けていないと失敗します**  
+windowsの場合：「npm run gen:revision」はshスクリプトを利用しているため、WSL上で実行するなどします  
 ```
 実行権限の付与
 chmod +x app/codedeploy/gen_revision.sh
@@ -223,6 +227,7 @@ docker exec -it rerekisho-reaction-mariadb-local mariadb -u root -p
 # 実行環境（development、production）
 NODE_ENV="development"
 APP_PORT= "3000"
+OUTPUT_REQUEST_LOGS="false"
 
 # セッション
 SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -237,6 +242,28 @@ SHADOW_DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho
 # redis
 REDIS_HOST="127.0.0.1"
 REDIS_PORT=3004
+```
+
+.env.testも設置します
+```
+# 実行環境（development、production）
+NODE_ENV="development"
+APP_PORT= "3001"
+OUTPUT_REQUEST_LOGS="false"
+
+# セッション
+SESSION_SECRET="local-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SESSION_NAME="connect.sid"
+
+# prisma(テスト用)
+DATABASE_URL="mysql://prisma_user_local:passpass@127.0.0.1:3002/rerekisho_reaction_test_db"
+
+# redis(テスト用)
+REDIS_HOST="127.0.0.1"
+REDIS_PORT=3005
+
+# JestのESMモジュールサポートを有効にするためのオプション(v29まで)
+NODE_OPTIONS=--experimental-vm-modules
 ```
 
 ### Prismaマイグレーションの適用

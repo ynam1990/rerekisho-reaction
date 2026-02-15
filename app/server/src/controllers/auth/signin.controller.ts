@@ -3,6 +3,7 @@ import { ServiceError } from "../../errors/ServiceError.js";
 import { signInService } from "../../services/auth/index.js";
 import { formatErrorResponse, formatSuccessResponse } from "../../utils/format.js";
 import { logError } from "../../errors/log.js";
+import { saveSessionAsync } from "../../utils/async_session.js";
 
 export const signInController = createTypedAPIHandler("/api/auth/signin", "post")(async (req, res) => {
   const reply = createTypedReply(res, "/api/auth/signin", "post");
@@ -15,7 +16,7 @@ export const signInController = createTypedAPIHandler("/api/auth/signin", "post"
     req.session.clientPrefsKey = user.clientPrefsKey;
     req.session.sessionVersion = user.sessionVersion;
     req.session.lastActiveAt = user.lastActiveAt;
-    await req.session.save();
+    await saveSessionAsync(req.session);
   } catch (error) {
     if (error instanceof ServiceError) {
       return reply(

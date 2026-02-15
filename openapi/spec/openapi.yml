@@ -15,6 +15,7 @@ security:
 paths:
   /api/auth/signup:
     post:
+      operationId: signup
       summary: ユーザ新規登録
       tags:
         - ログイン前API
@@ -27,13 +28,7 @@ paths:
               $ref: '#/components/schemas/AuthenticationDataWithAgreement'
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookie
-              schema:
-                type: string
-              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '409':
@@ -61,6 +56,7 @@ paths:
 
   /api/auth/signin:
     post:
+      operationId: signin
       summary: ユーザログイン
       tags:
         - ログイン前API
@@ -73,13 +69,7 @@ paths:
               $ref: '#/components/schemas/AuthenticationData'
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookie
-              schema:
-                type: string
-              example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -107,18 +97,13 @@ paths:
 
   /api/auth/signout:
     post:
+      operationId: signout
       summary: ユーザログアウト
       tags:
         - ログイン後API
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookieの削除
-              schema:
-                type: string
-              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithClearedSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -128,6 +113,7 @@ paths:
 
   /api/auth/me:
     get:
+      operationId: getUser
       summary: ログイン中のユーザ情報取得
       tags:
         - ログイン後API
@@ -159,18 +145,13 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
+      operationId: deleteUser
       summary: ユーザアカウント削除
       tags:
         - ログイン後API
       responses:
         '200':
-          headers:
-            Set-Cookie:
-              description: ログインセッション用Cookieの削除
-              schema:
-                type: string
-              example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
-          $ref: '#/components/responses/Success'
+          $ref: '#/components/responses/SuccessWithClearedSetCookie'
         '400':
           $ref: '#/components/responses/Error'
         '401':
@@ -180,6 +161,7 @@ paths:
 
   /api/resumes:
     get:
+      operationId: getResumes
       summary: ログイン中ユーザの履歴書一覧の取得
       tags:
         - ログイン後API
@@ -199,6 +181,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     post:
+      operationId: upsertResume
       summary: 履歴書データの新規作成・更新の共通エンドポイント
       description: idが存在しない場合は新規作成、存在する場合は更新を行います
       tags:
@@ -221,6 +204,7 @@ paths:
 
   /api/resumes/{resumeId}:
     get:
+      operationId: getResumeById
       summary: 履歴書IDに紐づく履歴書データの取得
       tags:
         - ログイン後API
@@ -245,6 +229,7 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
     delete:
+      operationId: deleteResumeById
       summary: 履歴書IDを指定して、履歴書データを削除
       tags:
         - ログイン後API
@@ -690,6 +675,36 @@ components:
   responses:
     Success:
       description: 成功レスポンス
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+          example:
+            message: "正常に完了しました。"
+            ok: true
+    SuccessWithSetCookie:
+      description: 成功レスポンス（ログインセッションCookie付き）
+      headers:
+        Set-Cookie:
+          description: ログインセッション用Cookie
+          schema:
+            type: string
+          example: connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SuccessResponse'
+          example:
+            message: "正常に完了しました。"
+            ok: true
+    SuccessWithClearedSetCookie:
+      description: 成功レスポンス（ログインセッションCookie削除付き）
+      headers:
+        Set-Cookie:
+          description: ログインセッション用Cookieの削除
+          schema:
+            type: string
+          example: connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
       content:
         application/json:
           schema:

@@ -14,40 +14,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** ユーザ新規登録 */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AuthenticationDataWithAgreement"];
-                };
-            };
-            responses: {
-                200: components["responses"]["Success"];
-                400: components["responses"]["Error"];
-                /** @description ユーザID重複エラー */
-                409: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example 409 */
-                            code: number;
-                            /** @example 指定されたユーザIDは既に使用されています。 */
-                            message: string;
-                            /** @example false */
-                            ok: boolean;
-                        };
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        post: operations["signup"];
         delete?: never;
         options?: never;
         head?: never;
@@ -64,40 +31,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** ユーザログイン */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["AuthenticationData"];
-                };
-            };
-            responses: {
-                200: components["responses"]["Success"];
-                400: components["responses"]["Error"];
-                /** @description ログイン失敗 */
-                401: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example 401 */
-                            code: number;
-                            /** @example パスワードが一致しませんでした。 */
-                            message: string;
-                            /** @example false */
-                            ok: boolean;
-                        };
-                    };
-                };
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        post: operations["signin"];
         delete?: never;
         options?: never;
         head?: never;
@@ -114,21 +48,7 @@ export interface paths {
         get?: never;
         put?: never;
         /** ユーザログアウト */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                200: components["responses"]["Success"];
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        post: operations["signout"];
         delete?: never;
         options?: never;
         head?: never;
@@ -143,54 +63,11 @@ export interface paths {
             cookie?: never;
         };
         /** ログイン中のユーザ情報取得 */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description ログイン中のユーザ情報 */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example username123 */
-                            username: string;
-                            /** @example keyforuser123 */
-                            clientPrefsKey: string;
-                            /** @example true */
-                            ok: boolean;
-                        };
-                    };
-                };
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        get: operations["getUser"];
         put?: never;
         post?: never;
         /** ユーザアカウント削除 */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                200: components["responses"]["Success"];
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        delete: operations["deleteUser"];
         options?: never;
         head?: never;
         patch?: never;
@@ -204,53 +81,13 @@ export interface paths {
             cookie?: never;
         };
         /** ログイン中ユーザの履歴書一覧の取得 */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description 一覧画面表示用に絞られた履歴書オブジェクトの配列 */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ResumeListItem"][];
-                    };
-                };
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        get: operations["getResumes"];
         put?: never;
         /**
          * 履歴書データの新規作成・更新の共通エンドポイント
          * @description idが存在しない場合は新規作成、存在する場合は更新を行います
          */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["ResumeObj"];
-                };
-            };
-            responses: {
-                200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        post: operations["upsertResume"];
         delete?: never;
         options?: never;
         head?: never;
@@ -265,53 +102,11 @@ export interface paths {
             cookie?: never;
         };
         /** 履歴書IDに紐づく履歴書データの取得 */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description 取得対象の履歴書ID */
-                    resumeId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description 指定された履歴書IDに紐づく履歴書データ */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": components["schemas"]["ResumeObj"];
-                    };
-                };
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        get: operations["getResumeById"];
         put?: never;
         post?: never;
         /** 履歴書IDを指定して、履歴書データを削除 */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    /** @description 削除対象の履歴書ID */
-                    resumeId: string;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                200: components["responses"]["SuccessWithResumeId"];
-                400: components["responses"]["Error"];
-                401: components["responses"]["UnauthorizedError"];
-                500: components["responses"]["InternalServerError"];
-            };
-        };
+        delete: operations["deleteResumeById"];
         options?: never;
         head?: never;
         patch?: never;
@@ -619,6 +414,46 @@ export interface components {
                 "application/json": components["schemas"]["SuccessResponse"];
             };
         };
+        /** @description 成功レスポンス（ログインセッションCookie付き） */
+        SuccessWithSetCookie: {
+            headers: {
+                /**
+                 * @description ログインセッション用Cookie
+                 * @example connect.sid=session-id.prism-mock-id; Path=/; HttpOnly; SameSite=Lax;
+                 */
+                "Set-Cookie"?: string;
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "ok": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponse"];
+            };
+        };
+        /** @description 成功レスポンス（ログインセッションCookie削除付き） */
+        SuccessWithClearedSetCookie: {
+            headers: {
+                /**
+                 * @description ログインセッション用Cookieの削除
+                 * @example connect.sid=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax;
+                 */
+                "Set-Cookie"?: string;
+                [name: string]: unknown;
+            };
+            content: {
+                /**
+                 * @example {
+                 *       "message": "正常に完了しました。",
+                 *       "ok": true
+                 *     }
+                 */
+                "application/json": components["schemas"]["SuccessResponse"];
+            };
+        };
         /** @description 成功レスポンス（履歴書ID付き） */
         SuccessWithResumeId: {
             headers: {
@@ -707,4 +542,219 @@ export interface components {
     pathItems: never;
 }
 export type $defs = Record<string, never>;
-export type operations = Record<string, never>;
+export interface operations {
+    signup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthenticationDataWithAgreement"];
+            };
+        };
+        responses: {
+            200: components["responses"]["SuccessWithSetCookie"];
+            400: components["responses"]["Error"];
+            /** @description ユーザID重複エラー */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 409 */
+                        code: number;
+                        /** @example 指定されたユーザIDは既に使用されています。 */
+                        message: string;
+                        /** @example false */
+                        ok: boolean;
+                    };
+                };
+            };
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    signin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AuthenticationData"];
+            };
+        };
+        responses: {
+            200: components["responses"]["SuccessWithSetCookie"];
+            400: components["responses"]["Error"];
+            /** @description ログイン失敗 */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example 401 */
+                        code: number;
+                        /** @example パスワードが一致しませんでした。 */
+                        message: string;
+                        /** @example false */
+                        ok: boolean;
+                    };
+                };
+            };
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    signout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["SuccessWithClearedSetCookie"];
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description ログイン中のユーザ情報 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @example username123 */
+                        username: string;
+                        /** @example keyforuser123 */
+                        clientPrefsKey: string;
+                        /** @example true */
+                        ok: boolean;
+                    };
+                };
+            };
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    deleteUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["SuccessWithClearedSetCookie"];
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getResumes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 一覧画面表示用に絞られた履歴書オブジェクトの配列 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeListItem"][];
+                };
+            };
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    upsertResume: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResumeObj"];
+            };
+        };
+        responses: {
+            200: components["responses"]["SuccessWithResumeIdAndUpdatedAt"];
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    getResumeById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 取得対象の履歴書ID */
+                resumeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 指定された履歴書IDに紐づく履歴書データ */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeObj"];
+                };
+            };
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+    deleteResumeById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 削除対象の履歴書ID */
+                resumeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: components["responses"]["SuccessWithResumeId"];
+            400: components["responses"]["Error"];
+            401: components["responses"]["UnauthorizedError"];
+            500: components["responses"]["InternalServerError"];
+        };
+    };
+}

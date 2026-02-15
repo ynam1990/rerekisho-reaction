@@ -12,6 +12,8 @@ export const cleanupUsers = async () => {
         lastActiveAt: {
           lt: limitDate,
         },
+        // 永続ユーザは削除対象外
+        isPermanent: false,
       },
       select: {
         id: true,

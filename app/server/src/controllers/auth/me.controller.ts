@@ -2,8 +2,8 @@ import { createTypedAPIHandler, createTypedReply } from "../../contracts/api_han
 import { logError } from "../../errors/log.js";
 import { ServiceError } from "../../errors/ServiceError.js";
 import { getMeService, deleteMeService } from "../../services/auth/index.js";
-import { destroySessionAsync } from "../../utils/destroy_session.js";
 import { formatErrorResponse, formatSuccessResponse } from "../../utils/format.js";
+import { saveSessionAsync, destroySessionAsync } from "../../utils/async_session.js";
 
 export const getMeController = createTypedAPIHandler("/api/auth/me", "get")(async (req, res) => {
   const reply = createTypedReply(res, "/api/auth/me", "get");
@@ -19,7 +19,7 @@ export const getMeController = createTypedAPIHandler("/api/auth/me", "get")(asyn
   
     if (req.session.lastActiveAt !== lastActiveAt) {
       req.session.lastActiveAt = lastActiveAt;
-      await req.session.save();
+      await saveSessionAsync(req.session);
     }
   } catch (error) {
     logError(error, "getMeController");

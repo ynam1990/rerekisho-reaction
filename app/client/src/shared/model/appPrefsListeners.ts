@@ -2,7 +2,7 @@ import { createListenerMiddleware, type TypedStartListening } from '@reduxjs/too
 import { isPartialLocalPrefs, setAppPrefs } from './appPrefsSlice';
 import type { AppDispatch, RootState } from '@/app/store/store';
 import { clientPrefsKeySelector } from '@/features/auth/model/authSelectors';
-import { savePrefsToLocalStorage } from '@/shared/utils/local_strage_io';
+import { savePrefsToLocalStorage } from '@/shared/utils/local_storage_io';
 
 export const appPrefsListenerMiddleware = createListenerMiddleware();
 

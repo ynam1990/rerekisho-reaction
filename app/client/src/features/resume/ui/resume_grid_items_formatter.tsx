@@ -327,7 +327,7 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
 
       // 最後の行になる場合は、欄を閉じる(1ページ目の場合は使い切るまで最後の行扱いしないようにします)
       const isLastRow = checkIsLastRow(2, 2) || (!isFirstPaper() && key === 'experiences' && isLastItem);
-      let borderBottom: (boolean | 'thin') = isLastRow ? true : 'thin';
+      const borderBottom: (boolean | 'thin') = isLastRow ? true : 'thin';
   
       appendEducationLikeItems(key, [
         {
@@ -475,7 +475,7 @@ export const formatResumeGridItems = (resume: ResumeObj): ResumeGridItem[][] => 
     // 内容行の追加
     // 内容行の途中で改ページが必要な場合は、内容行を分割します
     // [memo] 改行した上で1枚全て使い切り、2回以上の改行が必要になる場合には対応していません
-    let partedContentList = exceededIndex !== -1
+    const partedContentList = exceededIndex !== -1
       ? [
           {
             content: item.content.slice(0, exceededIndex),

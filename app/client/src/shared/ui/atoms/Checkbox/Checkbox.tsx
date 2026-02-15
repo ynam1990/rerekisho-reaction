@@ -21,6 +21,9 @@ export const Checkbox = forwardRef<HTMLDivElement, Props>((
   return (
     <CheckboxWrapper
       ref={ forwardedRef }
+      role="checkbox"
+      aria-checked={ value }
+      tabIndex={ 0 }
       $checked={ value }
       $disabled={ !!props.disabled }
       $color={ props.color ?? 'tertiary' }

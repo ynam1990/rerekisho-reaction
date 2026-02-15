@@ -23,7 +23,7 @@ export const ResumeList = (props: Props) => {
 
   useEffect(() => {
     getResumes();
-  }, []);
+  }, [getResumes]);
 
   const buttonProps = (resume: ResumeListItem) : GroupedButtonProps[] => {
     return [

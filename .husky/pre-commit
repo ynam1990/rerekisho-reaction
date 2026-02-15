@@ -1,0 +1,7 @@
+# 各commit前にクライアント側のコードの文法チェックおよびテストを行います
+npm run lint --workspace app/client
+npm run test:run --workspace app/client
+
+# 各commit前にサーバー側のコードの文法チェックを行います
+npm run lint --workspace app/server
+npm run test:run --workspace app/server
