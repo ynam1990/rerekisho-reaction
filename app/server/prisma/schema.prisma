@@ -26,6 +26,7 @@ model User {
   email          String?  @db.VarChar(255)
   passwordHash   String   @map("password_hash") @db.VarChar(255)
   sessionVersion Int      @default(0) @map("session_version")
+  isPermanent    Boolean  @default(false) @map("is_permanent")
   lastLoginAt    DateTime @map("last_login_at")
   lastActiveAt   DateTime @map("last_active_at")
   createdAt      DateTime @default(now()) @map("created_at")
