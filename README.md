@@ -1,12 +1,15 @@
 # rerekisho-reaction
 履歴書をブラウザ上で作成できる、Webアプリケーションのサンプルです。  
 Webアプリ開発を学習される方向けの参考用として公開しています。  
-
-公開Webサイト  
-https://rerekishon.ynam.click
   
 ※履歴書の様式は厚生労働省の定める通りです  
 https://www.mhlw.go.jp/stf/newpage_kouseisaiyou030416.html
+  
+java版バックエンド  
+※Node.js版と同じ機能をjavaで再現したバージョンです  
+https://github.com/ynam1990/rerekisho-reaction-java
+
+<img src="./doc/screenshot.png" alt="スクリーンショット" width="600">
 
 # ディレクトリ
 インフラ、バックエンド、フロントエンドをモノレポにしています。  
